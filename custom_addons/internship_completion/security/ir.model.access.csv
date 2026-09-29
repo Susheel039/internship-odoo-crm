@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_internship_submission_system,internship.submission system,model_internship_submission,base.group_system,1,1,1,1
+access_internship_completion_system,internship.completion system,model_internship_completion,base.group_system,1,1,1,1
+
+access_internship_submission_platform,internship.submission platform,model_internship_submission,internship_base.group_platform_administrator,1,1,1,1
+access_internship_completion_platform,internship.completion platform,model_internship_completion,internship_base.group_platform_administrator,1,1,1,1
+
+access_internship_submission_admin,internship.submission admin,model_internship_submission,internship_base.group_university_administrator,1,1,1,1
+access_internship_completion_admin,internship.completion admin,model_internship_completion,internship_base.group_university_administrator,1,1,1,1
+
+access_internship_submission_staff,internship.submission staff,model_internship_submission,internship_base.group_university_staff,1,1,0,0
+access_internship_completion_staff,internship.completion staff,model_internship_completion,internship_base.group_university_staff,1,1,0,0
+
+access_internship_submission_company,internship.submission company,model_internship_submission,internship_base.group_company_manager,1,1,0,0
+access_internship_completion_company,internship.completion company,model_internship_completion,internship_base.group_company_manager,1,1,0,0

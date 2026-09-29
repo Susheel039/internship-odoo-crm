@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_completion_certificate" model="ir.actions.report">
+        <field name="name">Internship Completion Certificate</field>
+        <field name="model">internship.completion</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_completion.report_completion_certificate</field>
+        <field name="report_file">internship_completion.report_completion_certificate</field>
+        <field name="binding_model_id" ref="model_internship_completion"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_completion_certificate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="text-center">
+                            <h1>Certificate of Internship Completion</h1>
+                            <p class="mt-4">This certifies that</p>
+                            <h2 t-esc="doc.student_id.name"/>
+                            <p class="mt-4">has successfully completed an internship with</p>
+                            <h3 t-esc="doc.company_id.name or doc.opportunity_id.company_id.name"/>
+                            <p t-if="doc.opportunity_id" t-esc="doc.opportunity_id.name"/>
+                            <p t-if="doc.start_date and doc.end_date">
+                                from <span t-field="doc.start_date"/> to <span t-field="doc.end_date"/>
+                            </p>
+                            <p class="mt-5">Approved on <span t-field="doc.completion_date"/></p>
+                            <p t-if="doc.approved_by" class="mt-4">Authorized by <span t-esc="doc.approved_by.name"/></p>
+                            <p class="mt-5">Certificate reference: <span t-esc="doc.name"/></p>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

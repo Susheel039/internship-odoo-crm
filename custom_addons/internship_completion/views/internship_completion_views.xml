@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_submission_tree" model="ir.ui.view">
+        <field name="name">internship.submission.tree</field>
+        <field name="model">internship.submission</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="opportunity_id"/>
+                <field name="due_date"/>
+                <field name="submitted_date"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_submission_form" model="ir.ui.view">
+        <field name="name">internship.submission.form</field>
+        <field name="model">internship.submission</field>
+        <field name="arch" type="xml">
+            <form string="Submission">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="student_id"/>
+                            <field name="opportunity_id"/>
+                            <field name="company_id"/>
+                        </group>
+                        <group>
+                            <field name="title"/>
+                            <field name="due_date"/>
+                            <field name="submitted_date"/>
+                            <field name="status"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="document" filename="document_filename"/>
+                        <field name="document_filename" invisible="1"/>
+                        <field name="document_url"/>
+                        <field name="evaluation_score"/>
+                    </group>
+                    <field name="supervisor_feedback"/>
+                    <field name="notes"/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_completion_tree" model="ir.ui.view">
+        <field name="name">internship.completion.tree</field>
+        <field name="model">internship.completion</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="opportunity_id"/>
+                <field name="completion_date"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_completion_form" model="ir.ui.view">
+        <field name="name">internship.completion.form</field>
+        <field name="model">internship.completion</field>
+        <field name="arch" type="xml">
+            <form string="Completion Record">
+                <header>
+                    <button name="action_start" type="object" string="Start" class="btn-primary" invisible="status != 'draft'"/>
+                    <button name="action_complete" type="object" string="Mark Complete" class="btn-primary" invisible="status != 'in_progress'"/>
+                    <button name="action_approve" type="object" string="Approve &amp; Issue Certificate" class="btn-primary" invisible="status != 'completed'"/>
+                    <button name="action_close" type="object" string="Close" invisible="status != 'approved'"/>
+                    <button name="action_print_certificate" type="object" string="Print Certificate" invisible="not certificate_issued"/>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,in_progress,completed,approved,closed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="student_id"/>
+                            <field name="opportunity_id"/>
+                            <field name="company_id"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="completion_date"/>
+                            <field name="status"/>
+                            <field name="certificate_issued"/>
+                            <field name="approved_by"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Final Evaluation">
+                            <group>
+                                <field name="evaluation_score"/>
+                                <field name="supervisor_feedback"/>
+                            </group>
+                            <field name="final_report"/>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_internship_submission" model="ir.actions.act_window">
+        <field name="name">Submissions</field>
+        <field name="res_model">internship.submission</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_internship_completion" model="ir.actions.act_window">
+        <field name="name">Completion Records</field>
+        <field name="res_model">internship.completion</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_internship_completion_root" name="Completion" parent="internship_base.menu_internship_root" sequence="40"/>
+    <menuitem id="menu_internship_submission" name="Submissions" parent="menu_internship_completion_root" action="action_internship_submission" sequence="10"/>
+    <menuitem id="menu_internship_completion" name="Completion Records" parent="menu_internship_completion_root" action="action_internship_completion" sequence="20"/>
+</odoo>

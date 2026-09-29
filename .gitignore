@@ -1,0 +1,10 @@
+.env
+*.pyc
+__pycache__/
+.idea/
+.vscode/
+.DS_Store
+*.log
+postgres_data/
+odoo_data/
+custom_addons/*/__pycache__/

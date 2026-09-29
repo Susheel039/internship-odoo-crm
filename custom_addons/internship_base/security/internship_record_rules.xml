@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_platform_university_all" model="ir.rule">
+        <field name="name">Platform administrators: all universities</field>
+        <field name="model_id" ref="model_internship_university"/>
+        <field name="groups" eval="[(4, ref('group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_university_users_university" model="ir.rule">
+        <field name="name">University users: assigned universities</field>
+        <field name="model_id" ref="model_internship_university"/>
+        <field name="groups" eval="[(4, ref('group_university_administrator')), (4, ref('group_university_staff'))]"/>
+        <field name="domain_force">[('user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_platform_company_all" model="ir.rule">
+        <field name="name">Platform administrators: all companies</field>
+        <field name="model_id" ref="model_internship_company"/>
+        <field name="groups" eval="[(4, ref('group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_company_users_company" model="ir.rule">
+        <field name="name">Company users: assigned companies</field>
+        <field name="model_id" ref="model_internship_company"/>
+        <field name="groups" eval="[(4, ref('group_company_manager'))]"/>
+        <field name="domain_force">[('user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_university_users_company" model="ir.rule">
+        <field name="name">University users: companies with assigned programs</field>
+        <field name="model_id" ref="model_internship_company"/>
+        <field name="groups" eval="[(4, ref('group_university_administrator')), (4, ref('group_university_staff'))]"/>
+        <field name="domain_force">[('opportunity_ids.program_id.university_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_platform_student_all" model="ir.rule">
+        <field name="name">Platform administrators: all students</field>
+        <field name="model_id" ref="model_internship_student"/>
+        <field name="groups" eval="[(4, ref('group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_university_users_student" model="ir.rule">
+        <field name="name">University users: assigned students</field>
+        <field name="model_id" ref="model_internship_student"/>
+        <field name="groups" eval="[(4, ref('group_university_administrator')), (4, ref('group_university_staff'))]"/>
+        <field name="domain_force">[('university_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_company_users_student" model="ir.rule">
+        <field name="name">Company users: applicants to assigned companies</field>
+        <field name="model_id" ref="model_internship_student"/>
+        <field name="groups" eval="[(4, ref('group_company_manager'))]"/>
+        <field name="domain_force">[('application_ids.opportunity_id.company_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_student_self_student" model="ir.rule">
+        <field name="name">Students: own profile</field>
+        <field name="model_id" ref="model_internship_student"/>
+        <field name="groups" eval="[(4, ref('group_student'))]"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+    </record>
+
+    <record id="rule_platform_program_all" model="ir.rule">
+        <field name="name">Platform administrators: all programs</field>
+        <field name="model_id" ref="model_internship_program"/>
+        <field name="groups" eval="[(4, ref('group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_university_users_program" model="ir.rule">
+        <field name="name">University users: assigned programs</field>
+        <field name="model_id" ref="model_internship_program"/>
+        <field name="groups" eval="[(4, ref('group_university_administrator')), (4, ref('group_university_staff'))]"/>
+        <field name="domain_force">[('university_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_company_users_program" model="ir.rule">
+        <field name="name">Company users: programs with assigned opportunities</field>
+        <field name="model_id" ref="model_internship_program"/>
+        <field name="groups" eval="[(4, ref('group_company_manager'))]"/>
+        <field name="domain_force">[('opportunity_ids.company_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_student_program" model="ir.rule">
+        <field name="name">Students: programs at their university</field>
+        <field name="model_id" ref="model_internship_program"/>
+        <field name="groups" eval="[(4, ref('group_student'))]"/>
+        <field name="domain_force">[('university_id.student_ids.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+
+    <record id="rule_platform_opportunity_all" model="ir.rule">
+        <field name="name">Platform administrators: all opportunities</field>
+        <field name="model_id" ref="model_internship_opportunity"/>
+        <field name="groups" eval="[(4, ref('group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_university_users_opportunity" model="ir.rule">
+        <field name="name">University users: assigned opportunities</field>
+        <field name="model_id" ref="model_internship_opportunity"/>
+        <field name="groups" eval="[(4, ref('group_university_administrator')), (4, ref('group_university_staff'))]"/>
+        <field name="domain_force">[('program_id.university_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_company_users_opportunity" model="ir.rule">
+        <field name="name">Company users: assigned opportunities</field>
+        <field name="model_id" ref="model_internship_opportunity"/>
+        <field name="groups" eval="[(4, ref('group_company_manager'))]"/>
+        <field name="domain_force">[('company_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_platform_application_all" model="ir.rule">
+        <field name="name">Platform administrators: all applications</field>
+        <field name="model_id" ref="model_internship_application"/>
+        <field name="groups" eval="[(4, ref('group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_university_users_application" model="ir.rule">
+        <field name="name">University users: assigned applications</field>
+        <field name="model_id" ref="model_internship_application"/>
+        <field name="groups" eval="[(4, ref('group_university_administrator')), (4, ref('group_university_staff'))]"/>
+        <field name="domain_force">[('university_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_company_users_application" model="ir.rule">
+        <field name="name">Company users: assigned applications</field>
+        <field name="model_id" ref="model_internship_application"/>
+        <field name="groups" eval="[(4, ref('group_company_manager'))]"/>
+        <field name="domain_force">[('opportunity_id.company_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_student_application" model="ir.rule">
+        <field name="name">Students: own applications</field>
+        <field name="model_id" ref="model_internship_application"/>
+        <field name="groups" eval="[(4, ref('group_student'))]"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+</odoo>

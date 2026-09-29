@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_internship_report_system,internship.report system,model_internship_report,base.group_system,1,1,1,1
+access_internship_report_platform,internship.report platform,model_internship_report,internship_base.group_platform_administrator,1,1,1,1
+access_internship_report_admin,internship.report admin,model_internship_report,internship_base.group_university_administrator,1,1,1,1
+access_internship_report_staff,internship.report staff,model_internship_report,internship_base.group_university_staff,1,1,0,0

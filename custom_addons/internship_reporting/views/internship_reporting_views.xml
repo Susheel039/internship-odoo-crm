@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_report_tree" model="ir.ui.view">
+        <field name="name">internship.report.tree</field>
+        <field name="model">internship.report</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="university_id"/>
+                <field name="company_id"/>
+                <field name="program_id"/>
+                <field name="total_students"/>
+                <field name="total_opportunities"/>
+                <field name="total_applications"/>
+                <field name="total_placed"/>
+                <field name="total_completed"/>
+                <field name="placement_rate"/>
+                <field name="completion_rate"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_report_form" model="ir.ui.view">
+        <field name="name">internship.report.form</field>
+        <field name="model">internship.report</field>
+        <field name="arch" type="xml">
+            <form string="Internship KPI Snapshot">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <group string="Report Scope">
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="university_id"/>
+                            <field name="company_id"/>
+                            <field name="program_id"/>
+                        </group>
+                    </group>
+                    <group string="Live Key Performance Indicators" col="4">
+                        <field name="total_students"/>
+                        <field name="total_opportunities"/>
+                        <field name="total_applications"/>
+                        <field name="total_placed"/>
+                        <field name="total_completed"/>
+                        <field name="placement_rate" widget="percentage"/>
+                        <field name="completion_rate" widget="percentage"/>
+                    </group>
+                    <field name="notes" placeholder="Notes about this report scope..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_report_search" model="ir.ui.view">
+        <field name="name">internship.report.search</field>
+        <field name="model">internship.report</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="university_id"/>
+                <field name="company_id"/>
+                <field name="program_id"/>
+                <separator/>
+                <filter name="group_university" string="By University" context="{'group_by': 'university_id'}"/>
+                <filter name="group_company" string="By Company" context="{'group_by': 'company_id'}"/>
+                <filter name="group_program" string="By Program" context="{'group_by': 'program_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_report" model="ir.actions.act_window">
+        <field name="name">KPI Snapshots</field>
+        <field name="res_model">internship.report</field>
+        <field name="search_view_id" ref="view_internship_report_search"/>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_internship_application_report_graph" model="ir.ui.view">
+        <field name="name">internship.application.report.graph</field>
+        <field name="model">internship.application</field>
+        <field name="arch" type="xml">
+            <graph string="Applications by Status and Date" type="bar">
+                <field name="application_date" interval="month" type="row"/>
+                <field name="status" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_internship_application_report_pivot" model="ir.ui.view">
+        <field name="name">internship.application.report.pivot</field>
+        <field name="model">internship.application</field>
+        <field name="arch" type="xml">
+            <pivot string="Application Analysis">
+                <field name="university_id" type="row"/>
+                <field name="opportunity_id" type="row"/>
+                <field name="status" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_internship_application_analysis" model="ir.actions.act_window">
+        <field name="name">Application Analysis</field>
+        <field name="res_model">internship.application</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+
+    <record id="view_internship_completion_report_graph" model="ir.ui.view">
+        <field name="name">internship.completion.report.graph</field>
+        <field name="model">internship.completion</field>
+        <field name="arch" type="xml">
+            <graph string="Completions by Status and Date" type="bar">
+                <field name="completion_date" interval="month" type="row"/>
+                <field name="status" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_internship_completion_report_pivot" model="ir.ui.view">
+        <field name="name">internship.completion.report.pivot</field>
+        <field name="model">internship.completion</field>
+        <field name="arch" type="xml">
+            <pivot string="Completion Analysis">
+                <field name="company_id" type="row"/>
+                <field name="status" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_internship_completion_analysis" model="ir.actions.act_window">
+        <field name="name">Completion Analysis</field>
+        <field name="res_model">internship.completion</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+
+    <menuitem id="menu_internship_reporting_root" name="Reports" parent="internship_base.menu_internship_root" sequence="90"/>
+    <menuitem id="menu_internship_report" name="KPI Snapshots" parent="menu_internship_reporting_root" action="action_internship_report" sequence="10"/>
+    <menuitem id="menu_internship_application_analysis" name="Application Analysis" parent="menu_internship_reporting_root" action="action_internship_application_analysis" sequence="20"/>
+    <menuitem id="menu_internship_completion_analysis" name="Completion Analysis" parent="menu_internship_reporting_root" action="action_internship_completion_analysis" sequence="30"/>
+</odoo>

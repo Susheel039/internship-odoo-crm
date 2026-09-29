@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_internship_crm_manager" model="res.groups">
+        <field name="name">Internship CRM Manager</field>
+    </record>
+</odoo>

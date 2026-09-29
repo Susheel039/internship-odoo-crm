@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_crm_lead_kanban" model="ir.ui.view">
+        <field name="name">internship.crm.lead.kanban</field>
+        <field name="model">internship.crm.lead</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="company_id"/>
+                <field name="opportunity_id"/>
+                <field name="lead_source"/>
+                <field name="priority"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card">
+                            <strong><field name="name"/></strong>
+                            <div t-if="record.student_id.value"><field name="student_id"/></div>
+                            <div t-if="record.company_id.value"><field name="company_id"/></div>
+                            <div t-if="record.opportunity_id.value"><field name="opportunity_id"/></div>
+                            <div class="text-muted"><field name="lead_source"/></div>
+                            <field name="priority" widget="priority"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_internship_crm_lead_tree" model="ir.ui.view">
+        <field name="name">internship.crm.lead.tree</field>
+        <field name="model">internship.crm.lead</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="company_id"/>
+                <field name="opportunity_id"/>
+                <field name="lead_source"/>
+                <field name="stage"/>
+                <field name="priority"/>
+                <field name="expected_start_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_crm_lead_form" model="ir.ui.view">
+        <field name="name">internship.crm.lead.form</field>
+        <field name="model">internship.crm.lead</field>
+        <field name="arch" type="xml">
+            <form string="Internship CRM Lead">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="student_id"/>
+                            <field name="company_id"/>
+                            <field name="opportunity_id"/>
+                            <field name="crm_id"/>
+                        </group>
+                        <group>
+                            <field name="lead_source"/>
+                            <field name="stage"/>
+                            <field name="priority"/>
+                            <field name="expected_start_date"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <field name="notes"/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_internship_crm_lead" model="ir.actions.act_window">
+        <field name="name">CRM Leads</field>
+        <field name="res_model">internship.crm.lead</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+    <menuitem id="menu_internship_crm_root" name="CRM" parent="internship_base.menu_internship_root" sequence="25"/>
+    <menuitem id="menu_internship_crm_leads" name="CRM Leads" parent="menu_internship_crm_root" action="action_internship_crm_lead" sequence="10"/>
+</odoo>

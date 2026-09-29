@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_internship_call_log_system,internship.call.log system,model_internship_call_log,base.group_system,1,1,1,1
+access_internship_call_log_platform,internship.call.log platform,model_internship_call_log,internship_base.group_platform_administrator,1,1,1,1
+access_internship_call_log_university,internship.call.log university,model_internship_call_log,internship_base.group_university_administrator,1,1,1,1
+access_internship_call_log_staff,internship.call.log staff,model_internship_call_log,internship_base.group_university_staff,1,1,0,0
+access_internship_call_log_company,internship.call.log company,model_internship_call_log,internship_base.group_company_manager,1,1,0,0

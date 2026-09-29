@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_call_log_tree" model="ir.ui.view">
+        <field name="name">internship.call.log.tree</field>
+        <field name="model">internship.call.log</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="company_id"/>
+                <field name="call_datetime"/>
+                <field name="call_type"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_call_log_form" model="ir.ui.view">
+        <field name="name">internship.call.log.form</field>
+        <field name="model">internship.call.log</field>
+        <field name="arch" type="xml">
+            <form string="Call Log">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="student_id"/>
+                            <field name="opportunity_id"/>
+                            <field name="company_id"/>
+                        </group>
+                        <group>
+                            <field name="call_datetime"/>
+                            <field name="call_type"/>
+                            <field name="status"/>
+                            <field name="duration_seconds"/>
+                            <field name="recording_url"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <field name="summary"/>
+                    <field name="notes"/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_internship_call_log" model="ir.actions.act_window">
+        <field name="name">Call Logs</field>
+        <field name="res_model">internship.call.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_internship_vapi_root" name="Call Tracking" parent="internship_base.menu_internship_root" sequence="60"/>
+    <menuitem id="menu_internship_call_logs" name="Call Logs" parent="menu_internship_vapi_root" action="action_internship_call_log" sequence="10"/>
+</odoo>
