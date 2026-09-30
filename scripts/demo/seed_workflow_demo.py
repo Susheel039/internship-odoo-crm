@@ -33,7 +33,30 @@ Partner = env["res.partner"]
 uk = env.ref("base.uk")
 gbp = env.ref("base.GBP")
 gbp.active = True
-env.company.write({"name": "INTERNTION", "currency_id": gbp.id, "country_id": uk.id})
+env.company.write(
+    {
+        "name": "INTERNTION",
+        "currency_id": gbp.id,
+        "country_id": uk.id,
+        # Shared communication identity (Settings > INTERNTION > Communication channels)
+        "channel_email_from": "placements@interntion.example",
+        "channel_sms_sender": "INTERNTION",
+        "channel_whatsapp_number": "+44 7700 900900",
+        "channel_whatsapp_phone_number_id": "104786699175000",
+    }
+)
+# Example personal channels for the administrator (Settings > Users > Communication Channels)
+env.ref("base.user_admin").write(
+    {
+        "channel_email_from": "leads@interntion.example",
+        "channel_sms_sender": "INTERNTION",
+        "channel_whatsapp_number": "+44 7700 900901",
+        "channel_whatsapp_phone_number_id": "104786699175041",
+        "channel_voice_phone_number_id": "6f1db602-demo-40b1-ac96-e0f5c382a8af",
+        "channel_voice_assistant_id": "6d928ecb-demo-432c-a03c-bd4e78b61012",
+        "channel_voice_api_key": "demo-key-not-real",
+    }
+)
 admin = env.ref("base.user_admin")
 PDF = env["ir.attachment"].create(
     {"name": "demo-document.pdf", "datas": base64.b64encode(b"%PDF-1.4 demo document"), "mimetype": "application/pdf"}

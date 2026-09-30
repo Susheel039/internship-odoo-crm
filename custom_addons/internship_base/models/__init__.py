@@ -17,3 +17,6 @@ from . import line_manager
 from . import opportunity
 from . import application
 from . import res_config_settings
+from . import res_company
+from . import res_users
+from . import mail_mail

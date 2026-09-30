@@ -38,3 +38,12 @@ class ResConfigSettings(models.TransientModel):
     internship_rule_retention_years = fields.Integer(
         string="Data retention (years)", config_parameter="internship_base.rule_retention_years", default=6
     )
+
+    # Company shared communication identity (users' blank channels fall back to these)
+    channel_email_from = fields.Char(related="company_id.channel_email_from", readonly=False)
+    channel_mail_server_id = fields.Many2one(related="company_id.channel_mail_server_id", readonly=False)
+    channel_sms_sender = fields.Char(related="company_id.channel_sms_sender", readonly=False)
+    channel_whatsapp_number = fields.Char(related="company_id.channel_whatsapp_number", readonly=False)
+    channel_whatsapp_phone_number_id = fields.Char(
+        related="company_id.channel_whatsapp_phone_number_id", readonly=False
+    )

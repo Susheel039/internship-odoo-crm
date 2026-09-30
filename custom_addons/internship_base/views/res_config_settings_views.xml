@@ -29,6 +29,31 @@
                             </div>
                         </setting>
                     </block>
+                    <block title="Communication channels (company)" name="internship_channels"
+                           help="The company's shared identity. Users' blank channels use these (Settings › Users › Communication Channels).">
+                        <setting string="Email" help="Shared from address and outgoing server.">
+                            <div class="content-group">
+                                <div class="row mt8"><label for="channel_email_from" class="col-lg-5 o_light_label" string="From Address"/>
+                                    <field name="channel_email_from"/></div>
+                                <div class="row"><label for="channel_mail_server_id" class="col-lg-5 o_light_label" string="Outgoing Mail Server"/>
+                                    <field name="channel_mail_server_id" options="{'no_create': True}"/></div>
+                            </div>
+                        </setting>
+                        <setting string="SMS and WhatsApp" help="Shared sender and business number.">
+                            <div class="content-group">
+                                <div class="row mt8"><label for="channel_sms_sender" class="col-lg-5 o_light_label" string="SMS Sender"/>
+                                    <field name="channel_sms_sender"/></div>
+                                <div class="row"><label for="channel_whatsapp_number" class="col-lg-5 o_light_label" string="WhatsApp Number"/>
+                                    <field name="channel_whatsapp_number"/></div>
+                                <div class="row"><label for="channel_whatsapp_phone_number_id" class="col-lg-5 o_light_label" string="Meta Phone Number ID"/>
+                                    <field name="channel_whatsapp_phone_number_id"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Users" help="Per-user channels are on each user's Communication Channels tab.">
+                            <button name="%(base.action_res_users)d" type="action" string="Manage Users"
+                                    icon="oi-arrow-right" class="btn-link"/>
+                        </setting>
+                    </block>
                 </app>
             </xpath>
         </field>

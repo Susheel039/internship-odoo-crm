@@ -18,9 +18,10 @@ class VapiError(Exception):
 
 
 class VapiClient:
-    def __init__(self, env):
+    def __init__(self, env, api_key=None):
         params = env["ir.config_parameter"].sudo()
-        self.api_key = params.get_param("internship_vapi.api_key")
+        # A user's own key (Communication Channels) wins over the company key.
+        self.api_key = api_key or params.get_param("internship_vapi.api_key")
         self.base_url = params.get_param("internship_vapi.api_base", API_BASE).rstrip("/")
         if not self.api_key:
             raise VapiError("The Vapi API key is not configured (CRM > Configuration > Settings > Voice Assistant).")

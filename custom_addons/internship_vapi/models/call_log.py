@@ -209,11 +209,31 @@ class InternshipCallLog(models.Model):
         hour = local.hour + local.minute / 60.0
         return local.weekday() in window["days"] and window["start"] <= hour < window["end"]
 
+    def _caller_user(self):
+        """The user whose voice identity is used: the lead's salesperson, else who queued the call."""
+        self.ensure_one()
+        return self.lead_id.user_id or self.create_uid
+
+    def _voice_identity(self, settings):
+        """Phone number, assistant and API key for this call (user channel, else company settings)."""
+        self.ensure_one()
+        channel = self._caller_user()._internship_channel("voice")
+        return {
+            "enabled": channel["enabled"],
+            "phone_number_id": channel.get("channel_voice_phone_number_id") or settings["phone_number_id"],
+            "assistant_id": channel.get("channel_voice_assistant_id") or self._assistant_for(settings),
+            "api_key": channel.get("channel_voice_api_key") or None,
+        }
+
     def _blocked_reason(self, settings):
         """Why this call must not be dialled now (None when it may be)."""
         self.ensure_one()
         if not settings["enabled"]:
             return self.env._("Voice AI calling is switched off.")
+        if not self._voice_identity(settings)["enabled"]:
+            return self.env._(
+                "Voice is switched off for %(user)s (Communication Channels).", user=self._caller_user().name
+            )
         if self.attempt_count >= settings["max_attempts"]:
             return self.env._("Maximum attempts reached.")
         if self.lead_id.do_not_call:
@@ -271,14 +291,15 @@ class InternshipCallLog(models.Model):
                     log.error_message = reason
                 continue
             log.attempt_count += 1
+            identity = log._voice_identity(settings)
             try:
-                client = client or VapiClient(self.env)
-                response = client.create_call(
+                call_client = client or VapiClient(self.env, api_key=identity["api_key"])
+                response = call_client.create_call(
                     log.customer_number,
-                    log._assistant_for(settings),
+                    identity["assistant_id"],
                     metadata=log._metadata(),
                     variable_values=log._variable_values(),
-                    phone_number_id=settings["phone_number_id"],
+                    phone_number_id=identity["phone_number_id"],
                 )
             except VapiError as error:
                 log.write(
@@ -295,8 +316,8 @@ class InternshipCallLog(models.Model):
                         response.get("status"), "scheduled"
                     ),
                     "call_datetime": fields.Datetime.now(),
-                    "assistant_id": log._assistant_for(settings),
-                    "phone_number_id": settings["phone_number_id"],
+                    "assistant_id": identity["assistant_id"],
+                    "phone_number_id": identity["phone_number_id"],
                     "error_message": False,
                 }
             )

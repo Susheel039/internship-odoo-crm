@@ -94,6 +94,31 @@ class TestVapiQueue(PlacementCommon):
         self.assertEqual(client.create_call.call_args.args[1], "asst-chaser")
         self.assertIn("due_date", client.create_call.call_args.kwargs["variable_values"])
 
+    def test_user_voice_channel(self):
+        self.lead.tps_checked = True
+        salesperson = self.env["res.users"].create({"name": "Sales Agent", "login": "sales_agent_voice"})
+        self.lead.user_id = salesperson
+        salesperson.write(
+            {
+                "channel_voice_phone_number_id": "user-phone-1",
+                "channel_voice_assistant_id": "user-asst-1",
+                "channel_voice_api_key": "user-key",
+            }
+        )
+        log = self.CallLog.action_queue_call("lead_generation", self.lead)
+        client = self._fake_client()
+        log._dial(client=client)
+        self.assertEqual(client.create_call.call_args.args[1], "user-asst-1")
+        self.assertEqual(client.create_call.call_args.kwargs["phone_number_id"], "user-phone-1")
+        self.assertEqual(log._voice_identity(self.CallLog._settings())["api_key"], "user-key")
+
+        salesperson.channel_voice_enabled = False
+        blocked = self.CallLog.action_queue_call("lead_generation", self.lead)
+        client = self._fake_client()
+        blocked._dial(client=client)
+        self.assertFalse(client.create_call.called, "switched off: no fallback to the company account")
+        self.assertIn("switched off", blocked.error_message)
+
     def test_queue_needs_phone(self):
         lead = self.env["crm.lead"].create({"name": "No phone"})
         with self.assertRaises(UserError):

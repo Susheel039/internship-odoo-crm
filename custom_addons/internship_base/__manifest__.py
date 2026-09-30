@@ -1,6 +1,6 @@
 {
     "name": "Internship Base",
-    "version": "19.0.2.1.0",
+    "version": "19.0.2.2.0",
     "category": "Custom",
     "summary": "Master data, configuration, shared mixins and security for the internship platform.",
     "author": "Internship CRM",
@@ -23,6 +23,7 @@
         "views/opportunity_views.xml",
         "views/application_views.xml",
         "views/res_config_settings_views.xml",
+        "views/res_users_views.xml",
     ],
     "demo": [
         "data/demo_data.xml",

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_communication_channels" model="ir.ui.view">
+        <field name="name">res.users.form.communication.channels</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='page_security']" position="after">
+                <page string="Communication Channels" name="communication_channels"
+                      groups="base.group_system,internship_base.group_platform_administrator">
+                    <div class="alert alert-info mb-4" role="status">
+                        These are the numbers and address this user's customers see and reply to. Leave a channel
+                        blank to keep using the company's shared details for it. Switching a channel off stops this
+                        user sending on it altogether — it does not fall back to the company account. Agents cannot
+                        see or edit any of this.
+                    </div>
+                    <group>
+                        <group string="Email" name="channel_email">
+                            <field name="channel_email_enabled" string="Enabled" widget="boolean_toggle"/>
+                            <field name="channel_email_from" readonly="not channel_email_enabled"
+                                   placeholder="Company shared address"/>
+                            <field name="channel_mail_server_id" string="Outgoing Mail Server" readonly="not channel_email_enabled"
+                                   options="{'no_create': True}" placeholder="Company shared server"/>
+                        </group>
+                        <group string="SMS" name="channel_sms">
+                            <field name="channel_sms_enabled" string="Enabled" widget="boolean_toggle"/>
+                            <field name="channel_sms_sender" readonly="not channel_sms_enabled"
+                                   placeholder="Company shared sender"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="WhatsApp" name="channel_whatsapp">
+                            <field name="channel_whatsapp_enabled" string="Enabled" widget="boolean_toggle"/>
+                            <field name="channel_whatsapp_number" readonly="not channel_whatsapp_enabled"
+                                   widget="phone" placeholder="+44 7700 900123"/>
+                            <field name="channel_whatsapp_phone_number_id" readonly="not channel_whatsapp_enabled"/>
+                        </group>
+                        <group string="Voice" name="channel_voice">
+                            <field name="channel_voice_enabled" string="Enabled" widget="boolean_toggle"/>
+                            <field name="channel_voice_phone_number_id" readonly="not channel_voice_enabled"
+                                   placeholder="Company number (Voice Assistant settings)"/>
+                            <field name="channel_voice_assistant_id" readonly="not channel_voice_enabled"
+                                   placeholder="Default assistant"/>
+                            <field name="channel_voice_api_key" password="True" readonly="not channel_voice_enabled"
+                                   placeholder="Company API key"/>
+                        </group>
+                    </group>
+                    <group string="Administrator" name="channel_admin">
+                        <group>
+                            <field name="channels_active"/>
+                            <field name="channels_house_identity"/>
+                            <field name="channels_personalised" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Shortcut for administrators: INTERNTION › Configuration › Users -->
+    <menuitem id="menu_internship_config_users" name="Users" parent="menu_internship_config"
+              action="base.action_res_users" sequence="95" groups="base.group_system"/>
+</odoo>
