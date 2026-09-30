@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Top-level menu skeleton. Other modules attach under these:
+    Dashboard (reporting) · Admission · Monitoring · Completion · CRM · Master data · Reports · Configuration
+-->
+<odoo>
+    <menuitem id="menu_internship_root" name="Internship CRM" sequence="10" web_icon="internship_base,static/description/icon.png"/>
+    <menuitem id="menu_internship_admissions" name="Admission" parent="menu_internship_root" sequence="10"/>
+    <menuitem id="menu_internship_people" name="Master Data" parent="menu_internship_root" sequence="50"/>
+    <menuitem id="menu_internship_config" name="Configuration" parent="menu_internship_root" sequence="95"
+              groups="internship_base.group_platform_administrator,internship_base.group_university_administrator,base.group_system"/>
+</odoo>

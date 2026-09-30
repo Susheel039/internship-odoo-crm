@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_student_tree" model="ir.ui.view">
+        <field name="name">internship.student.list</field>
+        <field name="model">internship.student</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="university_id"/>
+                <field name="program_id" optional="show"/>
+                <field name="academic_year_id" optional="show"/>
+                <field name="lifecycle_status" widget="badge"
+                       decoration-info="lifecycle_status in ('applied', 'offered')"
+                       decoration-success="lifecycle_status in ('approved', 'in_internship', 'completed')"
+                       decoration-danger="lifecycle_status == 'failed'"/>
+                <field name="rtw_status" optional="show" widget="badge"
+                       decoration-success="rtw_status == 'verified'" decoration-danger="rtw_status == 'failed'"/>
+                <field name="email" optional="hide"/>
+                <field name="phone" optional="hide"/>
+                <field name="retention_until" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_student_form" model="ir.ui.view">
+        <field name="name">internship.student.form</field>
+        <field name="model">internship.student</field>
+        <field name="arch" type="xml">
+            <form string="Student">
+                <header>
+                    <button name="action_retention_archive" type="object" string="Archive (retention reviewed)"
+                            invisible="not retention_flagged or not active"
+                            groups="internship_base.group_platform_administrator"
+                            confirm="Archive this student after the GDPR retention review?"/>
+                    <field name="lifecycle_status" widget="statusbar"
+                           statusbar_visible="searching,applied,offered,approved,in_internship,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <widget name="web_ribbon" title="Retention review" bg_color="text-bg-warning"
+                            invisible="not retention_flagged or not active"/>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Student name"/></h1>
+                        <field name="student_id" placeholder="Student ID"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="email" widget="email"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="date_of_birth"/>
+                        </group>
+                        <group>
+                            <field name="university_id"/>
+                            <field name="program_id" domain="[('university_id', '=', university_id)]"/>
+                            <field name="academic_year_id"/>
+                            <field name="academic_tutor_id"/>
+                            <field name="active" invisible="1"/>
+                            <field name="retention_flagged" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Academic" name="academic">
+                            <group>
+                                <group>
+                                    <field name="course"/>
+                                    <field name="department"/>
+                                    <field name="year_of_study"/>
+                                </group>
+                                <group>
+                                    <field name="graduation_year"/>
+                                    <field name="expected_graduation"/>
+                                </group>
+                            </group>
+                            <field name="properties" columns="2"/>
+                        </page>
+                        <page string="Profile" name="profile">
+                            <group>
+                                <group>
+                                    <field name="cv_attachment_id"/>
+                                    <field name="portfolio_url" widget="url"/>
+                                    <field name="preferred_locations"/>
+                                </group>
+                                <group>
+                                    <field name="skill_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                    <field name="sector_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Applications" name="applications">
+                            <field name="application_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="opportunity_id"/>
+                                    <field name="company_id"/>
+                                    <field name="application_date"/>
+                                    <field name="status" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Compliance" name="compliance">
+                            <group>
+                                <group string="Right to work">
+                                    <field name="rtw_status"/>
+                                    <field name="rtw_document_type"/>
+                                    <field name="rtw_expiry"/>
+                                    <field name="rtw_checked_by_id"/>
+                                    <field name="rtw_checked_date"/>
+                                </group>
+                                <group string="DBS and GDPR">
+                                    <field name="dbs_required"/>
+                                    <field name="dbs_status" invisible="not dbs_required"/>
+                                    <field name="gdpr_consent"/>
+                                    <field name="gdpr_consent_date"/>
+                                    <field name="consent_withdrawn_date"/>
+                                    <field name="retention_until"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Visa" name="visa"
+                              groups="internship_base.group_university_administrator,internship_base.group_platform_administrator">
+                            <group>
+                                <group>
+                                    <field name="visa_required"/>
+                                    <field name="visa_type" invisible="not visa_required"/>
+                                    <field name="visa_expiry" invisible="not visa_required"/>
+                                    <field name="term_time_hour_limit" invisible="not visa_required"/>
+                                </group>
+                                <group>
+                                    <field name="placement_permitted" invisible="not visa_required"/>
+                                    <field name="visa_checked_by_id" invisible="not visa_required"/>
+                                    <field name="visa_check_date" invisible="not visa_required"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Adjustments" name="adjustments"
+                              groups="internship_base.group_university_administrator,internship_base.group_platform_administrator">
+                            <group>
+                                <field name="adjustments_needed"/>
+                                <field name="adjustments_notes" invisible="not adjustments_needed"/>
+                                <field name="adjustments_shared_with_company" invisible="not adjustments_needed"/>
+                            </group>
+                        </page>
+                        <page string="Emergency Contact" name="emergency">
+                            <group>
+                                <field name="emergency_name"/>
+                                <field name="emergency_relationship"/>
+                                <field name="emergency_phone" widget="phone"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_student_search" model="ir.ui.view">
+        <field name="name">internship.student.search</field>
+        <field name="model">internship.student</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="email"/>
+                <field name="university_id"/>
+                <field name="program_id"/>
+                <field name="academic_year_id"/>
+                <field name="skill_ids"/>
+                <filter name="searching" string="Searching" domain="[('lifecycle_status', '=', 'searching')]"/>
+                <filter name="in_internship" string="In Internship" domain="[('lifecycle_status', '=', 'in_internship')]"/>
+                <separator/>
+                <filter name="rtw_not_verified" string="RTW not verified" domain="[('rtw_status', '!=', 'verified')]"/>
+                <filter name="rtw_expiring" string="RTW expiring (30 days)"
+                        domain="[('rtw_expiry', '!=', False), ('rtw_expiry', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <filter name="retention_due" string="Retention review due" domain="[('retention_flagged', '=', True)]"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <filter name="group_university" string="University" context="{'group_by': 'university_id'}"/>
+                <filter name="group_cohort" string="Cohort" context="{'group_by': 'academic_year_id'}"/>
+                <filter name="group_lifecycle" string="Lifecycle" context="{'group_by': 'lifecycle_status'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_student" model="ir.actions.act_window">
+        <field name="name">Students</field>
+        <field name="res_model">internship.student</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_internship_student" name="Students" parent="menu_internship_people" action="action_internship_student" sequence="30"/>
+</odoo>

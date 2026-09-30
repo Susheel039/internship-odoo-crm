@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_opportunity_tree" model="ir.ui.view">
+        <field name="name">internship.opportunity.list</field>
+        <field name="model">internship.opportunity</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="program_id" optional="show"/>
+                <field name="job_title" optional="hide"/>
+                <field name="location"/>
+                <field name="work_mode" optional="show"/>
+                <field name="start_date" optional="show"/>
+                <field name="application_deadline"/>
+                <field name="number_of_positions" optional="show"/>
+                <field name="positions_filled" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'open'" decoration-muted="state in ('closed', 'cancelled')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_opportunity_kanban" model="ir.ui.view">
+        <field name="name">internship.opportunity.kanban</field>
+        <field name="model">internship.opportunity</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold"/>
+                        <field name="company_id"/>
+                        <div class="text-muted">
+                            <field name="location"/> · <field name="work_mode"/>
+                        </div>
+                        <footer>
+                            <span><field name="positions_filled"/> / <field name="number_of_positions"/> filled</span>
+                            <field name="application_deadline" class="ms-auto"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_internship_opportunity_form" model="ir.ui.view">
+        <field name="name">internship.opportunity.form</field>
+        <field name="model">internship.opportunity</field>
+        <field name="arch" type="xml">
+            <form string="Internship Opportunity">
+                <header>
+                    <button name="action_open" type="object" string="Publish" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_fill" type="object" string="Mark Filled" invisible="state != 'open'"/>
+                    <button name="action_close" type="object" string="Close" invisible="state not in ('open', 'filled')"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('cancelled', 'closed')"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open,filled,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Data Analyst Placement"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id"/>
+                            <field name="program_id"/>
+                            <field name="job_title"/>
+                            <field name="department"/>
+                            <field name="internship_type"/>
+                        </group>
+                        <group>
+                            <field name="site_id"/>
+                            <field name="location"/>
+                            <field name="work_mode"/>
+                            <field name="hours_per_week"/>
+                            <field name="max_hours_per_week"/>
+                            <field name="open_to_visa_holders"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Dates">
+                            <field name="posting_date"/>
+                            <field name="application_deadline"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="duration_weeks"/>
+                        </group>
+                        <group string="Positions and pay">
+                            <field name="number_of_positions"/>
+                            <field name="positions_filled"/>
+                            <field name="is_paid"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="salary_amount" invisible="not is_paid"/>
+                            <field name="salary_note" invisible="not is_paid"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Skills" name="skills">
+                            <group>
+                                <field name="skill_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                <field name="skills_required"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_opportunity_search" model="ir.ui.view">
+        <field name="name">internship.opportunity.search</field>
+        <field name="model">internship.opportunity</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="program_id"/>
+                <field name="skill_ids"/>
+                <filter name="open" string="Open" domain="[('state', '=', 'open')]"/>
+                <filter name="paid" string="Paid" domain="[('is_paid', '=', True)]"/>
+                <filter name="remote" string="Remote / Hybrid" domain="[('work_mode', 'in', ('remote', 'hybrid'))]"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <filter name="group_company" string="Company" context="{'group_by': 'company_id'}"/>
+                <filter name="group_program" string="Programme" context="{'group_by': 'program_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_opportunity" model="ir.actions.act_window">
+        <field name="name">Opportunities</field>
+        <field name="res_model">internship.opportunity</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+    <menuitem id="menu_internship_opportunities" name="Opportunities" parent="menu_internship_admissions" action="action_internship_opportunity" sequence="10"/>
+</odoo>

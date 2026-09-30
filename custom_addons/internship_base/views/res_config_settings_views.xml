@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.internship_base</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="40"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Internship CRM" string="Internship CRM" name="internship_base" groups="base.group_system">
+                    <block title="Workflow defaults" name="internship_rules"
+                           help="System-wide fallback when neither the programme nor the university sets a value.">
+                        <setting string="Deadlines" help="Form, monthly record and final report deadlines.">
+                            <div class="content-group">
+                                <div class="row mt8"><label for="internship_rule_form_due_days" class="col-lg-6"/><field name="internship_rule_form_due_days"/></div>
+                                <div class="row"><label for="internship_rule_monthly_due_day" class="col-lg-6"/><field name="internship_rule_monthly_due_day"/></div>
+                                <div class="row"><label for="internship_rule_monthly_late_grace_days" class="col-lg-6"/><field name="internship_rule_monthly_late_grace_days"/></div>
+                                <div class="row"><label for="internship_rule_report_deadline_days" class="col-lg-6"/><field name="internship_rule_report_deadline_days"/></div>
+                                <div class="row"><label for="internship_rule_resubmission_days" class="col-lg-6"/><field name="internship_rule_resubmission_days"/></div>
+                            </div>
+                        </setting>
+                        <setting string="Thresholds" help="Escalation, attempts, alerts and data retention.">
+                            <div class="content-group">
+                                <div class="row mt8"><label for="internship_rule_max_report_attempts" class="col-lg-6"/><field name="internship_rule_max_report_attempts"/></div>
+                                <div class="row"><label for="internship_rule_tripartite_attendance_pct" class="col-lg-6"/><field name="internship_rule_tripartite_attendance_pct"/></div>
+                                <div class="row"><label for="internship_rule_tripartite_rating_threshold" class="col-lg-6"/><field name="internship_rule_tripartite_rating_threshold"/></div>
+                                <div class="row"><label for="internship_rule_expiry_alert_days" class="col-lg-6"/><field name="internship_rule_expiry_alert_days"/></div>
+                                <div class="row"><label for="internship_rule_retention_years" class="col-lg-6"/><field name="internship_rule_retention_years"/></div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_internship_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_settings_view_form"/>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'internship_base', 'bin_size': False}</field>
+    </record>
+
+    <menuitem id="menu_internship_config_settings" name="Settings" parent="menu_internship_config" action="action_internship_settings" sequence="100" groups="base.group_system"/>
+</odoo>

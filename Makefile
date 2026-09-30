@@ -8,7 +8,7 @@ ODOO := internship_odoo
 PG := internship_postgres
 
 .PHONY: help config up down restart logs shell odoo-shell psql init upgrade upgrade-apply \
-        test test-db backup restore clone lint format
+        upgrade-legacy test test-db backup restore clone lint format
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -43,6 +43,9 @@ init: ## Create DB and install all modules (make init DB=... DEMO=1)
 
 upgrade: ## Backup, clone, upgrade + test the clone (real DB untouched)
 	scripts/upgrade.sh $(DB)
+
+upgrade-legacy: ## Like upgrade, but seeds pre-v2 sample rows into the clone first (tests migrations)
+	scripts/upgrade.sh $(DB) --legacy-fixture
 
 upgrade-apply: ## Same as upgrade, then upgrade the real DB
 	scripts/upgrade.sh $(DB) --apply

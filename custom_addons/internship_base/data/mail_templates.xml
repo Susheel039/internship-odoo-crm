@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="mail_template_company_invite" model="mail.template">
+        <field name="name">Internship: invite company</field>
+        <field name="model_id" ref="model_internship_company"/>
+        <field name="subject">You are invited to host an internship on {{ object.env.company.name }}</field>
+        <field name="email_to">{{ object.contact_email or object.partner_id.email }}</field>
+        <field name="email_from">{{ (object.invited_by_id.email_formatted or user.email_formatted) }}</field>
+        <field name="body_html" type="html">
+<div>
+    <p>Hello <t t-out="object.contact_person or object.name"/>,</p>
+    <p>
+        You have been invited to register <strong t-out="object.name"/> as an internship host,
+        so that you can complete the internship form, sign the placement agreement and confirm
+        monthly attendance online.
+    </p>
+    <p style="margin: 24px 0;">
+        <a t-att-href="object._invite_url()"
+           style="background-color:#875A7B; padding:10px 16px; color:#fff; text-decoration:none; border-radius:4px;">
+            Accept the invitation
+        </a>
+    </p>
+    <p>If you were not expecting this e-mail you can ignore it.</p>
+    <p>Kind regards,<br/><t t-out="object.invited_by_id.name or user.name"/></p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

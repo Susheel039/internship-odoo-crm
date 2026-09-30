@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_program_tree" model="ir.ui.view">
+        <field name="name">internship.program.list</field>
+        <field name="model">internship.program</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="university_id"/>
+                <field name="academic_year_id"/>
+                <field name="department" optional="hide"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="application_deadline" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'open'" decoration-muted="state in ('closed', 'archived')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_program_form" model="ir.ui.view">
+        <field name="name">internship.program.form</field>
+        <field name="model">internship.program</field>
+        <field name="arch" type="xml">
+            <form string="Internship Programme">
+                <header>
+                    <button name="action_open" type="object" string="Open" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_close" type="object" string="Close" invisible="state != 'open'"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. BSc Computing placement year"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="university_id"/>
+                            <field name="department"/>
+                            <field name="academic_year_id"/>
+                            <field name="credit_value"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="application_deadline"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Internship Rules" name="internship_rules">
+                            <group>
+                                <group string="Duration and hours">
+                                    <field name="min_duration_weeks"/>
+                                    <field name="max_duration_weeks"/>
+                                    <field name="required_hours_per_week"/>
+                                </group>
+                                <group string="Start window">
+                                    <field name="allowed_start_from"/>
+                                    <field name="allowed_start_to"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Workflow Rules" name="workflow_rules">
+                            <p class="text-muted">0 = use the university default, then the system default.</p>
+                            <group>
+                                <group string="Deadlines">
+                                    <field name="form_due_days"/>
+                                    <field name="monthly_due_day"/>
+                                    <field name="monthly_late_grace_days"/>
+                                    <field name="report_deadline_days"/>
+                                    <field name="resubmission_days"/>
+                                </group>
+                                <group string="Thresholds">
+                                    <field name="max_report_attempts"/>
+                                    <field name="tripartite_attendance_pct"/>
+                                    <field name="tripartite_rating_threshold"/>
+                                    <field name="expiry_alert_days"/>
+                                    <field name="retention_years"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Templates" name="templates">
+                            <group>
+                                <field name="form_template_id"/>
+                                <field name="agreement_template_id"/>
+                                <field name="rubric_template_id"/>
+                                <field name="certificate_template_id"/>
+                                <field name="feedback_template_id"/>
+                            </group>
+                        </page>
+                        <page string="Marking Rubric" name="rubric">
+                            <field name="rubric_criterion_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="max_score"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Custom Fields" name="custom_fields">
+                            <p class="text-muted">Extra fields shown on this programme's placements and students.</p>
+                            <group>
+                                <field name="placement_properties_definition"/>
+                                <field name="student_properties_definition"/>
+                            </group>
+                        </page>
+                        <page string="Opportunities" name="opportunities">
+                            <field name="opportunity_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="company_id"/>
+                                    <field name="start_date"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_program_search" model="ir.ui.view">
+        <field name="name">internship.program.search</field>
+        <field name="model">internship.program</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="university_id"/>
+                <field name="academic_year_id"/>
+                <filter name="open" string="Open" domain="[('state', '=', 'open')]"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <filter name="group_university" string="University" context="{'group_by': 'university_id'}"/>
+                <filter name="group_year" string="Academic Year" context="{'group_by': 'academic_year_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_program" model="ir.actions.act_window">
+        <field name="name">Programmes</field>
+        <field name="res_model">internship.program</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_internship_programs" name="Programmes" parent="menu_internship_people" action="action_internship_program" sequence="20"/>
+</odoo>

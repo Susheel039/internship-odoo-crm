@@ -51,6 +51,8 @@ These rules are not optional. Production databases hold real student data.
 5. **Test every upgrade on a clone first**: `make upgrade` backs up the database, clones
    it to `<db>_upgrade_test`, upgrades and tests the clone, and leaves the real database
    untouched. Only then `make upgrade-apply`.
+   `make upgrade-legacy` does the same but first seeds pre-v2 sample rows
+   (`scripts/fixtures/legacy_v1.sql`) into the clone, so the v2 migrations run on real shapes of data.
 
 ### Versions and when migrations run
 

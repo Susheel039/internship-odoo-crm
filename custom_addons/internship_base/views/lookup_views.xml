@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Reasons -->
+    <record id="view_internship_reason_list" model="ir.ui.view">
+        <field name="name">internship.reason.list</field>
+        <field name="model">internship.reason</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="reason_type"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="description" optional="hide"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_internship_reason_search" model="ir.ui.view">
+        <field name="name">internship.reason.search</field>
+        <field name="model">internship.reason</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <filter name="group_type" string="Type" context="{'group_by': 'reason_type'}"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_internship_reason" model="ir.actions.act_window">
+        <field name="name">Reasons</field>
+        <field name="res_model">internship.reason</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_type': 1}</field>
+    </record>
+
+    <!-- Document types -->
+    <record id="view_internship_document_type_list" model="ir.ui.view">
+        <field name="name">internship.document.type.list</field>
+        <field name="model">internship.document.type</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="applies_to"/>
+                <field name="requires_expiry"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_internship_document_type" model="ir.actions.act_window">
+        <field name="name">Document Types</field>
+        <field name="res_model">internship.document.type</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Academic years -->
+    <record id="view_internship_academic_year_list" model="ir.ui.view">
+        <field name="name">internship.academic.year.list</field>
+        <field name="model">internship.academic.year</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_internship_academic_year" model="ir.actions.act_window">
+        <field name="name">Academic Years</field>
+        <field name="res_model">internship.academic.year</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Skills and sectors -->
+    <record id="view_internship_skill_list" model="ir.ui.view">
+        <field name="name">internship.skill.list</field>
+        <field name="model">internship.skill</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="color" widget="color_picker"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_internship_skill" model="ir.actions.act_window">
+        <field name="name">Skills</field>
+        <field name="res_model">internship.skill</field>
+        <field name="view_mode">list</field>
+    </record>
+    <record id="view_internship_sector_list" model="ir.ui.view">
+        <field name="name">internship.sector.list</field>
+        <field name="model">internship.sector</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="color" widget="color_picker"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_internship_sector" model="ir.actions.act_window">
+        <field name="name">Sectors</field>
+        <field name="res_model">internship.sector</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Rubric criteria -->
+    <record id="view_internship_rubric_criterion_list" model="ir.ui.view">
+        <field name="name">internship.rubric.criterion.list</field>
+        <field name="model">internship.rubric.criterion</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="program_id"/>
+                <field name="max_score"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_internship_rubric_criterion" model="ir.actions.act_window">
+        <field name="name">Rubric Criteria</field>
+        <field name="res_model">internship.rubric.criterion</field>
+        <field name="view_mode">list</field>
+    </record>
+
+
+    <menuitem id="menu_internship_config_reason" name="Reasons" parent="menu_internship_config" action="action_internship_reason" sequence="20"/>
+    <menuitem id="menu_internship_config_document_type" name="Document Types" parent="menu_internship_config" action="action_internship_document_type" sequence="30"/>
+    <menuitem id="menu_internship_config_academic_year" name="Academic Years" parent="menu_internship_config" action="action_internship_academic_year" sequence="40"/>
+    <menuitem id="menu_internship_config_skill" name="Skills" parent="menu_internship_config" action="action_internship_skill" sequence="50"/>
+    <menuitem id="menu_internship_config_sector" name="Sectors" parent="menu_internship_config" action="action_internship_sector" sequence="60"/>
+    <menuitem id="menu_internship_config_rubric" name="Rubric Criteria" parent="menu_internship_config" action="action_internship_rubric_criterion" sequence="70"/>
+</odoo>

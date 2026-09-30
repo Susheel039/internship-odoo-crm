@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_company_tree" model="ir.ui.view">
+        <field name="name">internship.company.list</field>
+        <field name="model">internship.company</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="company_registration_number"/>
+                <field name="industry" optional="show"/>
+                <field name="sector_ids" widget="many2many_tags" optional="hide"/>
+                <field name="vetting_state" widget="badge"
+                       decoration-success="vetting_state == 'approved'"
+                       decoration-warning="vetting_state in ('pending', 'expired')"
+                       decoration-danger="vetting_state == 'rejected'"/>
+                <field name="approved_until" optional="show"/>
+                <field name="insurance_expiry" optional="show"/>
+                <field name="contact_email" optional="hide"/>
+                <field name="phone" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_company_form" model="ir.ui.view">
+        <field name="name">internship.company.form</field>
+        <field name="model">internship.company</field>
+        <field name="arch" type="xml">
+            <form string="Company">
+                <header>
+                    <button name="action_vetting_approve" type="object" string="Approve Company" class="btn-primary"
+                            invisible="vetting_state == 'approved'"
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator"/>
+                    <button name="%(internship_base.action_internship_reason_wizard)d" type="action" string="Reject"
+                            invisible="vetting_state == 'rejected'"
+                            context="{'default_reason_type': 'company_rejection', 'default_method': 'action_vetting_reject'}"
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator"/>
+                    <button name="action_vetting_reset" type="object" string="Reset to Pending"
+                            invisible="vetting_state == 'pending'"
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator"/>
+                    <button name="action_send_invite" type="object" string="Send Invitation"
+                            invisible="invite_accepted"/>
+                    <field name="vetting_state" widget="statusbar" statusbar_visible="pending,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Company name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="company_registration_number"/>
+                            <field name="industry"/>
+                            <field name="sector_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            <field name="company_size"/>
+                        </group>
+                        <group>
+                            <field name="contact_person"/>
+                            <field name="contact_email" widget="email"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="website" widget="url"/>
+                            <field name="user_ids" widget="many2many_tags"/>
+                            <field name="active" invisible="1"/>
+                            <field name="invite_accepted" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Vetting &amp; Compliance" name="compliance">
+                            <group>
+                                <group string="Pre-approval">
+                                    <field name="vetting_approved_by_id"/>
+                                    <field name="vetting_approved_date"/>
+                                    <field name="approved_until"/>
+                                    <field name="vetting_rejection_reason_id" invisible="vetting_state != 'rejected'"/>
+                                    <field name="framework_agreement_attachment_id"/>
+                                </group>
+                                <group string="Insurance and risk">
+                                    <field name="insurance_policy_no"/>
+                                    <field name="insurance_expiry"/>
+                                    <field name="insurance_attachment_id"/>
+                                    <field name="risk_assessment_attachment_id"/>
+                                    <field name="risk_assessment_date"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Sites" name="sites">
+                            <field name="site_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="street"/>
+                                    <field name="city"/>
+                                    <field name="zip"/>
+                                    <field name="work_mode"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Line Managers" name="line_managers">
+                            <field name="line_manager_ids" context="{'default_company_id': id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="job_title"/>
+                                    <field name="email"/>
+                                    <field name="phone"/>
+                                    <field name="can_approve_attendance"/>
+                                    <field name="can_sign_agreement"/>
+                                    <field name="can_issue_certificate"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Registration &amp; Signatory" name="registration">
+                            <group>
+                                <group string="Registration">
+                                    <field name="registration_source"/>
+                                    <field name="invited_by_id"/>
+                                    <field name="invite_date"/>
+                                    <field name="invite_accepted"/>
+                                </group>
+                                <group string="Authorised signatory">
+                                    <field name="signatory_name"/>
+                                    <field name="signatory_title"/>
+                                    <field name="signatory_email" widget="email"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Opportunities" name="opportunities">
+                            <field name="opportunity_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="program_id"/>
+                                    <field name="start_date"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_company_search" model="ir.ui.view">
+        <field name="name">internship.company.search</field>
+        <field name="model">internship.company</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="company_registration_number"/>
+                <field name="sector_ids"/>
+                <filter name="vetting_pending" string="Vetting Pending" domain="[('vetting_state', '=', 'pending')]"/>
+                <filter name="vetting_approved" string="Approved" domain="[('vetting_state', '=', 'approved')]"/>
+                <filter name="vetting_expired" string="Expired" domain="[('vetting_state', '=', 'expired')]"/>
+                <separator/>
+                <filter name="expiring" string="Expiring (30 days)"
+                        domain="['|', ('insurance_expiry', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d')), ('approved_until', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <filter name="group_vetting" string="Vetting State" context="{'group_by': 'vetting_state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_company" model="ir.actions.act_window">
+        <field name="name">Companies</field>
+        <field name="res_model">internship.company</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Line managers -->
+    <record id="view_internship_line_manager_list" model="ir.ui.view">
+        <field name="name">internship.line.manager.list</field>
+        <field name="model">internship.line.manager</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="job_title"/>
+                <field name="email"/>
+                <field name="phone" optional="hide"/>
+                <field name="user_id" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_line_manager_form" model="ir.ui.view">
+        <field name="name">internship.line.manager.form</field>
+        <field name="model">internship.line.manager</field>
+        <field name="arch" type="xml">
+            <form string="Line Manager">
+                <header/>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="partner_id" placeholder="Contact"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id"/>
+                            <field name="job_title"/>
+                            <field name="email" widget="email"/>
+                            <field name="phone" widget="phone"/>
+                            <field name="user_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Permissions">
+                            <field name="can_approve_attendance"/>
+                            <field name="can_sign_agreement"/>
+                            <field name="can_issue_certificate"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_line_manager_search" model="ir.ui.view">
+        <field name="name">internship.line.manager.search</field>
+        <field name="model">internship.line.manager</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="company_id"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <filter name="group_company" string="Company" context="{'group_by': 'company_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_line_manager" model="ir.actions.act_window">
+        <field name="name">Line Managers</field>
+        <field name="res_model">internship.line.manager</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_internship_company" name="Companies" parent="menu_internship_people" action="action_internship_company" sequence="40"/>
+    <menuitem id="menu_internship_line_manager" name="Line Managers" parent="menu_internship_people" action="action_internship_line_manager" sequence="50"/>
+</odoo>

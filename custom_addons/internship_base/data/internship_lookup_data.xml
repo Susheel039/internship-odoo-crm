@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Seed values for the configurable lookups. noupdate: admins may edit them freely. -->
+<odoo noupdate="1">
+    <!-- Reasons -->
+    <record id="reason_rejection_skills" model="internship.reason">
+        <field name="name">Skills do not match the role</field><field name="code">skills_mismatch</field>
+        <field name="reason_type">rejection</field><field name="sequence">10</field>
+    </record>
+    <record id="reason_rejection_position_filled" model="internship.reason">
+        <field name="name">Position already filled</field><field name="code">position_filled</field>
+        <field name="reason_type">rejection</field><field name="sequence">20</field>
+    </record>
+    <record id="reason_rejection_eligibility" model="internship.reason">
+        <field name="name">Not eligible (right to work / visa)</field><field name="code">not_eligible</field>
+        <field name="reason_type">rejection</field><field name="sequence">30</field>
+    </record>
+    <record id="reason_decline_other_offer" model="internship.reason">
+        <field name="name">Accepted another offer</field><field name="code">other_offer</field>
+        <field name="reason_type">decline</field><field name="sequence">10</field>
+    </record>
+    <record id="reason_decline_location" model="internship.reason">
+        <field name="name">Location or commute</field><field name="code">location</field>
+        <field name="reason_type">decline</field><field name="sequence">20</field>
+    </record>
+    <record id="reason_decline_pay" model="internship.reason">
+        <field name="name">Pay or hours</field><field name="code">pay_hours</field>
+        <field name="reason_type">decline</field><field name="sequence">30</field>
+    </record>
+    <record id="reason_withdrawal_student" model="internship.reason">
+        <field name="name">Student withdrew</field><field name="code">student_withdrew</field>
+        <field name="reason_type">withdrawal</field><field name="sequence">10</field>
+    </record>
+    <record id="reason_withdrawal_other_approved" model="internship.reason">
+        <field name="name">Another internship approved</field><field name="code">other_approved</field>
+        <field name="reason_type">withdrawal</field><field name="sequence">20</field>
+    </record>
+    <record id="reason_uni_rejection_learning" model="internship.reason">
+        <field name="name">Insufficient learning outcomes</field><field name="code">learning_outcomes</field>
+        <field name="reason_type">university_rejection</field><field name="sequence">10</field>
+    </record>
+    <record id="reason_uni_rejection_hs" model="internship.reason">
+        <field name="name">Health and safety concerns</field><field name="code">health_safety</field>
+        <field name="reason_type">university_rejection</field><field name="sequence">20</field>
+    </record>
+    <record id="reason_uni_rejection_vetting" model="internship.reason">
+        <field name="name">Company not approved</field><field name="code">company_not_vetted</field>
+        <field name="reason_type">university_rejection</field><field name="sequence">30</field>
+    </record>
+    <record id="reason_termination_conduct" model="internship.reason">
+        <field name="name">Conduct or performance</field><field name="code">conduct</field>
+        <field name="reason_type">termination</field><field name="sequence">10</field>
+    </record>
+    <record id="reason_termination_health" model="internship.reason">
+        <field name="name">Health or personal circumstances</field><field name="code">personal</field>
+        <field name="reason_type">termination</field><field name="sequence">20</field>
+    </record>
+    <record id="reason_termination_company" model="internship.reason">
+        <field name="name">Company closed the role</field><field name="code">role_closed</field>
+        <field name="reason_type">termination</field><field name="sequence">30</field>
+    </record>
+    <record id="reason_document_illegible" model="internship.reason">
+        <field name="name">Illegible or incomplete</field><field name="code">illegible</field>
+        <field name="reason_type">document_rejection</field><field name="sequence">10</field>
+    </record>
+    <record id="reason_document_expired" model="internship.reason">
+        <field name="name">Expired document</field><field name="code">expired</field>
+        <field name="reason_type">document_rejection</field><field name="sequence">20</field>
+    </record>
+    <record id="reason_company_insurance" model="internship.reason">
+        <field name="name">No valid insurance</field><field name="code">no_insurance</field>
+        <field name="reason_type">company_rejection</field><field name="sequence">10</field>
+    </record>
+    <record id="reason_company_risk" model="internship.reason">
+        <field name="name">Risk assessment not satisfactory</field><field name="code">risk_assessment</field>
+        <field name="reason_type">company_rejection</field><field name="sequence">20</field>
+    </record>
+    <record id="reason_hold_sickness" model="internship.reason">
+        <field name="name">Long-term sickness</field><field name="code">sickness</field>
+        <field name="reason_type">hold</field><field name="sequence">10</field>
+    </record>
+    <record id="reason_hold_company" model="internship.reason">
+        <field name="name">Company pause</field><field name="code">company_pause</field>
+        <field name="reason_type">hold</field><field name="sequence">20</field>
+    </record>
+
+    <!-- Document types -->
+    <record id="doc_type_cv" model="internship.document.type">
+        <field name="name">CV</field><field name="code">cv</field><field name="applies_to">student</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="doc_type_cover_letter" model="internship.document.type">
+        <field name="name">Cover letter</field><field name="code">cover_letter</field><field name="applies_to">student</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="doc_type_rtw" model="internship.document.type">
+        <field name="name">Right to work evidence</field><field name="code">rtw</field><field name="applies_to">student</field>
+        <field name="requires_expiry" eval="True"/><field name="sequence">30</field>
+    </record>
+    <record id="doc_type_dbs" model="internship.document.type">
+        <field name="name">DBS certificate</field><field name="code">dbs</field><field name="applies_to">student</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="doc_type_insurance" model="internship.document.type">
+        <field name="name">Employer's liability insurance</field><field name="code">insurance</field>
+        <field name="applies_to">company</field><field name="requires_expiry" eval="True"/><field name="sequence">50</field>
+    </record>
+    <record id="doc_type_risk_assessment" model="internship.document.type">
+        <field name="name">Risk assessment</field><field name="code">risk_assessment</field>
+        <field name="applies_to">company</field><field name="sequence">60</field>
+    </record>
+    <record id="doc_type_offer_letter" model="internship.document.type">
+        <field name="name">Offer letter</field><field name="code">offer_letter</field>
+        <field name="applies_to">placement</field><field name="sequence">70</field>
+    </record>
+    <record id="doc_type_internship_form" model="internship.document.type">
+        <field name="name">Internship form</field><field name="code">internship_form</field>
+        <field name="applies_to">placement</field><field name="sequence">80</field>
+    </record>
+    <record id="doc_type_agreement" model="internship.document.type">
+        <field name="name">Three-party agreement</field><field name="code">agreement</field>
+        <field name="applies_to">placement</field><field name="sequence">90</field>
+    </record>
+    <record id="doc_type_final_report" model="internship.document.type">
+        <field name="name">Final report</field><field name="code">final_report</field>
+        <field name="applies_to">placement</field><field name="sequence">100</field>
+    </record>
+    <record id="doc_type_other" model="internship.document.type">
+        <field name="name">Other</field><field name="code">other</field>
+        <field name="applies_to">placement</field><field name="sequence">999</field>
+    </record>
+
+    <!-- Academic years (UK: September to August) -->
+    <record id="academic_year_2025_26" model="internship.academic.year">
+        <field name="name">2025/26</field><field name="code">2025_26</field>
+        <field name="date_from">2025-09-01</field><field name="date_to">2026-08-31</field>
+    </record>
+    <record id="academic_year_2026_27" model="internship.academic.year">
+        <field name="name">2026/27</field><field name="code">2026_27</field>
+        <field name="date_from">2026-09-01</field><field name="date_to">2027-08-31</field>
+    </record>
+    <record id="academic_year_2027_28" model="internship.academic.year">
+        <field name="name">2027/28</field><field name="code">2027_28</field>
+        <field name="date_from">2027-09-01</field><field name="date_to">2028-08-31</field>
+    </record>
+
+    <!-- Skills -->
+    <record id="skill_python" model="internship.skill"><field name="name">Python</field><field name="code">python</field></record>
+    <record id="skill_sql" model="internship.skill"><field name="name">SQL</field><field name="code">sql</field></record>
+    <record id="skill_excel" model="internship.skill"><field name="name">Excel</field><field name="code">excel</field></record>
+    <record id="skill_data_analysis" model="internship.skill"><field name="name">Data analysis</field><field name="code">data_analysis</field></record>
+    <record id="skill_communication" model="internship.skill"><field name="name">Communication</field><field name="code">communication</field></record>
+    <record id="skill_teamwork" model="internship.skill"><field name="name">Teamwork</field><field name="code">teamwork</field></record>
+    <record id="skill_project_management" model="internship.skill"><field name="name">Project management</field><field name="code">project_management</field></record>
+    <record id="skill_customer_service" model="internship.skill"><field name="name">Customer service</field><field name="code">customer_service</field></record>
+
+    <!-- Sectors -->
+    <record id="sector_technology" model="internship.sector"><field name="name">Technology</field><field name="code">technology</field></record>
+    <record id="sector_finance" model="internship.sector"><field name="name">Finance and accounting</field><field name="code">finance</field></record>
+    <record id="sector_healthcare" model="internship.sector"><field name="name">Health and social care</field><field name="code">healthcare</field></record>
+    <record id="sector_education" model="internship.sector"><field name="name">Education</field><field name="code">education</field></record>
+    <record id="sector_engineering" model="internship.sector"><field name="name">Engineering and manufacturing</field><field name="code">engineering</field></record>
+    <record id="sector_creative" model="internship.sector"><field name="name">Creative industries</field><field name="code">creative</field></record>
+    <record id="sector_public" model="internship.sector"><field name="name">Public sector</field><field name="code">public_sector</field></record>
+    <record id="sector_retail" model="internship.sector"><field name="name">Retail and hospitality</field><field name="code">retail</field></record>
+    <record id="sector_charity" model="internship.sector"><field name="name">Charity and not-for-profit</field><field name="code">charity</field></record>
+
+    <!-- Shared marking rubric (programmes can add their own) -->
+    <record id="rubric_reflection" model="internship.rubric.criterion">
+        <field name="name">Reflection on learning</field><field name="code">reflection</field>
+        <field name="max_score">30</field><field name="sequence">10</field>
+    </record>
+    <record id="rubric_theory" model="internship.rubric.criterion">
+        <field name="name">Application of theory to practice</field><field name="code">theory</field>
+        <field name="max_score">30</field><field name="sequence">20</field>
+    </record>
+    <record id="rubric_professional" model="internship.rubric.criterion">
+        <field name="name">Professional practice</field><field name="code">professional</field>
+        <field name="max_score">20</field><field name="sequence">30</field>
+    </record>
+    <record id="rubric_presentation" model="internship.rubric.criterion">
+        <field name="name">Structure and presentation</field><field name="code">presentation</field>
+        <field name="max_score">20</field><field name="sequence">40</field>
+    </record>
+</odoo>

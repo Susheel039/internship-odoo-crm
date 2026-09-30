@@ -68,7 +68,7 @@ class InternshipReport(models.Model):
             report.total_opportunities = self.env["internship.opportunity"].search_count(opportunity_domain)
             report.total_applications = self.env["internship.application"].search_count(application_domain)
             report.total_placed = self.env["internship.application"].search_count(
-                application_domain + [("status", "=", "placed")]
+                application_domain + [("status", "=", "accepted")]
             )
             report.total_completed = self.env["internship.completion"].search_count(
                 completion_domain + [("status", "in", ["approved", "closed"])]

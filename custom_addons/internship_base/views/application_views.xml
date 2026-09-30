@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_application_tree" model="ir.ui.view">
+        <field name="name">internship.application.list</field>
+        <field name="model">internship.application</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="opportunity_id"/>
+                <field name="company_id"/>
+                <field name="university_id" optional="hide"/>
+                <field name="application_date"/>
+                <field name="interview_date" optional="show"/>
+                <field name="student_response" optional="hide"/>
+                <field name="status" widget="badge"
+                       decoration-info="status in ('submitted', 'under_review', 'interview')"
+                       decoration-warning="status == 'offered'"
+                       decoration-success="status == 'accepted'"
+                       decoration-danger="status in ('rejected', 'declined')"
+                       decoration-muted="status == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_application_kanban" model="ir.ui.view">
+        <field name="name">internship.application.kanban</field>
+        <field name="model">internship.application</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_small_column">
+                <templates>
+                    <t t-name="card">
+                        <field name="student_id" class="fw-bold"/>
+                        <field name="opportunity_id"/>
+                        <field name="company_id" class="text-muted"/>
+                        <footer>
+                            <field name="name" class="text-muted"/>
+                            <field name="activity_ids" widget="kanban_activity" class="ms-auto"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_internship_application_form" model="ir.ui.view">
+        <field name="name">internship.application.form</field>
+        <field name="model">internship.application</field>
+        <field name="arch" type="xml">
+            <form string="Internship Application">
+                <header>
+                    <button name="action_submit" type="object" string="Submit" class="btn-primary" invisible="status != 'draft'"/>
+                    <button name="action_shortlist" type="object" string="Shortlist" class="btn-primary" invisible="status != 'submitted'"/>
+                    <button name="action_interview" type="object" string="Mark Interviewed" invisible="status != 'under_review'"/>
+                    <button name="action_offer" type="object" string="Make Offer" class="btn-primary" invisible="status not in ('under_review', 'interview')"/>
+                    <button name="action_student_accept" type="object" string="Student Accepts" class="btn-primary" invisible="status != 'offered'"/>
+                    <button name="%(internship_base.action_internship_reason_wizard)d" type="action" string="Student Declines"
+                            invisible="status != 'offered'"
+                            context="{'default_reason_type': 'decline', 'default_method': 'action_student_decline'}"/>
+                    <button name="%(internship_base.action_internship_reason_wizard)d" type="action" string="Reject"
+                            invisible="status not in ('draft', 'submitted', 'under_review', 'interview', 'offered')"
+                            context="{'default_reason_type': 'rejection', 'default_method': 'action_reject'}"/>
+                    <button name="%(internship_base.action_internship_reason_wizard)d" type="action" string="Withdraw"
+                            invisible="status not in ('draft', 'submitted', 'under_review', 'interview', 'offered')"
+                            context="{'default_reason_type': 'withdrawal', 'default_method': 'action_withdraw'}"/>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,submitted,under_review,interview,offered,accepted" readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Auto-withdrawn" bg_color="text-bg-secondary" invisible="not auto_withdrawn"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id"/>
+                            <field name="opportunity_id"/>
+                            <field name="company_id"/>
+                            <field name="university_id"/>
+                        </group>
+                        <group>
+                            <field name="application_date"/>
+                            <field name="student_response"/>
+                            <field name="response_date"/>
+                            <field name="decision_date"/>
+                            <field name="auto_withdrawn" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Submission" name="submission">
+                            <group>
+                                <field name="cv_attachment_id"/>
+                                <field name="cover_letter_attachment_id"/>
+                                <field name="screening_answers"/>
+                            </group>
+                        </page>
+                        <page string="Interview" name="interview">
+                            <group>
+                                <group>
+                                    <field name="interview_mode"/>
+                                    <field name="interview_date"/>
+                                    <field name="interviewer_id"/>
+                                    <field name="calendar_event_id"/>
+                                </group>
+                                <group>
+                                    <field name="interview_score"/>
+                                    <field name="interview_notes"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Outcome" name="outcome">
+                            <group>
+                                <group>
+                                    <field name="offer_made"/>
+                                    <field name="rejection_reason_id" invisible="status != 'rejected'"/>
+                                    <field name="rejection_reason" invisible="status != 'rejected'"/>
+                                    <field name="decline_reason_id" invisible="status != 'declined'"/>
+                                </group>
+                                <group invisible="status != 'cancelled'">
+                                    <field name="withdrawn_reason"/>
+                                    <field name="withdrawn_date"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_application_search" model="ir.ui.view">
+        <field name="name">internship.application.search</field>
+        <field name="model">internship.application</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="opportunity_id"/>
+                <field name="company_id"/>
+                <field name="university_id"/>
+                <filter name="open" string="Open" domain="[('status', 'in', ('submitted', 'under_review', 'interview', 'offered'))]"/>
+                <filter name="offered" string="Awaiting student" domain="[('status', '=', 'offered')]"/>
+                <filter name="accepted" string="Accepted" domain="[('status', '=', 'accepted')]"/>
+                <filter name="auto_withdrawn" string="Auto-withdrawn" domain="[('auto_withdrawn', '=', True)]"/>
+                <separator/>
+                <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+                <filter name="group_university" string="University" context="{'group_by': 'university_id'}"/>
+                <filter name="group_company" string="Company" context="{'group_by': 'company_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_application" model="ir.actions.act_window">
+        <field name="name">Applications</field>
+        <field name="res_model">internship.application</field>
+        <field name="view_mode">list,kanban,form</field>
+    </record>
+
+    <menuitem id="menu_internship_applications" name="Applications" parent="menu_internship_admissions" action="action_internship_application" sequence="20"/>
+</odoo>

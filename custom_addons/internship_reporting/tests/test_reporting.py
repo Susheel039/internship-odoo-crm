@@ -56,14 +56,10 @@ class TestInternshipReporting(TransactionCase):
             application.action_review()
 
         application.action_submit()
-        application.action_review()
+        application.action_shortlist()
         application.action_interview()
         application.action_offer()
-        application.action_accept()
-        application.action_documentation()
-        application.action_agreement()
-        application.action_approve()
-        application.action_place()
+        application.action_student_accept()
 
         self.env["internship.application"].create(
             {

@@ -125,4 +125,98 @@
         <field name="groups" eval="[(4, ref('group_student'))]"/>
         <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
     </record>
+
+    <!-- v2: line managers see their own company's records -->
+    <record id="rule_line_manager_company" model="ir.rule">
+        <field name="name">Line managers: own company</field>
+        <field name="model_id" ref="model_internship_company"/>
+        <field name="groups" eval="[(4, ref('group_line_manager'))]"/>
+        <field name="domain_force">[('line_manager_ids.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_line_manager_opportunity" model="ir.rule">
+        <field name="name">Line managers: own company opportunities</field>
+        <field name="model_id" ref="model_internship_opportunity"/>
+        <field name="groups" eval="[(4, ref('group_line_manager'))]"/>
+        <field name="domain_force">[('company_id.line_manager_ids.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_line_manager_application" model="ir.rule">
+        <field name="name">Line managers: own company applications</field>
+        <field name="model_id" ref="model_internship_application"/>
+        <field name="groups" eval="[(4, ref('group_line_manager'))]"/>
+        <field name="domain_force">[('opportunity_id.company_id.line_manager_ids.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_line_manager_program" model="ir.rule">
+        <field name="name">Line managers: programmes of own company opportunities</field>
+        <field name="model_id" ref="model_internship_program"/>
+        <field name="groups" eval="[(4, ref('group_line_manager'))]"/>
+        <field name="domain_force">[('opportunity_ids.company_id.line_manager_ids.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_line_manager_student" model="ir.rule">
+        <field name="name">Line managers: applicants to own company</field>
+        <field name="model_id" ref="model_internship_student"/>
+        <field name="groups" eval="[(4, ref('group_line_manager'))]"/>
+        <field name="domain_force">[('application_ids.opportunity_id.company_id.line_manager_ids.user_id', '=', user.id)]</field>
+    </record>
+
+    <!-- v2: university contacts, company sites, line managers -->
+    <record id="rule_platform_university_contact_all" model="ir.rule">
+        <field name="name">Platform administrators: all university contacts</field>
+        <field name="model_id" ref="model_internship_university_contact"/>
+        <field name="groups" eval="[(4, ref('group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_university_users_university_contact" model="ir.rule">
+        <field name="name">University users: own university contacts</field>
+        <field name="model_id" ref="model_internship_university_contact"/>
+        <field name="groups" eval="[(4, ref('group_university_administrator')), (4, ref('group_university_staff'))]"/>
+        <field name="domain_force">[('university_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_platform_company_site_all" model="ir.rule">
+        <field name="name">Platform administrators: all company sites</field>
+        <field name="model_id" ref="model_internship_company_site"/>
+        <field name="groups" eval="[(4, ref('group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_university_users_company_site" model="ir.rule">
+        <field name="name">University users: all company sites</field>
+        <field name="model_id" ref="model_internship_company_site"/>
+        <field name="groups" eval="[(4, ref('group_university_administrator')), (4, ref('group_university_staff')), (4, ref('group_crm_agent'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_company_users_company_site" model="ir.rule">
+        <field name="name">Company users: own sites</field>
+        <field name="model_id" ref="model_internship_company_site"/>
+        <field name="groups" eval="[(4, ref('group_company_manager'))]"/>
+        <field name="domain_force">[('company_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_line_manager_company_site" model="ir.rule">
+        <field name="name">Line managers: own company sites</field>
+        <field name="model_id" ref="model_internship_company_site"/>
+        <field name="groups" eval="[(4, ref('group_line_manager'))]"/>
+        <field name="domain_force">[('company_id.line_manager_ids.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_platform_line_manager_all" model="ir.rule">
+        <field name="name">Platform administrators: all line managers</field>
+        <field name="model_id" ref="model_internship_line_manager"/>
+        <field name="groups" eval="[(4, ref('group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_university_users_line_manager" model="ir.rule">
+        <field name="name">University users: all line managers</field>
+        <field name="model_id" ref="model_internship_line_manager"/>
+        <field name="groups" eval="[(4, ref('group_university_administrator')), (4, ref('group_university_staff')), (4, ref('group_crm_agent'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_company_users_line_manager" model="ir.rule">
+        <field name="name">Company users: own line managers</field>
+        <field name="model_id" ref="model_internship_line_manager"/>
+        <field name="groups" eval="[(4, ref('group_company_manager'))]"/>
+        <field name="domain_force">[('company_id.user_ids', 'in', user.id)]</field>
+    </record>
+    <record id="rule_line_manager_line_manager" model="ir.rule">
+        <field name="name">Line managers: colleagues at own company</field>
+        <field name="model_id" ref="model_internship_line_manager"/>
+        <field name="groups" eval="[(4, ref('group_line_manager'))]"/>
+        <field name="domain_force">[('company_id.line_manager_ids.user_id', '=', user.id)]</field>
+    </record>
 </odoo>
