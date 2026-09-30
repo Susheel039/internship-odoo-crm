@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_invite_company_wizard_form" model="ir.ui.view">
+        <field name="name">internship.invite.company.wizard.form</field>
+        <field name="model">internship.invite.company.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Self-sourced Placement">
+                <p class="text-muted">The student found this internship themselves. Register (or pick) the company,
+                    invite it to the platform and open the placement.</p>
+                <group>
+                    <group string="Student and role">
+                        <field name="student_id"/>
+                        <field name="role_title"/>
+                        <field name="planned_start"/>
+                        <field name="planned_end"/>
+                        <field name="hours_per_week"/>
+                    </group>
+                    <group string="Company">
+                        <field name="existing_company_id"/>
+                        <field name="company_name" required="not existing_company_id" invisible="existing_company_id"/>
+                        <field name="company_registration_number" invisible="existing_company_id"/>
+                        <field name="contact_name"/>
+                        <field name="contact_email" widget="email" required="not existing_company_id"/>
+                        <field name="contact_phone" widget="phone"/>
+                        <field name="send_invite"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Create Placement" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_internship_invite_company_wizard" model="ir.actions.act_window">
+        <field name="name">Self-sourced Placement</field>
+        <field name="res_model">internship.invite.company.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

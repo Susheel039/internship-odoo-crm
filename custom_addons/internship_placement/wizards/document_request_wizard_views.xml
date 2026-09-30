@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_document_request_wizard_form" model="ir.ui.view">
+        <field name="name">internship.document.request.wizard.form</field>
+        <field name="model">internship.document.request.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Request Documents">
+                <group>
+                    <group>
+                        <field name="placement_id" readonly="1"/>
+                        <field name="requested_from"/>
+                    </group>
+                    <group>
+                        <field name="due_date"/>
+                    </group>
+                </group>
+                <field name="line_ids">
+                    <list editable="bottom">
+                        <field name="document_type_id"/>
+                        <field name="description"/>
+                        <field name="mandatory"/>
+                    </list>
+                </field>
+                <field name="notes" placeholder="Message to include in the e-mail"/>
+                <footer>
+                    <button name="action_confirm" type="object" string="Send Request" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

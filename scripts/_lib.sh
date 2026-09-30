@@ -22,8 +22,10 @@ BACKUP_ROOT="${BACKUP_ROOT:-$REPO_ROOT/backups}"
 # A spare HTTP port so CLI runs inside the container don't clash with the live server on 8069.
 CLI_HTTP_PORT="${CLI_HTTP_PORT:-8070}"
 
+# Dependency order. New v2 modules are installed (-i) on upgrade, existing ones updated (-u).
 INTERNSHIP_MODULES=(
   internship_base
+  internship_placement
   internship_crm
   internship_monitoring
   internship_completion
@@ -68,7 +70,10 @@ run_odoo_tests() {
   local logfile status=0
   logfile="$(mktemp -t odoo-test.XXXXXX)"
   log "Running tests on '$db' ($mode $modules, tags $tags)"
-  odoo_cli -d "$db" "$mode" "$modules" --test-enable --test-tags "$tags" \
+  local mode_args=("$mode" "$modules")
+  # On upgrade, also install modules that are new in this version (a no-op for installed ones).
+  [[ "$mode" == "-u" ]] && mode_args=(-i "$modules" -u "$modules")
+  odoo_cli -d "$db" "${mode_args[@]}" --test-enable --test-tags "$tags" \
     --stop-after-init --http-port="$CLI_HTTP_PORT" --log-level=test "$@" 2>&1 | tee "$logfile" || status=$?
   if [[ $status -ne 0 ]] || grep -qE '^[0-9-]+ [0-9:,]+ [0-9]+ (ERROR|CRITICAL) ' "$logfile"; then
     echo

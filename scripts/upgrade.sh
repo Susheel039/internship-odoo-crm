@@ -48,6 +48,6 @@ if [[ $APPLY -eq 0 ]]; then
 fi
 
 log "Step 4/4: upgrading '$DB' (backup taken in step 1)"
-odoo_cli -d "$DB" -u "$MODULES" --stop-after-init --http-port="$CLI_HTTP_PORT"
+odoo_cli -d "$DB" -i "$MODULES" -u "$MODULES" --stop-after-init --http-port="$CLI_HTTP_PORT"
 log "Restart Odoo to load the new registry: docker restart $ODOO_CONTAINER"
 log "Upgrade of '$DB' complete."

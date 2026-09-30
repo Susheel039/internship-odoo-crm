@@ -156,9 +156,7 @@
         <field name="res_model">internship.meeting</field>
         <field name="view_mode">list,form</field>
     </record>
-
-    <menuitem id="menu_internship_monitoring_root" name="Monitoring" parent="internship_base.menu_internship_root" sequence="30"/>
-    <menuitem id="menu_internship_attendance" name="Attendance" parent="menu_internship_monitoring_root" action="action_internship_attendance" sequence="10"/>
-    <menuitem id="menu_internship_performance" name="Performance" parent="menu_internship_monitoring_root" action="action_internship_performance" sequence="20"/>
-    <menuitem id="menu_internship_meetings" name="Meetings" parent="menu_internship_monitoring_root" action="action_internship_meeting" sequence="30"/>
+    <menuitem id="menu_internship_attendance" name="Attendance" parent="internship_base.menu_internship_monitoring_main" action="action_internship_attendance" sequence="10"/>
+    <menuitem id="menu_internship_performance" name="Performance" parent="internship_base.menu_internship_monitoring_main" action="action_internship_performance" sequence="20"/>
+    <menuitem id="menu_internship_meetings" name="Meetings" parent="internship_base.menu_internship_monitoring_main" action="action_internship_meeting" sequence="30"/>
 </odoo>

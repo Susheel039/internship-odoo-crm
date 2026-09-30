@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_change_request_list" model="ir.ui.view">
+        <field name="name">internship.change.request.list</field>
+        <field name="model">internship.change.request</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="placement_id"/>
+                <field name="student_id"/>
+                <field name="change_type"/>
+                <field name="current_value"/>
+                <field name="new_value"/>
+                <field name="agreement_amendment_needed" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'applied'" decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_change_request_form" model="ir.ui.view">
+        <field name="name">internship.change.request.form</field>
+        <field name="model">internship.change.request</field>
+        <field name="arch" type="xml">
+            <form string="Change Request">
+                <header>
+                    <button name="action_company_approve" type="object" string="Company Approves"
+                            invisible="state != 'requested' or company_approved_by_id"/>
+                    <button name="action_university_approve" type="object" string="University Approves"
+                            invisible="state != 'requested' or university_approved_by_id"
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator,internship_base.group_university_staff"/>
+                    <button name="action_apply" type="object" string="Apply to Placement" class="btn-primary"
+                            invisible="state != 'approved'"/>
+                    <button name="action_reject" type="object" string="Reject" invisible="state != 'requested'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="placement_id"/>
+                            <field name="change_type"/>
+                            <field name="current_value"/>
+                            <field name="new_value"/>
+                            <field name="agreement_amendment_needed"/>
+                        </group>
+                        <group string="New value">
+                            <field name="new_date_start" invisible="change_type != 'dates'"/>
+                            <field name="new_date_end" invisible="change_type != 'dates'"/>
+                            <field name="new_line_manager_id" invisible="change_type != 'line_manager'"
+                                   domain="[('company_id', '=', internship_company_id)]"/>
+                            <field name="new_hours" invisible="change_type != 'hours'"/>
+                            <field name="new_site_id" invisible="change_type != 'site'"
+                                   domain="[('company_id', '=', internship_company_id)]"/>
+                            <field name="new_role_title" invisible="change_type != 'role'"/>
+                            <field name="internship_company_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="reason"/>
+                        <field name="requested_by_id"/>
+                        <field name="company_approved_by_id"/>
+                        <field name="company_approved_date"/>
+                        <field name="university_approved_by_id"/>
+                        <field name="university_approved_date"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_internship_change_request" model="ir.actions.act_window">
+        <field name="name">Change Requests</field>
+        <field name="res_model">internship.change.request</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -81,7 +81,5 @@
         <field name="res_model">internship.crm.lead</field>
         <field name="view_mode">kanban,list,form</field>
     </record>
-
-    <menuitem id="menu_internship_crm_root" name="CRM" parent="internship_base.menu_internship_root" sequence="25"/>
-    <menuitem id="menu_internship_crm_leads" name="CRM Leads" parent="menu_internship_crm_root" action="action_internship_crm_lead" sequence="10"/>
+    <menuitem id="menu_internship_crm_leads" name="CRM Leads" parent="internship_base.menu_internship_crm_main" action="action_internship_crm_lead" sequence="10"/>
 </odoo>

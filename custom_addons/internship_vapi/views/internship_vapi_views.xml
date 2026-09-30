@@ -53,7 +53,5 @@
         <field name="res_model">internship.call.log</field>
         <field name="view_mode">list,form</field>
     </record>
-
-    <menuitem id="menu_internship_vapi_root" name="Call Tracking" parent="internship_base.menu_internship_root" sequence="60"/>
-    <menuitem id="menu_internship_call_logs" name="Call Logs" parent="menu_internship_vapi_root" action="action_internship_call_log" sequence="10"/>
+    <menuitem id="menu_internship_call_logs" name="Call Logs" parent="internship_base.menu_internship_crm_main" action="action_internship_call_log" sequence="10"/>
 </odoo>

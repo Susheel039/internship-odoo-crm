@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_university_review_form" model="ir.ui.view">
+        <field name="name">internship.university.review.form</field>
+        <field name="model">internship.university.review</field>
+        <field name="arch" type="xml">
+            <form string="University Decision">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="placement_id" readonly="1"/>
+                            <field name="student_id"/>
+                            <field name="internship_company_id"/>
+                            <field name="round_no"/>
+                        </group>
+                        <group>
+                            <field name="reviewer_id"/>
+                            <field name="review_date"/>
+                            <field name="decided" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Checklist">
+                        <group>
+                            <field name="chk_company_vetted"/>
+                            <field name="chk_insurance_valid"/>
+                            <field name="chk_rtw_ok"/>
+                        </group>
+                        <group>
+                            <field name="chk_visa_ok"/>
+                            <field name="chk_form_complete"/>
+                            <button name="action_refresh_checks" type="object" string="Refresh from records"
+                                    class="btn-link" invisible="decided"/>
+                        </group>
+                    </group>
+                    <group string="Decision">
+                        <field name="decision" widget="radio" readonly="decided"/>
+                        <field name="rejection_reason_id" invisible="decision != 'reject'" required="decision == 'reject'"/>
+                        <field name="comments"/>
+                        <field name="student_notified_date" invisible="not student_notified_date"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_decide" type="object" string="Record Decision" class="btn-primary"
+                            invisible="decided" data-hotkey="q"/>
+                    <button string="Close" special="cancel" data-hotkey="x"/>
+                </footer>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_university_review_list" model="ir.ui.view">
+        <field name="name">internship.university.review.list</field>
+        <field name="model">internship.university.review</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="placement_id"/>
+                <field name="student_id"/>
+                <field name="round_no"/>
+                <field name="review_date"/>
+                <field name="reviewer_id"/>
+                <field name="decision"/>
+            </list>
+        </field>
+    </record>
+</odoo>

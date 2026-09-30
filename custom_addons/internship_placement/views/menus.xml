@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_internship_placements" name="Placements Pipeline" parent="internship_base.menu_internship_admissions"
+              action="action_internship_placement" sequence="30"/>
+    <menuitem id="menu_internship_document_requests" name="Document Requests" parent="internship_base.menu_internship_admissions"
+              action="action_internship_document_request" sequence="40"/>
+    <menuitem id="menu_internship_documents" name="Documents" parent="internship_base.menu_internship_admissions"
+              action="action_internship_document" sequence="60"/>
+    <menuitem id="menu_internship_invite_company" name="Self-sourced Placement" parent="internship_base.menu_internship_admissions"
+              action="action_internship_invite_company_wizard" sequence="70"/>
+
+    <menuitem id="menu_internship_leave" name="Leave" parent="internship_base.menu_internship_monitoring_main"
+              action="action_internship_leave" sequence="40"/>
+    <menuitem id="menu_internship_change_requests" name="Change Requests" parent="internship_base.menu_internship_monitoring_main"
+              action="action_internship_change_request" sequence="50"/>
+
+    <menuitem id="menu_internship_config_stage" name="Placement Stages" parent="internship_base.menu_internship_config"
+              action="action_internship_placement_stage" sequence="10"/>
+</odoo>

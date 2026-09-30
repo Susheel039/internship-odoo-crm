@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_internship_placement" model="ir.sequence">
+        <field name="name">Internship Placement</field>
+        <field name="code">internship.placement</field>
+        <field name="prefix">INT-%(year)s-</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+    <record id="seq_internship_document_request" model="ir.sequence">
+        <field name="name">Internship Document Request</field>
+        <field name="code">internship.document.request</field>
+        <field name="prefix">DOC-</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

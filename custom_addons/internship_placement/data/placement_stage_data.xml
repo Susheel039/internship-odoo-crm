@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="stage_form_requested" model="internship.placement.stage">
+        <field name="sequence">10</field>
+        <field name="code">form_requested</field>
+        <field name="name">Form requested</field>
+        <field name="phase">1</field>
+        <field name="is_closed" eval="False"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="False"/>
+    </record>
+    <record id="stage_under_review" model="internship.placement.stage">
+        <field name="sequence">20</field>
+        <field name="code">under_review</field>
+        <field name="name">Documents under review</field>
+        <field name="phase">1</field>
+        <field name="is_closed" eval="False"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="False"/>
+    </record>
+    <record id="stage_more_docs" model="internship.placement.stage">
+        <field name="sequence">30</field>
+        <field name="code">more_docs</field>
+        <field name="name">More documents needed</field>
+        <field name="phase">1</field>
+        <field name="is_closed" eval="False"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="False"/>
+    </record>
+    <record id="stage_meeting" model="internship.placement.stage">
+        <field name="sequence">40</field>
+        <field name="code">meeting</field>
+        <field name="name">University–company meeting</field>
+        <field name="phase">1</field>
+        <field name="is_closed" eval="False"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="False"/>
+    </record>
+    <record id="stage_agreement" model="internship.placement.stage">
+        <field name="sequence">50</field>
+        <field name="code">agreement</field>
+        <field name="name">Agreement in signing</field>
+        <field name="phase">1</field>
+        <field name="is_closed" eval="False"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="False"/>
+    </record>
+    <record id="stage_approved" model="internship.placement.stage">
+        <field name="sequence">60</field>
+        <field name="code">approved</field>
+        <field name="name">Approved – awaiting start</field>
+        <field name="phase">1</field>
+        <field name="is_closed" eval="False"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="False"/>
+    </record>
+    <record id="stage_active" model="internship.placement.stage">
+        <field name="sequence">70</field>
+        <field name="code">active</field>
+        <field name="name">Active</field>
+        <field name="phase">2</field>
+        <field name="is_closed" eval="False"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="False"/>
+    </record>
+    <record id="stage_on_hold" model="internship.placement.stage">
+        <field name="sequence">75</field>
+        <field name="code">on_hold</field>
+        <field name="name">On hold</field>
+        <field name="phase">2</field>
+        <field name="is_closed" eval="False"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="False"/>
+    </record>
+    <record id="stage_completion" model="internship.placement.stage">
+        <field name="sequence">80</field>
+        <field name="code">completion</field>
+        <field name="name">Final report &amp; closure</field>
+        <field name="phase">3</field>
+        <field name="is_closed" eval="False"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="False"/>
+    </record>
+    <record id="stage_completed" model="internship.placement.stage">
+        <field name="sequence">90</field>
+        <field name="code">completed</field>
+        <field name="name">Completed</field>
+        <field name="phase">3</field>
+        <field name="is_closed" eval="True"/>
+        <field name="is_won" eval="True"/>
+        <field name="fold" eval="True"/>
+    </record>
+    <record id="stage_failed" model="internship.placement.stage">
+        <field name="sequence">91</field>
+        <field name="code">failed</field>
+        <field name="name">Failed</field>
+        <field name="phase">3</field>
+        <field name="is_closed" eval="True"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="True"/>
+    </record>
+    <record id="stage_terminated" model="internship.placement.stage">
+        <field name="sequence">92</field>
+        <field name="code">terminated</field>
+        <field name="name">Terminated</field>
+        <field name="phase">2</field>
+        <field name="is_closed" eval="True"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="True"/>
+    </record>
+    <record id="stage_rejected" model="internship.placement.stage">
+        <field name="sequence">93</field>
+        <field name="code">rejected</field>
+        <field name="name">Rejected by university</field>
+        <field name="phase">1</field>
+        <field name="is_closed" eval="True"/>
+        <field name="is_won" eval="False"/>
+        <field name="fold" eval="True"/>
+    </record>
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_placement_stage_list" model="ir.ui.view">
+        <field name="name">internship.placement.stage.list</field>
+        <field name="model">internship.placement.stage</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code" readonly="id"/>
+                <field name="phase"/>
+                <field name="fold"/>
+                <field name="is_closed"/>
+                <field name="is_won"/>
+                <field name="description" optional="hide"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_internship_placement_stage" model="ir.actions.act_window">
+        <field name="name">Placement Stages</field>
+        <field name="res_model">internship.placement.stage</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p>Stage codes drive the workflow; rename stages freely but keep their codes.</p>
+        </field>
+    </record>
+</odoo>

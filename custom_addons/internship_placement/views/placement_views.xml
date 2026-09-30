@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_placement_kanban" model="ir.ui.view">
+        <field name="name">internship.placement.kanban</field>
+        <field name="model">internship.placement</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" class="o_kanban_small_column" quick_create="false"
+                    group_create="false" group_delete="false">
+                <field name="risk_flag"/>
+                <field name="color"/>
+                <templates>
+                    <t t-name="card" class="flex-row">
+                        <div class="flex-grow-1">
+                            <div class="d-flex">
+                                <field name="student_id" class="fw-bold"/>
+                                <span class="ms-auto">
+                                    <span t-if="record.risk_flag.raw_value == 'red'" class="badge text-bg-danger">At risk</span>
+                                    <span t-elif="record.risk_flag.raw_value == 'amber'" class="badge text-bg-warning">Attention</span>
+                                </span>
+                            </div>
+                            <field name="role_title"/>
+                            <field name="internship_company_id" class="text-muted"/>
+                            <field name="university_id" widget="badge" class="mt-1"/>
+                            <footer class="pt-1">
+                                <field name="priority" widget="priority"/>
+                                <field name="activity_ids" widget="kanban_activity"/>
+                                <field name="name" class="text-muted small ms-2"/>
+                                <field name="user_id" widget="many2one_avatar_user" class="ms-auto"/>
+                            </footer>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_internship_placement_list" model="ir.ui.view">
+        <field name="name">internship.placement.list</field>
+        <field name="model">internship.placement</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="risk_flag == 'red'" decoration-warning="risk_flag == 'amber'">
+                <field name="priority" widget="priority" optional="show"/>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="internship_company_id"/>
+                <field name="university_id" optional="show"/>
+                <field name="program_id" optional="hide"/>
+                <field name="role_title" optional="show"/>
+                <field name="planned_start" optional="show"/>
+                <field name="planned_end" optional="show"/>
+                <field name="stage_id"/>
+                <field name="risk_flag" widget="badge" optional="show"
+                       decoration-success="risk_flag == 'green'" decoration-warning="risk_flag == 'amber'"
+                       decoration-danger="risk_flag == 'red'"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="activity_ids" widget="list_activity" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_placement_form" model="ir.ui.view">
+        <field name="name">internship.placement.form</field>
+        <field name="model">internship.placement</field>
+        <field name="arch" type="xml">
+            <form string="Placement">
+                <header>
+                    <!-- Phase 1: admission / approval -->
+                    <button name="action_submit_form" type="object" string="Submit Internship Form" class="btn-primary"
+                            invisible="stage_code != 'form_requested'"/>
+                    <button name="action_open_review" type="object" string="University Decision" class="btn-primary"
+                            invisible="stage_code not in ('under_review', 'meeting')"
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator,internship_base.group_university_staff"/>
+                    <button name="action_schedule_meeting" type="object" string="Schedule Meeting"
+                            invisible="stage_code != 'under_review'"
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator,internship_base.group_university_staff"/>
+                    <button name="action_meeting_no_more_docs" type="object" string="Meeting Held: Back to Review"
+                            invisible="stage_code != 'meeting'"/>
+                    <button name="action_meeting_more_docs" type="object" string="Meeting Held: Request Documents"
+                            invisible="stage_code != 'meeting'"/>
+                    <button name="action_request_documents" type="object" string="Request Documents"
+                            invisible="stage_code not in ('under_review', 'more_docs', 'meeting')"/>
+                    <button name="action_mark_agreement_signed" type="object" string="Agreement Signed Offline"
+                            invisible="stage_code != 'agreement'"
+                            confirm="Confirm the three-party agreement was fully signed outside Odoo? The student's other applications will be withdrawn."
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator"/>
+                    <!-- Phase 2: monitoring -->
+                    <button name="action_start" type="object" string="Start Internship" class="btn-primary"
+                            invisible="stage_code != 'approved'"/>
+                    <button name="%(internship_base.action_internship_reason_wizard)d" type="action" string="Put on Hold"
+                            invisible="stage_code != 'active'"
+                            context="{'default_reason_type': 'hold', 'default_method': 'action_hold'}"/>
+                    <button name="action_resume" type="object" string="Resume" class="btn-primary"
+                            invisible="stage_code != 'on_hold'"/>
+                    <button name="action_to_completion" type="object" string="End: Start Completion"
+                            invisible="stage_code != 'active'"/>
+                    <button name="action_terminate" type="object" string="Terminate"
+                            invisible="stage_code not in ('active', 'on_hold')"/>
+                    <field name="stage_id" widget="statusbar" options="{'clickable': '0'}"
+                           statusbar_visible="form_requested,under_review,agreement,approved,active,completion,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_reviews" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                            <field name="review_count" widget="statinfo" string="Reviews"/>
+                        </button>
+                        <button name="action_view_document_requests" type="object" class="oe_stat_button" icon="fa-inbox">
+                            <field name="document_request_count" widget="statinfo" string="Doc Requests"/>
+                        </button>
+                        <button name="action_view_documents" type="object" class="oe_stat_button" icon="fa-files-o">
+                            <field name="document_count" widget="statinfo" string="Documents"/>
+                        </button>
+                        <button name="action_view_leave" type="object" class="oe_stat_button" icon="fa-plane">
+                            <field name="leave_count" widget="statinfo" string="Leave"/>
+                        </button>
+                        <button name="action_view_change_requests" type="object" class="oe_stat_button" icon="fa-exchange">
+                            <field name="change_request_count" widget="statinfo" string="Changes"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="At risk" bg_color="text-bg-danger" invisible="risk_flag != 'red'"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-secondary" invisible="active"/>
+                    <field name="stage_code" invisible="1"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="student_id" placeholder="Student"/></h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="internship_company_id"/>
+                            <field name="role_title"/>
+                            <field name="line_manager_id"/>
+                            <field name="university_id"/>
+                            <field name="program_id"/>
+                        </group>
+                        <group>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="tutor_id" widget="many2one_avatar_user"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="risk_flag" widget="badge"
+                                   decoration-success="risk_flag == 'green'" decoration-warning="risk_flag == 'amber'"
+                                   decoration-danger="risk_flag == 'red'"/>
+                            <field name="risk_reason" invisible="not risk_reason"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Student" name="student">
+                            <group>
+                                <group>
+                                    <field name="academic_year_id"/>
+                                    <field name="placement_source"/>
+                                    <field name="application_id"/>
+                                    <field name="opportunity_id"/>
+                                </group>
+                                <group string="Dates">
+                                    <field name="planned_start"/>
+                                    <field name="planned_end"/>
+                                    <field name="actual_start"/>
+                                    <field name="actual_end"/>
+                                    <field name="duration_weeks"/>
+                                </group>
+                            </group>
+                            <field name="properties" columns="2"/>
+                        </page>
+                        <page string="Company &amp; Compliance" name="company">
+                            <group>
+                                <group>
+                                    <field name="site_id"/>
+                                    <field name="work_mode"/>
+                                    <field name="hours_per_week"/>
+                                </group>
+                                <group>
+                                    <field name="is_paid"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="salary_amount" invisible="not is_paid"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Application &amp; Interview" name="application" invisible="not application_id">
+                            <group>
+                                <field name="application_id" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Offer &amp; Form" name="offer_form">
+                            <group>
+                                <group string="Offer">
+                                    <field name="offer_letter_attachment_id"/>
+                                    <field name="offer_issue_date"/>
+                                    <field name="offer_expiry_date"/>
+                                    <field name="offer_accepted_date"/>
+                                </group>
+                                <group string="Form request">
+                                    <field name="form_requested_by_id"/>
+                                    <field name="form_requested_date"/>
+                                    <field name="form_contact_email" widget="email"/>
+                                    <field name="form_due_date"/>
+                                    <field name="form_reminder_count"/>
+                                </group>
+                            </group>
+                            <group string="Internship form (completed by the company)">
+                                <field name="learning_objectives" placeholder="What will the student learn and do?"/>
+                                <field name="hs_confirmed"/>
+                                <field name="form_attachment_id"/>
+                                <field name="form_submitted_date"/>
+                                <field name="supporting_attachment_ids" widget="many2many_binary"/>
+                            </group>
+                        </page>
+                        <page string="Review" name="review">
+                            <group>
+                                <field name="review_round"/>
+                            </group>
+                            <field name="review_ids" readonly="1">
+                                <list>
+                                    <field name="round_no"/>
+                                    <field name="review_date"/>
+                                    <field name="reviewer_id"/>
+                                    <field name="decision"/>
+                                    <field name="rejection_reason_id"/>
+                                    <field name="comments"/>
+                                </list>
+                            </field>
+                            <separator string="Document requests"/>
+                            <field name="document_request_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="round_no"/>
+                                    <field name="requested_from"/>
+                                    <field name="due_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Leave &amp; Changes" name="leave_changes">
+                            <field name="leave_ids" context="{'default_placement_id': id}">
+                                <list>
+                                    <field name="leave_type"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="days"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                            <field name="change_request_ids" context="{'default_placement_id': id}">
+                                <list>
+                                    <field name="change_type"/>
+                                    <field name="current_value"/>
+                                    <field name="new_value"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                            <group string="Hold and termination"
+                                   invisible="stage_code not in ('on_hold', 'terminated') and not termination_date">
+                                <field name="hold_reason_id"/>
+                                <field name="termination_date"/>
+                                <field name="termination_initiated_by"/>
+                                <field name="termination_reason_id"/>
+                                <field name="termination_notes"/>
+                            </group>
+                        </page>
+                        <page string="Documents" name="documents">
+                            <field name="document_ids" context="{'default_placement_id': id, 'default_student_id': student_id, 'default_internship_company_id': internship_company_id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="document_type_id"/>
+                                    <field name="version"/>
+                                    <field name="expiry_date"/>
+                                    <field name="access"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_placement_search" model="ir.ui.view">
+        <field name="name">internship.placement.search</field>
+        <field name="model">internship.placement</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="internship_company_id"/>
+                <field name="university_id"/>
+                <field name="program_id"/>
+                <field name="user_id"/>
+                <filter name="my" string="My Placements" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter name="open" string="Open" domain="[('is_closed', '=', False)]"/>
+                <filter name="phase_1" string="Admission" domain="[('phase', '=', '1')]"/>
+                <filter name="phase_2" string="Monitoring" domain="[('phase', '=', '2')]"/>
+                <filter name="phase_3" string="Completion" domain="[('phase', '=', '3')]"/>
+                <separator/>
+                <filter name="red" string="At Risk" domain="[('risk_flag', '=', 'red')]"/>
+                <filter name="amber" string="Needs Attention" domain="[('risk_flag', '=', 'amber')]"/>
+                <separator/>
+                <filter name="self_sourced" string="Self-sourced" domain="[('placement_source', '=', 'self_sourced')]"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <filter name="group_stage" string="Stage" context="{'group_by': 'stage_id'}"/>
+                <filter name="group_university" string="University" context="{'group_by': 'university_id'}"/>
+                <filter name="group_company" string="Company" context="{'group_by': 'internship_company_id'}"/>
+                <filter name="group_year" string="Academic Year" context="{'group_by': 'academic_year_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_placement" model="ir.actions.act_window">
+        <field name="name">Placements</field>
+        <field name="res_model">internship.placement</field>
+        <field name="view_mode">kanban,list,form,pivot,graph</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No placements yet</p>
+            <p>A placement is created when a student accepts an offer, or from a self-sourced company invitation.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_document_list" model="ir.ui.view">
+        <field name="name">internship.document.list</field>
+        <field name="model">internship.document</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="document_type_id"/>
+                <field name="placement_id" optional="show"/>
+                <field name="student_id" optional="show"/>
+                <field name="internship_company_id" optional="show"/>
+                <field name="version"/>
+                <field name="upload_date" optional="show"/>
+                <field name="expiry_date"/>
+                <field name="access" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'approved'"
+                       decoration-danger="state in ('rejected', 'expired')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_document_form" model="ir.ui.view">
+        <field name="name">internship.document.form</field>
+        <field name="model">internship.document</field>
+        <field name="arch" type="xml">
+            <form string="Document">
+                <header>
+                    <button name="action_approve" type="object" string="Approve" class="btn-primary"
+                            invisible="state in ('approved', 'expired')"/>
+                    <button name="%(internship_base.action_internship_reason_wizard)d" type="action" string="Reject"
+                            invisible="state in ('rejected', 'expired')"
+                            context="{'default_reason_type': 'document_rejection', 'default_method': 'action_reject'}"/>
+                    <button name="action_new_version" type="object" string="Upload New Version" invisible="not id"/>
+                    <field name="state" widget="statusbar" statusbar_visible="uploaded,under_review,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="document_type_id"/>
+                            <field name="attachment_id"/>
+                            <field name="expiry_date"/>
+                            <field name="access"/>
+                        </group>
+                        <group>
+                            <field name="placement_id"/>
+                            <field name="student_id"/>
+                            <field name="internship_company_id"/>
+                            <field name="version"/>
+                            <field name="previous_version_id" invisible="not previous_version_id"/>
+                            <field name="uploaded_by_id"/>
+                            <field name="upload_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_document_search" model="ir.ui.view">
+        <field name="name">internship.document.search</field>
+        <field name="model">internship.document</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="document_type_id"/>
+                <field name="placement_id"/>
+                <field name="student_id"/>
+                <field name="internship_company_id"/>
+                <filter name="expiring" string="Expiring (30 days)"
+                        domain="[('expiry_date', '!=', False), ('expiry_date', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <filter name="to_review" string="To Review" domain="[('state', 'in', ('uploaded', 'under_review'))]"/>
+                <filter name="group_type" string="Type" context="{'group_by': 'document_type_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_document" model="ir.actions.act_window">
+        <field name="name">Documents</field>
+        <field name="res_model">internship.document</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

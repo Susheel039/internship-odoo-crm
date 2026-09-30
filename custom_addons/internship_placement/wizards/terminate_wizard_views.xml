@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_terminate_wizard_form" model="ir.ui.view">
+        <field name="name">internship.terminate.wizard.form</field>
+        <field name="model">internship.terminate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Terminate Placement">
+                <p class="text-danger">Terminating closes the placement and schedules an exit meeting.</p>
+                <group>
+                    <field name="placement_id" readonly="1"/>
+                    <field name="initiated_by" widget="radio" options="{'horizontal': true}"/>
+                    <field name="reason_id" options="{'no_create': True}"/>
+                    <field name="termination_date"/>
+                    <field name="notes"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Terminate" class="btn-danger" data-hotkey="q"/>
+                    <button string="Cancel" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

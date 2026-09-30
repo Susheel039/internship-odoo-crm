@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="mail_template_form_request" model="mail.template">
+        <field name="name">Internship: internship form request (company)</field>
+        <field name="model_id" ref="model_internship_placement"/>
+        <field name="subject">Internship form needed for {{ object.student_id.name }} ({{ object.name }})</field>
+        <field name="email_to">{{ object.form_contact_email }}</field>
+        <field name="body_html" type="html">
+<div>
+    <p>Hello,</p>
+    <p><strong t-out="object.student_id.name"/> has accepted the role
+        <strong t-out="object.role_title or ''"/> with <t t-out="object.internship_company_id.name"/>.</p>
+    <p>Before the university can approve the internship, please complete the internship form
+        (learning objectives, health and safety confirmation and the signed form)
+        <t t-if="object.form_due_date">by <strong t-out="object.form_due_date"/></t>.</p>
+    <p>Reference: <t t-out="object.name"/></p>
+    <p>Kind regards,<br/><t t-out="object.user_id.name or ''"/></p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="mail_template_document_request" model="mail.template">
+        <field name="name">Internship: document request</field>
+        <field name="model_id" ref="model_internship_document_request"/>
+        <field name="subject">Documents needed for {{ object.placement_id.name }} ({{ object.name }})</field>
+        <field name="email_to">{{ ','.join(filter(None, [object.requested_from in ('student', 'both') and object.placement_id.student_id.email or '', object.requested_from in ('company', 'both') and object.placement_id.form_contact_email or ''])) }}</field>
+        <field name="body_html" type="html">
+<div>
+    <p>Hello,</p>
+    <p>The university needs the following documents for placement
+        <strong t-out="object.placement_id.name"/>
+        <t t-if="object.due_date"> by <strong t-out="object.due_date"/></t>:</p>
+    <ul>
+        <li t-foreach="object.line_ids" t-as="line">
+            <t t-out="line.description or line.document_type_id.name"/>
+            <t t-if="line.mandatory"> (required)</t>
+        </li>
+    </ul>
+    <p t-if="object.notes" t-out="object.notes"/>
+    <p>Kind regards,<br/><t t-out="object.requested_by_id.name or ''"/></p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="mail_template_university_decision" model="mail.template">
+        <field name="name">Internship: university decision (student)</field>
+        <field name="model_id" ref="model_internship_university_review"/>
+        <field name="subject">Decision on your internship {{ object.placement_id.name }}</field>
+        <field name="email_to">{{ object.placement_id.student_id.email }}</field>
+        <field name="body_html" type="html">
+<div>
+    <p>Dear <t t-out="object.placement_id.student_id.name"/>,</p>
+    <p t-if="object.decision == 'reject'">
+        The university has not approved your internship with
+        <t t-out="object.placement_id.internship_company_id.name"/>.
+        Reason: <t t-out="object.rejection_reason_id.name or ''"/>.
+        Your placement coordinator will contact you about next steps.
+    </p>
+    <p t-else="">The university has recorded a decision on your internship. Please check your placement page.</p>
+    <p t-if="object.comments" t-out="object.comments"/>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

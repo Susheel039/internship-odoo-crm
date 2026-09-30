@@ -137,9 +137,7 @@
         <field name="res_model">internship.completion</field>
         <field name="view_mode">graph,pivot,list</field>
     </record>
-
-    <menuitem id="menu_internship_reporting_root" name="Reports" parent="internship_base.menu_internship_root" sequence="90"/>
-    <menuitem id="menu_internship_report" name="KPI Snapshots" parent="menu_internship_reporting_root" action="action_internship_report" sequence="10"/>
-    <menuitem id="menu_internship_application_analysis" name="Application Analysis" parent="menu_internship_reporting_root" action="action_internship_application_analysis" sequence="20"/>
-    <menuitem id="menu_internship_completion_analysis" name="Completion Analysis" parent="menu_internship_reporting_root" action="action_internship_completion_analysis" sequence="30"/>
+    <menuitem id="menu_internship_report" name="KPI Snapshots" parent="internship_base.menu_internship_reports_main" action="action_internship_report" sequence="10"/>
+    <menuitem id="menu_internship_application_analysis" name="Application Analysis" parent="internship_base.menu_internship_reports_main" action="action_internship_application_analysis" sequence="20"/>
+    <menuitem id="menu_internship_completion_analysis" name="Completion Analysis" parent="internship_base.menu_internship_reports_main" action="action_internship_completion_analysis" sequence="30"/>
 </odoo>
