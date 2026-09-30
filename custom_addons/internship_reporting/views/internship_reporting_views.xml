@@ -95,7 +95,7 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <record id="action_internship_dashboard" model="ir.actions.client">
+    <record id="action_internship_dashboard_client" model="ir.actions.client">
         <field name="name">Dashboard</field>
         <field name="tag">internship_dashboard</field>
     </record>
@@ -249,7 +249,7 @@
     </record>
 
     <menuitem id="menu_internship_dashboard" name="Dashboard" parent="internship_base.menu_internship_root"
-              action="action_internship_dashboard" sequence="1"/>
+              action="action_internship_dashboard_client" sequence="1"/>
     <menuitem id="menu_internship_report" name="KPI Snapshots" parent="internship_base.menu_internship_reports_main" action="action_internship_report" sequence="10"/>
     <menuitem id="menu_internship_placement_analysis" name="Placements" parent="internship_base.menu_internship_reports_main" action="action_internship_placement_analysis" sequence="20"/>
     <menuitem id="menu_internship_monthly_analysis" name="Monthly Attendance" parent="internship_base.menu_internship_reports_main" action="action_internship_monthly_analysis" sequence="30"/>
