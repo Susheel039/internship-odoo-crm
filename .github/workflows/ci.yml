@@ -43,7 +43,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     env:
-      MODULES: internship_base,internship_placement,internship_agreement,internship_crm,internship_monitoring,internship_completion,internship_vapi,internship_reporting
+      MODULES: internship_base,internship_placement,internship_agreement,internship_crm,internship_monitoring,internship_completion,internship_vapi,internship_reporting,internship_portal
     steps:
       - uses: actions/checkout@v4
 

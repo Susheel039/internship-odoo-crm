@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_internship" name="Internship Placements" inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/internship_portal/static/description/icon.png'"/>
+                <t t-set="title">Internship placements</t>
+                <t t-set="url" t-value="'/my/placements'"/>
+                <t t-set="text">Documents, monthly records, agreement, report and feedback</t>
+                <t t-set="placeholder_count" t-value="'internship_placement_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_breadcrumbs_internship" inherit_id="portal.portal_breadcrumbs" priority="30">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name in ('internship_placements', 'internship_placement')"
+                t-attf-class="breadcrumb-item #{'active' if page_name == 'internship_placements' else ''}">
+                <a t-if="page_name == 'internship_placement'" href="/my/placements">Placements</a>
+                <t t-else="">Placements</t>
+            </li>
+            <li t-if="page_name == 'internship_placement'" class="breadcrumb-item active" t-out="placement.name"/>
+        </xpath>
+    </template>
+
+    <template id="portal_my_placements" name="My Placements">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Internship placements</t>
+            </t>
+            <div t-if="not placements" class="alert alert-info">You have no internship placements yet.</div>
+            <t t-if="placements" t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Student</th>
+                        <th>Company</th>
+                        <th>Role</th>
+                        <th>Dates</th>
+                        <th class="text-end">Stage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="placements" t-as="p">
+                        <td><a t-attf-href="/my/placements/#{p.id}" t-out="p.name"/></td>
+                        <td t-out="p.student_id.name"/>
+                        <td t-out="p.internship_company_id.name"/>
+                        <td t-out="p.role_title or ''"/>
+                        <td><t t-out="p.planned_start or ''"/> – <t t-out="p.planned_end or ''"/></td>
+                        <td class="text-end"><span class="badge text-bg-primary" t-out="p.stage_id.name"/></td>
+                    </tr>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_my_placement" name="My Placement">
+        <t t-call="portal.portal_layout">
+            <t t-set="p" t-value="placement"/>
+            <div class="row mt-3">
+                <div class="col-lg-8">
+                    <h1 class="h3"><t t-out="p.name"/> <span class="badge text-bg-primary fs-6" t-out="p.stage_id.name"/></h1>
+                    <p class="text-muted">
+                        <t t-out="p.role_title or ''"/> at <strong t-out="p.internship_company_id.name"/>
+                        · <t t-out="p.student_id.name"/> (<t t-out="p.university_id.name or ''"/>)
+                    </p>
+                    <div t-if="message" class="alert alert-success">Saved. Thank you.</div>
+                    <div t-if="error" class="alert alert-danger" t-out="error"/>
+
+                    <!-- Agreement -->
+                    <div t-if="sign_url" class="alert alert-warning">
+                        The placement agreement is waiting for your signature.
+                        <a t-att-href="sign_url" class="btn btn-primary btn-sm ms-2">Review and sign</a>
+                    </div>
+
+                    <!-- Student: nudge the company for the form -->
+                    <form t-if="role == 'student' and p.stage_code == 'form_requested'" method="post"
+                          t-attf-action="/my/placements/#{p.id}/request-form" class="mb-4">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <p>Your host company needs to complete the internship form
+                            <t t-if="p.form_due_date">(due <t t-out="p.form_due_date"/>)</t>.</p>
+                        <button type="submit" class="btn btn-secondary btn-sm">Send the company a reminder</button>
+                    </form>
+
+                    <!-- Line manager: internship form -->
+                    <section t-if="role == 'manager' and p.stage_code == 'form_requested'" class="card mb-4">
+                        <div class="card-header"><strong>Internship form</strong></div>
+                        <form class="card-body" method="post" enctype="multipart/form-data" t-attf-action="/my/placements/#{p.id}/form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <label class="form-label" for="learning_objectives">Learning objectives</label>
+                            <textarea id="learning_objectives" name="learning_objectives" class="form-control mb-3" rows="4" required="required"/>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="hs_confirmed" name="hs_confirmed" value="1" required="required"/>
+                                <label class="form-check-label" for="hs_confirmed">We confirm health and safety induction, supervision and insurance are in place.</label>
+                            </div>
+                            <label class="form-label" for="form_file">Signed internship form</label>
+                            <input type="file" id="form_file" name="form_file" class="form-control mb-3" required="required"/>
+                            <button type="submit" class="btn btn-primary">Submit form</button>
+                        </form>
+                    </section>
+
+                    <!-- Document requests -->
+                    <section t-if="open_requests" class="card mb-4">
+                        <div class="card-header"><strong>Documents requested</strong></div>
+                        <ul class="list-group list-group-flush">
+                            <t t-foreach="open_requests" t-as="req">
+                                <li t-foreach="req.line_ids.filtered(lambda l: not l.accepted)" t-as="line" class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <span><t t-out="line.description or line.document_type_id.name"/>
+                                            <span t-if="line.mandatory" class="text-danger">*</span>
+                                            <small t-if="req.due_date" class="text-muted"> due <t t-out="req.due_date"/></small></span>
+                                        <span t-if="line.attachment_id" class="badge text-bg-info">Uploaded, awaiting review</span>
+                                    </div>
+                                    <div t-if="line.rejection_note" class="text-danger small" t-out="line.rejection_note"/>
+                                    <form method="post" enctype="multipart/form-data" class="d-flex gap-2 mt-2"
+                                          t-attf-action="/my/placements/#{p.id}/documents/#{line.id}">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="file" name="document" class="form-control form-control-sm" required="required"/>
+                                        <button type="submit" class="btn btn-sm btn-secondary">Upload</button>
+                                    </form>
+                                </li>
+                            </t>
+                        </ul>
+                    </section>
+
+                    <!-- Monthly records -->
+                    <section t-if="monthly" class="card mb-4">
+                        <div class="card-header"><strong>Monthly attendance</strong></div>
+                        <ul class="list-group list-group-flush">
+                            <li t-foreach="monthly" t-as="m" class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <span t-out="m.name"/>
+                                    <span><small class="text-muted me-2">due <t t-out="m.due_date or ''"/></small>
+                                        <span class="badge text-bg-secondary" t-field="m.state"/></span>
+                                </div>
+                                <form t-if="role == 'student' and m.state in ('pending', 'late')" method="post" class="row g-2 mt-2"
+                                      t-attf-action="/my/placements/#{p.id}/monthly/#{m.id}/submit">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div class="col-md-3"><label class="form-label small">Days attended (of <t t-out="m.days_expected"/>)</label>
+                                        <input type="number" step="0.5" min="0" name="days_attended" class="form-control form-control-sm" required="required"/></div>
+                                    <div class="col-md-3"><label class="form-label small">Total hours</label>
+                                        <input type="number" step="0.5" min="0" name="total_hours" class="form-control form-control-sm"/></div>
+                                    <div class="col-md-6"><label class="form-label small">Absence reasons</label>
+                                        <input type="text" name="absence_reasons" class="form-control form-control-sm"/></div>
+                                    <div class="col-12"><label class="form-label small">Reflection on this month</label>
+                                        <textarea name="self_reflection" rows="2" class="form-control form-control-sm"/></div>
+                                    <div class="col-12"><button type="submit" class="btn btn-sm btn-primary">Submit month</button></div>
+                                </form>
+                                <form t-if="role == 'manager' and m.state == 'submitted' and p.line_manager_id.can_approve_attendance"
+                                      method="post" class="row g-2 mt-2" t-attf-action="/my/placements/#{p.id}/monthly/#{m.id}/approve">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <p class="small mb-1">Student reported <t t-out="m.days_attended"/> of <t t-out="m.days_expected"/> days.</p>
+                                    <div class="col-md-4"><label class="form-label small">Working as required?</label>
+                                        <select name="working_as_required" class="form-select form-select-sm" required="required">
+                                            <option value="">Choose...</option><option value="yes">Yes</option><option value="no">No</option>
+                                        </select></div>
+                                    <div class="col-md-4"><label class="form-label small">Rating (1–5)</label>
+                                        <select name="rating" class="form-select form-select-sm" required="required">
+                                            <option value="">Choose...</option>
+                                            <option value="1">1 - Poor</option><option value="2">2 - Below expectations</option>
+                                            <option value="3">3 - Meets expectations</option><option value="4">4 - Good</option>
+                                            <option value="5">5 - Excellent</option>
+                                        </select></div>
+                                    <div class="col-md-6"><label class="form-label small">Strengths</label>
+                                        <textarea name="strengths" rows="2" class="form-control form-control-sm"/></div>
+                                    <div class="col-md-6"><label class="form-label small">Areas to improve</label>
+                                        <textarea name="improvement_areas" rows="2" class="form-control form-control-sm"/></div>
+                                    <div class="col-12"><label class="form-label small">Concerns for the university</label>
+                                        <textarea name="concerns" rows="2" class="form-control form-control-sm"/></div>
+                                    <div class="col-12"><button type="submit" class="btn btn-sm btn-primary">Approve month</button></div>
+                                </form>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <!-- Leave request -->
+                    <section t-if="role == 'student' and p.stage_code in ('approved', 'active', 'on_hold')" class="card mb-4">
+                        <div class="card-header"><strong>Request leave</strong></div>
+                        <form class="card-body row g-2" method="post" enctype="multipart/form-data" t-attf-action="/my/placements/#{p.id}/leave">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="col-md-4"><select name="leave_type" class="form-select form-select-sm">
+                                <option value="annual">Annual leave</option><option value="sick">Sickness</option>
+                                <option value="university">University commitment</option><option value="other">Other</option>
+                            </select></div>
+                            <div class="col-md-4"><input type="date" name="date_from" class="form-control form-control-sm" required="required"/></div>
+                            <div class="col-md-4"><input type="date" name="date_to" class="form-control form-control-sm" required="required"/></div>
+                            <div class="col-md-8"><input type="text" name="notes" placeholder="Notes" class="form-control form-control-sm"/></div>
+                            <div class="col-md-4"><input type="file" name="evidence" class="form-control form-control-sm"/></div>
+                            <div class="col-12"><button type="submit" class="btn btn-sm btn-secondary">Request leave</button></div>
+                        </form>
+                    </section>
+
+                    <!-- Final report -->
+                    <section t-if="role == 'student' and report" class="card mb-4">
+                        <div class="card-header"><strong>Final report (attempt <t t-out="report.attempt_no"/>)</strong>
+                            <small class="text-muted"> due <t t-out="report.due_date or ''"/></small></div>
+                        <form class="card-body" method="post" enctype="multipart/form-data" t-attf-action="/my/placements/#{p.id}/report/#{report.id}">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="text" name="report_title" placeholder="Report title" class="form-control mb-2" required="required"/>
+                            <input type="file" name="report_file" class="form-control mb-2" required="required"/>
+                            <button type="submit" class="btn btn-primary">Submit report</button>
+                        </form>
+                    </section>
+
+                    <!-- Line manager: evaluation and certificate -->
+                    <section t-if="role == 'manager' and p.stage_code == 'completion'" class="card mb-4">
+                        <div class="card-header"><strong>End of placement</strong></div>
+                        <div class="card-body">
+                            <form t-if="not p.evaluation_ids.filtered(lambda e: e.state == 'submitted')" method="post"
+                                  t-attf-action="/my/placements/#{p.id}/evaluation" class="mb-3">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <label class="form-label">Overall rating</label>
+                                <select name="overall_rating" class="form-select mb-2" required="required">
+                                    <option value="">Choose...</option><option value="1">1</option><option value="2">2</option>
+                                    <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                                </select>
+                                <textarea name="skills_gained" rows="2" placeholder="Skills gained" class="form-control mb-2"/>
+                                <textarea name="final_feedback" rows="3" placeholder="Final feedback" class="form-control mb-2"/>
+                                <div class="form-check mb-2"><input class="form-check-input" type="checkbox" name="would_rehire" id="would_rehire" value="1"/>
+                                    <label class="form-check-label" for="would_rehire">We would hire this student again</label></div>
+                                <button type="submit" class="btn btn-primary">Submit evaluation</button>
+                            </form>
+                            <p t-else="" class="text-success">Evaluation submitted. Thank you.</p>
+                            <form t-if="p.line_manager_id.can_issue_certificate and not p.certificate_ids" method="post"
+                                  t-attf-action="/my/placements/#{p.id}/certificate">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-secondary">Issue certificate</button>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- Student feedback -->
+                    <section t-if="role == 'student' and p.stage_code in ('completion', 'completed') and not p.feedback_ids" class="card mb-4">
+                        <div class="card-header"><strong>Your feedback on the placement</strong></div>
+                        <form class="card-body" method="post" t-attf-action="/my/placements/#{p.id}/feedback">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="row g-2 mb-2">
+                                <t t-foreach="[('overall_rating', 'Overall'), ('learning_quality', 'Learning'), ('supervision_quality', 'Supervision')]" t-as="q">
+                                    <div class="col-md-4"><label class="form-label small" t-out="q[1]"/>
+                                        <select t-att-name="q[0]" class="form-select form-select-sm">
+                                            <option value="">-</option><option value="1">1</option><option value="2">2</option>
+                                            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                                        </select></div>
+                                </t>
+                            </div>
+                            <textarea name="comments" rows="3" placeholder="Comments (anonymous to the company)" class="form-control mb-2"/>
+                            <div class="form-check mb-2"><input class="form-check-input" type="checkbox" name="would_recommend" id="would_recommend" value="1"/>
+                                <label class="form-check-label" for="would_recommend">I would recommend this placement</label></div>
+                            <button type="submit" class="btn btn-primary">Send feedback</button>
+                        </form>
+                    </section>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body small">
+                            <p><strong>Dates</strong><br/><t t-out="p.actual_start or p.planned_start or '-'"/> to <t t-out="p.actual_end or p.planned_end or '-'"/></p>
+                            <p><strong>Line manager</strong><br/><t t-out="p.line_manager_id.name or '-'"/></p>
+                            <p><strong>Academic tutor</strong><br/><t t-out="p.tutor_id.name or '-'"/></p>
+                            <p><strong>Hours per week</strong><br/><t t-out="p.hours_per_week"/></p>
+                            <p t-if="p.certificate_ids.filtered('attachment_id')">
+                                <a t-attf-href="/my/placements/#{p.id}/certificate/download" class="btn btn-outline-primary btn-sm">Download certificate</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

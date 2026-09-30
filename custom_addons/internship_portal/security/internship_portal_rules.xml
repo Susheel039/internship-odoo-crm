@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Portal users (students and line managers) read only their own placements and related records.
+     Writes go through the portal controllers, which check ownership first. -->
+<odoo>
+    <record id="rule_placement_portal" model="ir.rule">
+        <field name="name">internship.placement: portal users (own placements)</field>
+        <field name="model_id" ref="internship_placement.model_internship_placement"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|', ('student_id.partner_id', '=', user.partner_id.id), ('line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_attendance_monthly_portal" model="ir.rule">
+        <field name="name">internship.attendance.monthly: portal users (own placements)</field>
+        <field name="model_id" ref="internship_monitoring.model_internship_attendance_monthly"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|', ('placement_id.student_id.partner_id', '=', user.partner_id.id), ('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_document_request_portal" model="ir.rule">
+        <field name="name">internship.document.request: portal users (own placements)</field>
+        <field name="model_id" ref="internship_placement.model_internship_document_request"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|', ('placement_id.student_id.partner_id', '=', user.partner_id.id), ('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_document_request_line_portal" model="ir.rule">
+        <field name="name">internship.document.request.line: portal users (own placements)</field>
+        <field name="model_id" ref="internship_placement.model_internship_document_request_line"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|', ('placement_id.student_id.partner_id', '=', user.partner_id.id), ('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_leave_portal" model="ir.rule">
+        <field name="name">internship.leave: portal users (own placements)</field>
+        <field name="model_id" ref="internship_placement.model_internship_leave"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|', ('placement_id.student_id.partner_id', '=', user.partner_id.id), ('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_submission_portal" model="ir.rule">
+        <field name="name">internship.submission: portal users (own placements)</field>
+        <field name="model_id" ref="internship_completion.model_internship_submission"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|', ('placement_id.student_id.partner_id', '=', user.partner_id.id), ('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_certificate_portal" model="ir.rule">
+        <field name="name">internship.certificate: portal users (own placements)</field>
+        <field name="model_id" ref="internship_completion.model_internship_certificate"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|', ('placement_id.student_id.partner_id', '=', user.partner_id.id), ('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_company_evaluation_portal" model="ir.rule">
+        <field name="name">internship.company.evaluation: portal users (own placements)</field>
+        <field name="model_id" ref="internship_completion.model_internship_company_evaluation"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|', ('placement_id.student_id.partner_id', '=', user.partner_id.id), ('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_student_feedback_portal" model="ir.rule">
+        <field name="name">internship.student.feedback: portal users (own placements)</field>
+        <field name="model_id" ref="internship_completion.model_internship_student_feedback"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('placement_id.student_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+    <record id="rule_agreement_portal" model="ir.rule">
+        <field name="name">internship.agreement: portal users (own placements)</field>
+        <field name="model_id" ref="internship_agreement.model_internship_agreement"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|', ('placement_id.student_id.partner_id', '=', user.partner_id.id), ('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+</odoo>
