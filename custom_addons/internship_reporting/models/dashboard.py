@@ -18,6 +18,17 @@ class InternshipDashboard(models.AbstractModel):
 
     @api.model
     def get_dashboard_data(self, university_id=False):
+        # Dashboard Viewers have no access to the records themselves: compute the totals with
+        # elevated rights and tell the page not to open records.
+        can_open = self.env["internship.placement"].has_access("read")
+        if not can_open and self.env.user.has_group("internship_reporting.group_dashboard_viewer"):
+            self = self.sudo()
+        data = self._get_dashboard_data(university_id)
+        data["can_open"] = can_open
+        return data
+
+    @api.model
+    def _get_dashboard_data(self, university_id=False):
         university_id = int(university_id or 0) or False
         placement_scope = [("university_id", "=", university_id)] if university_id else []
         application_scope = [("university_id", "=", university_id)] if university_id else []

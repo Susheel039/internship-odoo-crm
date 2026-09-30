@@ -134,7 +134,7 @@
                             </div></div>
                         </div>
                     </div>
-                    <p class="text-muted small">Click any card, bar or slice to open the records behind it.</p>
+                    <p t-if="state.data.can_open" class="text-muted small">Click any card, bar or slice to open the records behind it.</p>
                 </t>
             </div>
         </div>

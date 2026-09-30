@@ -137,6 +137,9 @@ export class InternshipDashboard extends Component {
     }
 
     openRecords(model, domain, name) {
+        if (!this.state.data.can_open) {
+            return; // Dashboard Viewers see totals only
+        }
         this.action.doAction({
             type: "ir.actions.act_window",
             name,
@@ -155,10 +158,16 @@ export class InternshipDashboard extends Component {
     }
 
     openPlacement(id) {
+        if (!this.state.data.can_open) {
+            return;
+        }
         this.action.doAction({ type: "ir.actions.act_window", res_model: "internship.placement", res_id: id, views: [[false, "form"]] });
     }
 
     openLead(id) {
+        if (!this.state.data.can_open) {
+            return;
+        }
         this.action.doAction({ type: "ir.actions.act_window", res_model: "crm.lead", res_id: id, views: [[false, "form"]] });
     }
 }

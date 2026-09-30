@@ -108,3 +108,26 @@ class TestInternshipReporting(PlacementCommon):
         self.assertTrue(completion.certificate_issued)
         self.assertEqual(completion.approved_by, self.env.user)
         self.assertTrue(completion.action_print_certificate())
+
+    def test_dashboard_viewer_sees_only_the_dashboard(self):
+        viewer = self.env["res.users"].create(
+            {
+                "name": "Viewer",
+                "login": "dashboard_viewer_test",
+                "group_ids": [(6, 0, [self.env.ref("internship_reporting.group_dashboard_viewer").id])],
+            }
+        )
+        self._approved_placement()
+        data = self.env["internship.dashboard"].with_user(viewer).get_dashboard_data()
+        self.assertFalse(data["can_open"], "totals only, no record access")
+        self.assertGreaterEqual(sum(data["charts"]["placements_by_stage"]["values"]), 1)
+        menus = self.env["ir.ui.menu"].with_user(viewer)._visible_menu_ids()
+        self.assertEqual(
+            set(menus),
+            {
+                self.env.ref("internship_base.menu_internship_root").id,
+                self.env.ref("internship_reporting.menu_internship_dashboard").id,
+            },
+        )
+        admin_menus = self.env["ir.ui.menu"]._visible_menu_ids()
+        self.assertGreater(len(admin_menus), 2, "other users are not affected")
