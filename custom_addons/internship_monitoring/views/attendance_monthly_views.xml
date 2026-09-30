@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_internship_attendance_monthly_list" model="ir.ui.view">
+        <field name="name">internship.attendance.monthly.list</field>
+        <field name="model">internship.attendance.monthly</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="tripartite_triggered or state == 'late'" decoration-muted="state == 'university_reviewed'">
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="internship_company_id" optional="show"/>
+                <field name="due_date"/>
+                <field name="days_expected" optional="hide"/>
+                <field name="days_attended" optional="show"/>
+                <field name="attendance_pct"/>
+                <field name="rating" optional="show"/>
+                <field name="working_as_required" optional="show"/>
+                <field name="tripartite_triggered" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'university_reviewed'"
+                       decoration-warning="state in ('submitted', 'company_approved')" decoration-danger="state in ('late', 'flagged')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_internship_attendance_monthly_form" model="ir.ui.view">
+        <field name="name">internship.attendance.monthly.form</field>
+        <field name="model">internship.attendance.monthly</field>
+        <field name="arch" type="xml">
+            <form string="Monthly Record">
+                <header>
+                    <button name="action_student_submit" type="object" string="Submit (Student)" class="btn-primary"
+                            invisible="state not in ('pending', 'late')"/>
+                    <button name="action_company_approve" type="object" string="Approve (Company)" class="btn-primary"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_university_review" type="object" string="Mark Reviewed" class="btn-primary"
+                            invisible="state not in ('company_approved', 'flagged')"
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator,internship_base.group_university_staff"/>
+                    <button name="%(internship_base.action_internship_reason_wizard)d" type="action" string="Flag"
+                            invisible="state in ('pending', 'flagged')"
+                            context="{'default_reason_type': 'termination', 'default_method': 'action_flag', 'default_reason_required': False}"
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator,internship_base.group_university_staff"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,submitted,company_approved,university_reviewed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Tripartite" bg_color="text-bg-danger" invisible="not tripartite_triggered"/>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="placement_id"/>
+                            <field name="student_id"/>
+                            <field name="year"/>
+                            <field name="month"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="due_date"/>
+                            <field name="submitted_date"/>
+                            <field name="is_late"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Student" name="student">
+                            <group>
+                                <group>
+                                    <field name="days_expected"/>
+                                    <field name="days_attended"/>
+                                    <field name="annual_leave_days"/>
+                                    <field name="sick_days"/>
+                                    <field name="attendance_pct"/>
+                                    <field name="total_hours"/>
+                                </group>
+                                <group>
+                                    <field name="student_confirmed"/>
+                                    <field name="student_confirmed_date"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="absence_reasons"/>
+                                <field name="self_reflection"/>
+                            </group>
+                        </page>
+                        <page string="Company" name="company">
+                            <group>
+                                <group>
+                                    <field name="working_as_required" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="rating"/>
+                                    <field name="company_approved_by_id"/>
+                                    <field name="company_approved_date"/>
+                                </group>
+                                <group>
+                                    <field name="strengths"/>
+                                    <field name="improvement_areas"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="concerns"/>
+                                <field name="manager_comments"/>
+                            </group>
+                        </page>
+                        <page string="University" name="university">
+                            <group>
+                                <field name="university_reviewed_by_id"/>
+                                <field name="university_reviewed_date"/>
+                                <field name="university_comments"/>
+                                <field name="tripartite_triggered"/>
+                                <field name="trigger_reason" invisible="not tripartite_triggered"/>
+                                <field name="meeting_id" invisible="not meeting_id"/>
+                            </group>
+                        </page>
+                        <page string="Daily Log" name="daily">
+                            <field name="attendance_ids" readonly="1">
+                                <list>
+                                    <field name="attendance_date"/>
+                                    <field name="status"/>
+                                    <field name="check_in"/>
+                                    <field name="check_out"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_internship_attendance_monthly_search" model="ir.ui.view">
+        <field name="name">internship.attendance.monthly.search</field>
+        <field name="model">internship.attendance.monthly</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="student_id"/>
+                <field name="placement_id"/>
+                <field name="internship_company_id"/>
+                <filter name="to_submit" string="Awaiting Student" domain="[('state', 'in', ('pending', 'late'))]"/>
+                <filter name="to_approve" string="Awaiting Company" domain="[('state', '=', 'submitted')]"/>
+                <filter name="to_review" string="Awaiting University" domain="[('state', '=', 'company_approved')]"/>
+                <filter name="late" string="Late" domain="[('state', '=', 'late')]"/>
+                <filter name="escalated" string="Tripartite" domain="[('tripartite_triggered', '=', True)]"/>
+                <separator/>
+                <filter name="group_month" string="Month" context="{'group_by': 'date_start:month'}"/>
+                <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                <filter name="group_university" string="University" context="{'group_by': 'university_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_internship_attendance_monthly" model="ir.actions.act_window">
+        <field name="name">Monthly Attendance</field>
+        <field name="res_model">internship.attendance.monthly</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+    </record>
+
+    <record id="view_internship_meeting_calendar" model="ir.ui.view">
+        <field name="name">internship.meeting.calendar</field>
+        <field name="model">internship.meeting</field>
+        <field name="arch" type="xml">
+            <calendar date_start="meeting_date" color="meeting_type" mode="month" quick_create="0">
+                <field name="title"/>
+                <field name="student_id"/>
+                <field name="meeting_type" filters="1"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_internship_placement_form_monitoring" model="ir.ui.view">
+        <field name="name">internship.placement.form.monitoring</field>
+        <field name="model">internship.placement</field>
+        <field name="inherit_id" ref="internship_placement.view_internship_placement_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_monthly" type="object" class="oe_stat_button" icon="fa-calendar-check-o">
+                    <field name="monthly_count" widget="statinfo" string="Monthly"/>
+                </button>
+                <button name="action_view_meetings" type="object" class="oe_stat_button" icon="fa-users">
+                    <field name="meeting_count" widget="statinfo" string="Meetings"/>
+                </button>
+            </div>
+            <page name="leave_changes" position="before">
+                <page string="Monthly Attendance" name="monthly">
+                    <field name="monthly_ids" readonly="1">
+                        <list decoration-danger="tripartite_triggered or state == 'late'">
+                            <field name="name"/>
+                            <field name="due_date"/>
+                            <field name="attendance_pct"/>
+                            <field name="rating"/>
+                            <field name="working_as_required"/>
+                            <field name="tripartite_triggered"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                </page>
+                <page string="Meetings" name="meetings">
+                    <field name="meeting_ids" context="{'default_placement_id': id}">
+                        <list>
+                            <field name="meeting_date"/>
+                            <field name="title"/>
+                            <field name="meeting_type"/>
+                            <field name="trigger"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="exit_meeting_id" invisible="not exit_meeting_id"/>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+
+    <menuitem id="menu_internship_attendance_monthly" name="Monthly Attendance" parent="internship_base.menu_internship_monitoring_main"
+              action="action_internship_attendance_monthly" sequence="10"/>
+</odoo>

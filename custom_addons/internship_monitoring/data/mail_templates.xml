@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="mail_template_monthly_reminder" model="mail.template">
+        <field name="name">Internship: monthly record reminder (student)</field>
+        <field name="model_id" ref="model_internship_attendance_monthly"/>
+        <field name="subject">Your monthly internship record for {{ object.name }} is due</field>
+        <field name="email_to">{{ object.placement_id.student_id.email }}</field>
+        <field name="body_html" type="html">
+<div>
+    <p>Dear <t t-out="object.placement_id.student_id.name"/>,</p>
+    <p>Please submit your attendance and reflection for <strong t-out="object.name"/>
+        <t t-if="object.due_date"> by <strong t-out="object.due_date"/></t>.</p>
+    <p t-if="object.state == 'late'">This record is now late. Please submit it as soon as possible.</p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

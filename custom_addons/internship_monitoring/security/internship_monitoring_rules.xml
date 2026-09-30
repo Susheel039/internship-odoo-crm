@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_attendance_monthly_platform" model="ir.rule">
+        <field name="name">internship.attendance.monthly: platform administrators</field>
+        <field name="model_id" ref="model_internship_attendance_monthly"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_attendance_monthly_university" model="ir.rule">
+        <field name="name">internship.attendance.monthly: university users</field>
+        <field name="model_id" ref="model_internship_attendance_monthly"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_university_administrator')), (4, ref('internship_base.group_university_staff'))]"/>
+        <field name="domain_force">[('placement_id.university_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_attendance_monthly_company" model="ir.rule">
+        <field name="name">internship.attendance.monthly: company managers</field>
+        <field name="model_id" ref="model_internship_attendance_monthly"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_company_manager'))]"/>
+        <field name="domain_force">[('placement_id.internship_company_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_attendance_monthly_line_manager" model="ir.rule">
+        <field name="name">internship.attendance.monthly: line managers</field>
+        <field name="model_id" ref="model_internship_attendance_monthly"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_line_manager'))]"/>
+        <field name="domain_force">[('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_attendance_monthly_student" model="ir.rule">
+        <field name="name">internship.attendance.monthly: students</field>
+        <field name="model_id" ref="model_internship_attendance_monthly"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_student'))]"/>
+        <field name="domain_force">[('placement_id.student_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+
+    <record id="rule_meeting_attendee_platform" model="ir.rule">
+        <field name="name">internship.meeting.attendee: platform administrators</field>
+        <field name="model_id" ref="model_internship_meeting_attendee"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_meeting_attendee_university" model="ir.rule">
+        <field name="name">internship.meeting.attendee: university users</field>
+        <field name="model_id" ref="model_internship_meeting_attendee"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_university_administrator')), (4, ref('internship_base.group_university_staff'))]"/>
+        <field name="domain_force">[('meeting_id.placement_id.university_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_meeting_attendee_company" model="ir.rule">
+        <field name="name">internship.meeting.attendee: company managers</field>
+        <field name="model_id" ref="model_internship_meeting_attendee"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_company_manager'))]"/>
+        <field name="domain_force">[('meeting_id.placement_id.internship_company_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_meeting_attendee_line_manager" model="ir.rule">
+        <field name="name">internship.meeting.attendee: line managers</field>
+        <field name="model_id" ref="model_internship_meeting_attendee"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_line_manager'))]"/>
+        <field name="domain_force">[('meeting_id.placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_meeting_attendee_student" model="ir.rule">
+        <field name="name">internship.meeting.attendee: students</field>
+        <field name="model_id" ref="model_internship_meeting_attendee"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_student'))]"/>
+        <field name="domain_force">[('meeting_id.placement_id.student_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+
+    <record id="rule_attendance_platform" model="ir.rule">
+        <field name="name">internship.attendance: platform administrators</field>
+        <field name="model_id" ref="model_internship_attendance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_attendance_university" model="ir.rule">
+        <field name="name">internship.attendance: university users</field>
+        <field name="model_id" ref="model_internship_attendance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_university_administrator')), (4, ref('internship_base.group_university_staff'))]"/>
+        <field name="domain_force">['|', ('placement_id.university_id.user_ids', 'in', user.id), ('student_id.university_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_attendance_company" model="ir.rule">
+        <field name="name">internship.attendance: company managers</field>
+        <field name="model_id" ref="model_internship_attendance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_company_manager'))]"/>
+        <field name="domain_force">['|', ('placement_id.internship_company_id.user_ids', 'in', user.id), ('opportunity_id.company_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_attendance_line_manager" model="ir.rule">
+        <field name="name">internship.attendance: line managers</field>
+        <field name="model_id" ref="model_internship_attendance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_line_manager'))]"/>
+        <field name="domain_force">[('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_attendance_student" model="ir.rule">
+        <field name="name">internship.attendance: students</field>
+        <field name="model_id" ref="model_internship_attendance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_student'))]"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+
+    <record id="rule_performance_platform" model="ir.rule">
+        <field name="name">internship.performance: platform administrators</field>
+        <field name="model_id" ref="model_internship_performance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_performance_university" model="ir.rule">
+        <field name="name">internship.performance: university users</field>
+        <field name="model_id" ref="model_internship_performance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_university_administrator')), (4, ref('internship_base.group_university_staff'))]"/>
+        <field name="domain_force">['|', ('placement_id.university_id.user_ids', 'in', user.id), ('student_id.university_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_performance_company" model="ir.rule">
+        <field name="name">internship.performance: company managers</field>
+        <field name="model_id" ref="model_internship_performance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_company_manager'))]"/>
+        <field name="domain_force">['|', ('placement_id.internship_company_id.user_ids', 'in', user.id), ('opportunity_id.company_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_performance_line_manager" model="ir.rule">
+        <field name="name">internship.performance: line managers</field>
+        <field name="model_id" ref="model_internship_performance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_line_manager'))]"/>
+        <field name="domain_force">[('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_performance_student" model="ir.rule">
+        <field name="name">internship.performance: students</field>
+        <field name="model_id" ref="model_internship_performance"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_student'))]"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+
+    <record id="rule_meeting_platform" model="ir.rule">
+        <field name="name">internship.meeting: platform administrators</field>
+        <field name="model_id" ref="model_internship_meeting"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_meeting_university" model="ir.rule">
+        <field name="name">internship.meeting: university users</field>
+        <field name="model_id" ref="model_internship_meeting"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_university_administrator')), (4, ref('internship_base.group_university_staff'))]"/>
+        <field name="domain_force">['|', ('placement_id.university_id.user_ids', 'in', user.id), ('student_id.university_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_meeting_company" model="ir.rule">
+        <field name="name">internship.meeting: company managers</field>
+        <field name="model_id" ref="model_internship_meeting"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_company_manager'))]"/>
+        <field name="domain_force">['|', ('placement_id.internship_company_id.user_ids', 'in', user.id), ('opportunity_id.company_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_meeting_line_manager" model="ir.rule">
+        <field name="name">internship.meeting: line managers</field>
+        <field name="model_id" ref="model_internship_meeting"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_line_manager'))]"/>
+        <field name="domain_force">[('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_meeting_student" model="ir.rule">
+        <field name="name">internship.meeting: students</field>
+        <field name="model_id" ref="model_internship_meeting"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_student'))]"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+
+</odoo>

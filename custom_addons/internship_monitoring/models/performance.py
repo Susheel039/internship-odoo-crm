@@ -45,6 +45,14 @@ class InternshipPerformance(models.Model):
     comments = fields.Text(string="Comments")
     active = fields.Boolean(default=True, tracking=True)
 
+    # v2
+    placement_id = fields.Many2one("internship.placement", index=True, ondelete="set null", tracking=True)
+    review_kind = fields.Selection(
+        [("mid_term", "Mid-term review"), ("final", "Final review"), ("ad_hoc", "Ad hoc")],
+        default="ad_hoc",
+        tracking=True,
+    )
+
     def action_set_satisfactory(self):
         return self.write({"status": "satisfactory"})
 

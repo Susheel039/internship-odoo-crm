@@ -1,4 +1,5 @@
 from . import base
+from . import mail_thread
 from . import mixins
 from . import reason
 from . import document_type
