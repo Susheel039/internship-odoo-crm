@@ -1,45 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Voice assistant settings live in the CRM app's general settings. -->
     <record id="res_config_settings_view_form_vapi" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.inherit.internship_vapi</field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="internship_base.res_config_settings_view_form"/>
+        <field name="inherit_id" ref="crm.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <block name="internship_rules" position="after">
-                <block title="Voice AI (Vapi)" name="internship_vapi">
-                    <setting string="Enable calling" help="Kill switch: nothing is dialled while this is off.">
-                        <field name="internship_vapi_enabled"/>
+            <xpath expr="//app[@name='crm']" position="inside">
+                <block title="Voice Assistant (Vapi)" name="internship_vapi_settings">
+                    <setting string="Enabled" help="Kill switch. Nothing is dialled while this is off.">
+                        <field name="vapi_enabled"/>
                     </setting>
-                    <setting string="Credentials" help="Stored as system parameters; never logged.">
+                    <setting string="Connection" help="From the Vapi dashboard. Stored as system parameters, never logged.">
                         <div class="content-group">
-                            <div class="row mt8"><label for="internship_vapi_api_key" class="col-lg-5"/>
-                                <field name="internship_vapi_api_key" password="True"/></div>
-                            <div class="row"><label for="internship_vapi_webhook_token" class="col-lg-5"/>
-                                <field name="internship_vapi_webhook_token" password="True"/></div>
-                            <div class="row"><label for="internship_vapi_phone_number_id" class="col-lg-5"/>
-                                <field name="internship_vapi_phone_number_id"/></div>
-                            <div class="row"><label for="internship_vapi_default_assistant_id" class="col-lg-5"/>
-                                <field name="internship_vapi_default_assistant_id"/></div>
-                            <div class="row"><label for="internship_vapi_chaser_assistant_id" class="col-lg-5"/>
-                                <field name="internship_vapi_chaser_assistant_id"/></div>
+                            <div class="row mt8"><label for="vapi_api_key" class="col-lg-5 o_light_label"/>
+                                <field name="vapi_api_key" password="True"/></div>
+                            <div class="row"><label for="vapi_default_assistant_id" class="col-lg-5 o_light_label"/>
+                                <field name="vapi_default_assistant_id"/></div>
+                            <div class="row"><label for="vapi_chaser_assistant_id" class="col-lg-5 o_light_label"/>
+                                <field name="vapi_chaser_assistant_id"/></div>
+                            <div class="row"><label for="vapi_phone_number_id" class="col-lg-5 o_light_label"/>
+                                <field name="vapi_phone_number_id"/></div>
+                            <button name="action_vapi_test_connection" type="object" string="Test Connection"
+                                    icon="oi-arrow-right" class="btn-link"/>
                         </div>
                     </setting>
-                    <setting string="Calling window" help="Queued calls are only dialled inside this window.">
+                    <setting string="Webhook" help="Paste these into the assistant's Server URL and tool settings in Vapi.">
                         <div class="content-group">
-                            <div class="row mt8"><label for="internship_vapi_window_start" class="col-lg-5"/>
-                                <field name="internship_vapi_window_start" widget="float_time"/></div>
-                            <div class="row"><label for="internship_vapi_window_end" class="col-lg-5"/>
-                                <field name="internship_vapi_window_end" widget="float_time"/></div>
-                            <div class="row"><label for="internship_vapi_window_days" class="col-lg-5"/>
-                                <field name="internship_vapi_window_days"/></div>
-                            <div class="row"><label for="internship_vapi_timezone" class="col-lg-5"/>
-                                <field name="internship_vapi_timezone"/></div>
-                            <div class="row"><label for="internship_vapi_max_attempts" class="col-lg-5"/>
-                                <field name="internship_vapi_max_attempts"/></div>
+                            <div class="row mt8"><label for="vapi_webhook_url" class="col-lg-5 o_light_label"/>
+                                <field name="vapi_webhook_url" widget="CopyClipboardChar"/></div>
+                            <div class="row"><label for="vapi_tool_url" class="col-lg-5 o_light_label"/>
+                                <field name="vapi_tool_url" widget="CopyClipboardChar"/></div>
+                            <div class="row"><label for="vapi_webhook_token" class="col-lg-5 o_light_label"/>
+                                <field name="vapi_webhook_token" password="True"/></div>
+                            <button name="action_vapi_generate_token" type="object" string="Generate New Token"
+                                    icon="oi-arrow-right" class="btn-link"
+                                    confirm="Generate a new webhook token? Vapi must be updated with it."/>
                         </div>
+                    </setting>
+                    <setting string="Calling rules" help="Queued calls are only dialled inside the window, up to the maximum attempts.">
+                        <div class="content-group">
+                            <div class="row mt8"><label for="vapi_calling_window" class="col-lg-5 o_light_label"/>
+                                <field name="vapi_calling_window" placeholder="Mon-Fri 09:00-20:00 Europe/London"/></div>
+                            <div class="row"><label for="vapi_max_attempts" class="col-lg-5 o_light_label"/>
+                                <field name="vapi_max_attempts"/></div>
+                        </div>
+                    </setting>
+                    <setting string="Activity" help="Calls and raw webhook events.">
+                        <button name="action_vapi_open_call_logs" type="object" string="Call Logs" icon="oi-arrow-right" class="btn-link"/>
+                        <button name="action_vapi_open_events" type="object" string="Webhook Events" icon="oi-arrow-right" class="btn-link"
+                                groups="base.group_system"/>
                     </setting>
                 </block>
-            </block>
+            </xpath>
         </field>
     </record>
+
+    <record id="action_internship_voice_assistant_settings" model="ir.actions.act_window">
+        <field name="name">Voice Assistant</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'crm', 'bin_size': False}</field>
+    </record>
+
+    <menuitem id="menu_crm_voice_assistant_settings" name="Voice Assistant" parent="crm.crm_menu_config"
+              action="action_internship_voice_assistant_settings" sequence="1" groups="base.group_system"/>
 </odoo>

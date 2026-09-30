@@ -34,8 +34,9 @@ class TestInternshipCrm(InternshipCommon):
         self.assertEqual(twin.legacy_internship_lead_id, merged, "existing crm twin enriched, not duplicated")
         self.assertEqual(twin.stage_id.name, "Interview")
         lost = Lead.search([("legacy_internship_lead_id", "=", closed.id)])
-        self.assertFalse(lost.active)
+        self.assertEqual(lost.stage_id.name, "Lost")
         self.assertTrue(lost.lost_reason_id)
+        self.assertEqual(lead.opportunity_id, self.opportunity)
 
         count = Lead.search_count([("legacy_internship_lead_id", "!=", False)])
         migrate_legacy_leads(self.env)

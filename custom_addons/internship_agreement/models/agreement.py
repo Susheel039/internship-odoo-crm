@@ -36,11 +36,11 @@ class InternshipAgreement(models.Model):
     )
     name = fields.Char(required=True, default="New", copy=False, readonly=True, index=True)
     version = fields.Integer(default=1, readonly=True)
-    amendment_of_id = fields.Many2one("internship.agreement", readonly=True, index=True, string="Amends")
+    amendment_of_id = fields.Many2one("internship.agreement", readonly=True, index=True, string="Amendment Of")
     change_request_id = fields.Many2one("internship.change.request", readonly=True)
 
-    pdf_attachment_id = fields.Many2one("ir.attachment", string="Agreement Document", readonly=True, copy=False)
-    pdf_sha256 = fields.Char(string="SHA-256", readonly=True, copy=False)
+    pdf_attachment_id = fields.Many2one("ir.attachment", string="PDF Attachment", readonly=True, copy=False)
+    pdf_sha256 = fields.Char(string="PDF SHA256", readonly=True, copy=False)
     signed_attachment_id = fields.Many2one("ir.attachment", string="Signed Document", readonly=True, copy=False)
     generated_date = fields.Datetime(readonly=True, copy=False)
     sent_to_company_date = fields.Datetime(readonly=True, copy=False)
@@ -49,7 +49,7 @@ class InternshipAgreement(models.Model):
     reminder_count = fields.Integer(readonly=True, copy=False)
     last_reminder_date = fields.Date(readonly=True, copy=False)
 
-    signer_ids = fields.One2many("internship.agreement.signer", "agreement_id", string="Signers", copy=False)
+    signer_ids = fields.One2many("internship.agreement.signer", "agreement_id", string="Signer", copy=False)
     current_signer_id = fields.Many2one("internship.agreement.signer", compute="_compute_current_signer_id")
     state = fields.Selection(
         [

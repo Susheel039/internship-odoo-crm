@@ -14,14 +14,15 @@ class InternshipVapiEvent(models.Model):
     event_type = fields.Char(required=True, index=True)
     external_call_id = fields.Char(index=True)
     payload = fields.Json()
-    payload_hash = fields.Char(required=True)
+    hash = fields.Char(string="Hash", required=True, index=True)
+    payload_hash = fields.Char(string="Payload Hash (19.0.2.0)", deprecated="Replaced by hash in 19.0.2.1")
     received_at = fields.Datetime(default=fields.Datetime.now, required=True)
     processed = fields.Boolean(index=True)
     error = fields.Text()
     call_log_id = fields.Many2one("internship.call.log", index=True, ondelete="set null")
 
     _unique_event = models.Constraint(
-        "unique(external_call_id, event_type, payload_hash)", "This webhook event was already received."
+        "unique(external_call_id, event_type, hash)", "This webhook event was already received."
     )
 
     @api.model
@@ -36,12 +37,12 @@ class InternshipVapiEvent(models.Model):
             [
                 ("external_call_id", "=", external_call_id),
                 ("event_type", "=", event_type),
-                ("payload_hash", "=", digest),
+                ("hash", "=", digest),
             ],
             limit=1,
         )
         if existing:
             return existing, False
         return self.create(
-            {"event_type": event_type, "external_call_id": external_call_id, "payload": payload, "payload_hash": digest}
+            {"event_type": event_type, "external_call_id": external_call_id, "payload": payload, "hash": digest}
         ), True

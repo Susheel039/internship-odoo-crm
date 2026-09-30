@@ -44,11 +44,15 @@ class InternshipAttendanceMonthly(models.Model):
     sick_days = fields.Float(compute="_compute_leave_days", store=True)
 
     # Company confirmation
-    working_as_required = fields.Selection(
-        [("yes", "Yes"), ("no", "No")],
-        string="Working as Required",
+    working_as_required = fields.Boolean(
+        string="Working As Required",
         tracking=True,
-        help="Required before the company can approve the record.",
+        help="Company confirmation. Approving with this unticked escalates to a tripartite meeting.",
+    )
+    working_as_required_legacy = fields.Char(
+        string="Working As Required (v2.0)",
+        readonly=True,
+        deprecated="Replaced by the working_as_required Boolean in 19.0.2.1",
     )
     concerns = fields.Text()
 
@@ -75,13 +79,13 @@ class InternshipAttendanceMonthly(models.Model):
     university_comments = fields.Text()
 
     attendance_pct = fields.Float(
-        string="Attendance %", compute="_compute_attendance_pct", store=True, aggregator="avg", digits=(5, 1)
+        string="Attendance Pct", compute="_compute_attendance_pct", store=True, aggregator="avg", digits=(5, 1)
     )
 
     # Escalation
     tripartite_triggered = fields.Boolean(readonly=True, copy=False, tracking=True, index=True)
     trigger_reason = fields.Char(readonly=True, copy=False)
-    meeting_id = fields.Many2one("internship.meeting", readonly=True, copy=False, string="Tripartite Meeting")
+    meeting_id = fields.Many2one("internship.meeting", readonly=True, copy=False, string="Meeting")
     escalation_checked = fields.Boolean(readonly=True, copy=False)
 
     attendance_ids = fields.One2many("internship.attendance", "monthly_id", string="Daily Log")
@@ -243,8 +247,6 @@ class InternshipAttendanceMonthly(models.Model):
         for record in self:
             if record.state != "submitted":
                 raise UserError(self.env._("Only submitted records can be approved by the company."))
-            if not record.working_as_required:
-                raise UserError(self.env._("Confirm whether the student is working as required."))
             if not record.rating:
                 raise UserError(self.env._("Give a performance rating before approving."))
         self._check_can_company_approve()
@@ -294,7 +296,7 @@ class InternshipAttendanceMonthly(models.Model):
             reasons.append(
                 self.env._("Rating %(rating)s is at or below %(limit)s", rating=self.rating, limit=rating_limit)
             )
-        if self.working_as_required == "no":
+        if not self.working_as_required:
             reasons.append(self.env._("Company says the student is not working as required"))
         return reasons
 
@@ -305,7 +307,7 @@ class InternshipAttendanceMonthly(models.Model):
             if reasons and not record.tripartite_triggered:
                 trigger = (
                     "auto_not_working"
-                    if record.working_as_required == "no"
+                    if not record.working_as_required
                     else (
                         "auto_rating"
                         if record.rating

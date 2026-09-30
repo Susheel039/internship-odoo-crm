@@ -5,7 +5,7 @@ from odoo.exceptions import UserError
 class InternshipPlacement(models.Model):
     _inherit = "internship.placement"
 
-    call_log_ids = fields.One2many("internship.call.log", "placement_id", string="Calls")
+    call_log_ids = fields.One2many("internship.call.log", "placement_id", string="Call Log")
     call_count = fields.Integer(compute="_compute_call_count")
 
     def _compute_call_count(self):

@@ -25,7 +25,7 @@ class InternshipPlacement(models.Model):
     # ------------------------------------------------------------------
     # Identity
     # ------------------------------------------------------------------
-    name = fields.Char(string="Reference", required=True, default="New", copy=False, readonly=True, index=True)
+    name = fields.Char(string="Name", required=True, default="New", copy=False, readonly=True, index=True)
     stage_id = fields.Many2one(
         "internship.placement.stage",
         string="Stage",
@@ -37,16 +37,14 @@ class InternshipPlacement(models.Model):
         group_expand="_read_group_stage_ids",
         default=lambda self: self.env["internship.placement.stage"]._get_by_code("form_requested"),
     )
-    stage_code = fields.Char(related="stage_id.code", store=True, index=True)
+    stage_code = fields.Char(related="stage_id.code", store=True, index=True, string="Stage Code")
     phase = fields.Selection(related="stage_id.phase", store=True, index=True)
     is_closed = fields.Boolean(related="stage_id.is_closed", store=True, index=True)
     priority = fields.Selection(
         [("0", "Normal"), ("1", "Important"), ("2", "High"), ("3", "Urgent")], default="0", index=True
     )
     color = fields.Integer()
-    user_id = fields.Many2one(
-        "res.users", string="Coordinator", tracking=True, index=True, default=lambda self: self.env.user
-    )
+    user_id = fields.Many2one("res.users", string="User", tracking=True, index=True, default=lambda self: self.env.user)
     active = fields.Boolean(default=True, tracking=True)
 
     # ------------------------------------------------------------------
@@ -59,11 +57,11 @@ class InternshipPlacement(models.Model):
     university_id = fields.Many2one(
         related="student_id.university_id", store=True, index=True, string="University", readonly=True
     )
-    program_id = fields.Many2one("internship.program", string="Programme", index=True, tracking=True)
+    program_id = fields.Many2one("internship.program", string="Program", index=True, tracking=True)
     academic_year_id = fields.Many2one("internship.academic.year", string="Academic Year", index=True)
     opportunity_id = fields.Many2one("internship.opportunity", index=True, ondelete="set null", tracking=True)
     internship_company_id = fields.Many2one(
-        "internship.company", string="Company", required=True, index=True, ondelete="restrict", tracking=True
+        "internship.company", string="Internship Company", required=True, index=True, ondelete="restrict", tracking=True
     )
     line_manager_id = fields.Many2one(
         "internship.line.manager",
@@ -72,7 +70,7 @@ class InternshipPlacement(models.Model):
         tracking=True,
         domain="[('company_id', '=', internship_company_id)]",
     )
-    tutor_id = fields.Many2one("res.users", string="Academic Tutor", index=True, tracking=True)
+    tutor_id = fields.Many2one("res.users", string="Tutor", index=True, tracking=True)
     site_id = fields.Many2one(
         "internship.company.site", string="Site", domain="[('company_id', '=', internship_company_id)]"
     )
@@ -85,7 +83,7 @@ class InternshipPlacement(models.Model):
         default="platform",
         required=True,
     )
-    is_paid = fields.Boolean(string="Paid", default=True)
+    is_paid = fields.Boolean(string="Is Paid", default=True)
     currency_id = fields.Many2one(
         "res.currency", default=lambda self: self.env.ref("base.GBP", raise_if_not_found=False)
     )
@@ -104,7 +102,7 @@ class InternshipPlacement(models.Model):
     duration_weeks = fields.Integer(compute="_compute_duration_weeks", store=True)
 
     # Offer
-    offer_letter_attachment_id = fields.Many2one("ir.attachment", string="Offer Letter")
+    offer_letter_attachment_id = fields.Many2one("ir.attachment", string="Offer Letter Attachment")
     offer_issue_date = fields.Date(tracking=True)
     offer_expiry_date = fields.Date(tracking=True)
     offer_accepted_date = fields.Date(tracking=True)
@@ -112,26 +110,26 @@ class InternshipPlacement(models.Model):
     # Form request (student -> company)
     form_requested_by_id = fields.Many2one("res.users", string="Form Requested By", copy=False)
     form_requested_date = fields.Date(tracking=True, copy=False)
-    form_contact_email = fields.Char(string="Form Contact E-mail")
+    form_contact_email = fields.Char(string="Form Contact Email")
     form_due_date = fields.Date(compute="_compute_form_due_date", store=True, tracking=True)
     form_reminder_count = fields.Integer(copy=False)
     form_last_reminder_date = fields.Date(copy=False)
 
     # Internship form (company fills)
     learning_objectives = fields.Html()
-    hs_confirmed = fields.Boolean(string="Health & Safety Confirmed", tracking=True)
+    hs_confirmed = fields.Boolean(string="HS Confirmed", tracking=True)
     form_submitted_date = fields.Date(tracking=True, copy=False)
-    form_attachment_id = fields.Many2one("ir.attachment", string="Signed Internship Form")
+    form_attachment_id = fields.Many2one("ir.attachment", string="Form Attachment")
     supporting_attachment_ids = fields.Many2many(
         "ir.attachment",
         "internship_placement_supporting_attachment_rel",
         "placement_id",
         "attachment_id",
-        string="Supporting Documents",
+        string="Supporting Attachment",
     )
 
     # University review
-    review_ids = fields.One2many("internship.university.review", "placement_id", string="Reviews")
+    review_ids = fields.One2many("internship.university.review", "placement_id", string="Review")
     review_round = fields.Integer(compute="_compute_review_round", store=True)
 
     # Health
@@ -166,6 +164,24 @@ class InternshipPlacement(models.Model):
     leave_count = fields.Integer(compute="_compute_counts")
     change_request_count = fields.Integer(compute="_compute_counts")
     review_count = fields.Integer(compute="_compute_counts")
+
+    # Read-only views of the linked application and company, for the form tabs.
+    interview_mode = fields.Selection(related="application_id.interview_mode")
+    interview_date = fields.Datetime(related="application_id.interview_date")
+    interviewer_id = fields.Many2one(related="application_id.interviewer_id")
+    interview_score = fields.Integer(related="application_id.interview_score")
+    interview_notes = fields.Text(related="application_id.interview_notes")
+    application_cv_attachment_id = fields.Many2one(related="application_id.cv_attachment_id", string="CV Attachment")
+    company_vetting_state = fields.Selection(related="internship_company_id.vetting_state", string="Vetting State")
+    company_approved_until = fields.Date(related="internship_company_id.approved_until", string="Approved Until")
+    company_insurance_policy_no = fields.Char(
+        related="internship_company_id.insurance_policy_no", string="Insurance Policy No"
+    )
+    company_insurance_expiry = fields.Date(related="internship_company_id.insurance_expiry", string="Insurance Expiry")
+    company_risk_assessment_date = fields.Date(
+        related="internship_company_id.risk_assessment_date", string="Risk Assessment Date"
+    )
+    student_rtw_status = fields.Selection(related="student_id.rtw_status", string="RTW Status")
 
     properties = fields.Properties("Properties", definition="program_id.placement_properties_definition", copy=True)
 
@@ -497,8 +513,13 @@ class InternshipPlacement(models.Model):
                 ),
                 subtype_xmlid="mail.mt_comment",
             )
-            if template and placement.student_id.email:
+            if template and (placement.student_id.email or placement.form_contact_email):
                 template.send_mail(review.id)
+            schedule_activity_once(
+                placement,
+                placement.user_id or default_coordinator(self.env),
+                self.env._("Placement rejected: tell the student about next steps"),
+            )
         return True
 
     def _mark_agreement_complete(self):

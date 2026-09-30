@@ -82,7 +82,8 @@
                         <page string="Company" name="company">
                             <group>
                                 <group>
-                                    <field name="working_as_required" widget="radio" options="{'horizontal': true}"/>
+                                    <field name="working_as_required" widget="boolean_toggle"/>
+                                    <field name="working_as_required_legacy" invisible="1"/>
                                     <field name="rating"/>
                                     <field name="company_approved_by_id"/>
                                     <field name="company_approved_date"/>
@@ -147,7 +148,7 @@
     </record>
 
     <record id="action_internship_attendance_monthly" model="ir.actions.act_window">
-        <field name="name">Monthly Attendance</field>
+        <field name="name">Monthly attendance</field>
         <field name="res_model">internship.attendance.monthly</field>
         <field name="view_mode">list,form,pivot,graph</field>
     </record>
@@ -175,6 +176,12 @@
                 </button>
                 <button name="action_view_meetings" type="object" class="oe_stat_button" icon="fa-users">
                     <field name="meeting_count" widget="statinfo" string="Meetings"/>
+                </button>
+                <button name="action_view_attendance" type="object" class="oe_stat_button" icon="fa-clock-o">
+                    <field name="attendance_count" widget="statinfo" string="Daily Attendance"/>
+                </button>
+                <button name="action_view_performance" type="object" class="oe_stat_button" icon="fa-line-chart">
+                    <field name="performance_count" widget="statinfo" string="Performance"/>
                 </button>
             </div>
             <page name="leave_changes" position="before">
@@ -209,6 +216,6 @@
         </field>
     </record>
 
-    <menuitem id="menu_internship_attendance_monthly" name="Monthly Attendance" parent="internship_base.menu_internship_monitoring_main"
+    <menuitem id="menu_internship_attendance_monthly" name="Monthly attendance" parent="internship_base.menu_internship_monitoring_main"
               action="action_internship_attendance_monthly" sequence="10"/>
 </odoo>

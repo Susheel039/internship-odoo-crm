@@ -1,6 +1,6 @@
 {
     "name": "Internship Base",
-    "version": "19.0.2.0.0",
+    "version": "19.0.2.1.0",
     "category": "Custom",
     "summary": "Master data, configuration, shared mixins and security for the internship platform.",
     "author": "Internship CRM",

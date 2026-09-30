@@ -8,7 +8,7 @@ class InternshipExternalRefMixin(models.AbstractModel):
     _description = "Internship External Reference Mixin"
 
     external_source = fields.Char(index=True, copy=False, help="System the record came from, e.g. 'vapi' or 'n8n'.")
-    external_ref = fields.Char(string="External Reference", index=True, copy=False)
+    external_ref = fields.Char(string="External Ref", index=True, copy=False)
 
     _external_ref_unique = models.Constraint(
         "unique(external_source, external_ref)",

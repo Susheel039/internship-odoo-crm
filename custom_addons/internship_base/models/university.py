@@ -7,7 +7,7 @@ class InternshipUniversity(models.Model):
     _order = "name"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char(string="University Name", required=True, tracking=True)
+    name = fields.Char(string="Name", required=True, tracking=True)
     code = fields.Char(string="Code", tracking=True)
     partner_id = fields.Many2one(
         "res.partner",
@@ -20,21 +20,21 @@ class InternshipUniversity(models.Model):
     phone = fields.Char(string="Phone")
     address = fields.Text(string="Address")
     active = fields.Boolean(default=True, tracking=True)
-    user_ids = fields.Many2many("res.users", string="Users")
-    student_ids = fields.One2many("internship.student", "university_id", string="Students")
+    user_ids = fields.Many2many("res.users", string="User")
+    student_ids = fields.One2many("internship.student", "university_id", string="Student")
     notes = fields.Text(string="Notes")
 
     ukprn = fields.Char(string="UKPRN", tracking=True, help="UK Provider Reference Number (8 digits).")
-    website = fields.Char(related="partner_id.website", readonly=False)
-    logo = fields.Binary(related="partner_id.image_1920", readonly=False)
-    contact_ids = fields.One2many("internship.university.contact", "university_id", string="Contacts")
-    program_ids = fields.One2many("internship.program", "university_id", string="Programmes")
+    website = fields.Char(related="partner_id.website", readonly=False, string="Website")
+    logo = fields.Binary(related="partner_id.image_1920", readonly=False, string="Logo")
+    contact_ids = fields.One2many("internship.university.contact", "university_id", string="Contact")
+    program_ids = fields.One2many("internship.program", "university_id", string="Program")
     framework_template_ids = fields.Many2many(
         "ir.attachment",
         "internship_university_template_rel",
         "university_id",
         "attachment_id",
-        string="Default Templates",
+        string="Framework Template",
         help="Default form, agreement and rubric templates offered to new programmes.",
     )
 

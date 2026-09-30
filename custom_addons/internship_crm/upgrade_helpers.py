@@ -11,6 +11,7 @@ STAGE_MAP = {
     "proposal": "qualified",
     "interview": "interview",
     "accepted": "won",
+    "closed": "lost",
 }
 SOURCE_MAP = {
     "referral": "referral",
@@ -36,7 +37,7 @@ def migrate_legacy_leads(env):
             "type": "opportunity",
             "lead_category": "student" if student else "company",
             "student_id": student.id,
-            "internship_opportunity_id": legacy.opportunity_id.id,
+            "opportunity_id": legacy.opportunity_id.id,
             "internship_company_id": legacy.company_id.id,
             "university_id": legacy.university_id.id,
             "source_channel": SOURCE_MAP.get(legacy.lead_source, "other"),
@@ -47,8 +48,7 @@ def migrate_legacy_leads(env):
         }
         if student:
             values.update(partner_id=student.partner_id.id, email_from=student.email, phone=student.phone)
-        if legacy.stage != "closed":
-            values["stage_id"] = Lead._internship_stage(STAGE_MAP.get(legacy.stage, "new")).id
+        values["stage_id"] = Lead._internship_stage(STAGE_MAP.get(legacy.stage, "new")).id
         if legacy.crm_id:
             # The legacy lead already had a native twin: enrich it instead of duplicating.
             lead = legacy.crm_id.with_context(tracking_disable=True)
@@ -57,8 +57,10 @@ def migrate_legacy_leads(env):
         else:
             lead = Lead.create(values)
             created += 1
-        if legacy.stage == "closed" or not legacy.active:
-            lead.action_set_lost(lost_reason_id=lost_reason.id if lost_reason else False)
+        if legacy.stage == "closed":
+            lead.lost_reason_id = lost_reason
+        if not legacy.active:
+            lead.action_archive()
         lead.message_post(body=env._("Migrated from legacy internship lead %(name)s.", name=legacy.name))
     _logger.info("internship_crm 19.0.2.0.0: legacy leads -> crm.lead: %s created, %s merged", created, updated)
     return created + updated

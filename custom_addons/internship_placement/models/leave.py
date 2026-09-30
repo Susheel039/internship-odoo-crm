@@ -20,7 +20,7 @@ class InternshipLeave(models.Model):
     date_to = fields.Date(required=True, tracking=True)
     days = fields.Float(compute="_compute_days", store=True, help="Working days (Monday to Friday).")
     requested_date = fields.Date(default=fields.Date.context_today)
-    evidence_attachment_id = fields.Many2one("ir.attachment", string="Evidence")
+    evidence_attachment_id = fields.Many2one("ir.attachment", string="Evidence Attachment")
     notes = fields.Text()
     state = fields.Selection(
         [("requested", "Requested"), ("approved", "Approved"), ("rejected", "Rejected")],

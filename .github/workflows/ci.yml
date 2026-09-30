@@ -52,12 +52,12 @@ jobs:
           # Test tags: "/internship_base,/internship_crm,..."
           TAGS="/${MODULES//,/,/}"
           # The image entrypoint builds the DB connection from HOST/USER/PASSWORD.
-          # --with-demo: Odoo 19 no longer loads demo data by default.
+          # --without-demo=False: load demo data (Odoo 19 skips it by default).
           docker run --rm --network host \
             -e HOST=localhost -e PORT=5432 -e USER=odoo -e PASSWORD=odoo \
             -v "$PWD/custom_addons:/mnt/extra-addons:ro" \
             odoo:19.0 odoo \
-              -d ci -i "$MODULES" --with-demo \
+              -d ci -i "$MODULES" --without-demo=False \
               --test-enable --test-tags "$TAGS" \
               --stop-after-init --log-level=test \
             2>&1 | tee odoo-test.log

@@ -21,7 +21,7 @@ class InternshipCertificate(models.Model):
         tracking=True,
         domain="[('company_id', '=', internship_company_id), ('can_issue_certificate', '=', True)]",
     )
-    attachment_id = fields.Many2one("ir.attachment", string="Certificate", readonly=True, copy=False)
+    attachment_id = fields.Many2one("ir.attachment", string="Attachment", readonly=True, copy=False)
 
     @api.model_create_multi
     def create(self, vals_list):

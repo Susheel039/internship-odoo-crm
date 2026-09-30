@@ -1,4 +1,5 @@
 from . import call_log
+from . import call_log_status_v2
 from . import vapi_event
 from . import crm_lead
 from . import student

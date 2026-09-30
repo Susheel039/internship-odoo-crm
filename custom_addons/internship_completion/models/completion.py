@@ -36,10 +36,10 @@ class InternshipCompletion(models.Model):
     end_date = fields.Date(string="End Date")
     completion_date = fields.Date(string="Completion Date", default=fields.Date.context_today)
     final_report = fields.Text(
-        string="Final Report (v1)", deprecated="Replaced by internship.submission report attempts in 19.0.2"
+        string="Final Report", deprecated="Replaced by internship.submission report attempts in 19.0.2"
     )
     evaluation_score = fields.Float(
-        string="Evaluation Score (v1)",
+        string="Evaluation Score",
         digits=(3, 1),
         deprecated="Replaced by internship.submission grade / internship.company.evaluation in 19.0.2",
     )
@@ -68,12 +68,10 @@ class InternshipCompletion(models.Model):
         related="placement_id.internship_company_id", store=True, index=True, string="Placement Company"
     )
     university_id = fields.Many2one(related="placement_id.university_id", store=True, index=True)
-    chk_report_passed = fields.Boolean(string="Report passed", compute="_compute_checks", store=True)
-    chk_evaluation_received = fields.Boolean(
-        string="Company evaluation received", compute="_compute_checks", store=True
-    )
-    chk_certificate_issued = fields.Boolean(string="Certificate issued", compute="_compute_checks", store=True)
-    chk_feedback_submitted = fields.Boolean(string="Student feedback submitted", compute="_compute_checks", store=True)
+    chk_report_passed = fields.Boolean(string="Chk Report Passed", compute="_compute_checks", store=True)
+    chk_evaluation_received = fields.Boolean(string="Chk Evaluation Received", compute="_compute_checks", store=True)
+    chk_certificate_issued = fields.Boolean(string="Chk Certificate Issued", compute="_compute_checks", store=True)
+    chk_feedback_submitted = fields.Boolean(string="Chk Feedback Submitted", compute="_compute_checks", store=True)
     all_checks_done = fields.Boolean(compute="_compute_checks", store=True)
     accepted_by_id = fields.Many2one("res.users", readonly=True, tracking=True, copy=False)
     accepted_date = fields.Datetime(readonly=True, copy=False)

@@ -5,7 +5,7 @@ from odoo.exceptions import UserError
 class InternshipPlacement(models.Model):
     _inherit = "internship.placement"
 
-    agreement_ids = fields.One2many("internship.agreement", "placement_id", string="Agreements")
+    agreement_ids = fields.One2many("internship.agreement", "placement_id", string="Agreement")
     agreement_count = fields.Integer(compute="_compute_agreement_count")
     agreement_id = fields.Many2one(
         "internship.agreement", compute="_compute_agreement_count", string="Current Agreement"

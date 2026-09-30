@@ -17,7 +17,7 @@ class InternshipAgreementSigner(models.Model):
     role = fields.Selection(
         [("company", "Company"), ("student", "Student"), ("university", "University")], required=True
     )
-    partner_id = fields.Many2one("res.partner", required=True, ondelete="restrict", string="Signer")
+    partner_id = fields.Many2one("res.partner", required=True, ondelete="restrict", string="Partner")
     user_id = fields.Many2one("res.users", string="User")
     access_token = fields.Char(copy=False, groups=TOKEN_GROUPS, default=lambda self: secrets.token_urlsafe(32))
     state = fields.Selection(
@@ -27,7 +27,7 @@ class InternshipAgreementSigner(models.Model):
     )
     sent_date = fields.Datetime(readonly=True, copy=False)
     signed_at = fields.Datetime(readonly=True, copy=False)
-    signed_ip = fields.Char(string="Signed from IP", readonly=True, copy=False)
+    signed_ip = fields.Char(string="Signed IP", readonly=True, copy=False)
     user_agent = fields.Char(readonly=True, copy=False)
     signature = fields.Binary(attachment=True, readonly=True, copy=False)
     signed_name = fields.Char(readonly=True, copy=False)

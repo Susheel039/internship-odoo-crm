@@ -8,17 +8,17 @@ one file.
 
 ## 1. Odoo side first
 
-Settings › Internship CRM › **Voice AI (Vapi)**:
+CRM › Configuration › **Voice Assistant** (the Voice Assistant block of the CRM settings):
 
 | Setting | Value |
 |---|---|
-| Enable calling | Off until testing is finished (kill switch) |
-| Vapi API Key | Private API key from the Vapi dashboard |
+| Enabled | Off until testing is finished (kill switch) |
+| API Key | Private API key from the Vapi dashboard |
 | Webhook Token | A long random string, e.g. `python3 -c "import secrets; print(secrets.token_urlsafe(48))"` |
 | Phone Number ID | The Vapi phone number used for outbound calls (UK number) |
-| Lead Generation Assistant ID | Assistant A below |
+| Default Assistant ID | Assistant A below (lead generation) |
 | Workflow Chaser Assistant ID | Assistant B below |
-| Calling window | Mon–Fri (`0,1,2,3,4`), 09:00–20:00, `Europe/London` |
+| Calling Window | `Mon-Fri 09:00-20:00 Europe/London` (days, hours, time zone) |
 | Max Attempts | 3 |
 
 Keys and tokens are stored as system parameters, never in Git, and never logged.
@@ -37,7 +37,7 @@ company marketing calls have *TPS/CTPS Checked*, and attempts are below the maxi
 | Tool server URL | `https://<your-odoo-host>/internship/vapi/tool` (same header) |
 
 Odoo answers `401` to a missing or wrong token and refuses plain HTTP from anywhere but
-localhost. Every event is stored in *CRM › Webhook Events* before it is processed, and
+localhost. Every event is stored (Voice Assistant settings › *Webhook Events*) before it is processed, and
 retries of the same event are ignored.
 
 Metadata Odoo sends with every outbound call: `odoo_db`, `call_log_id`, `lead_id`,

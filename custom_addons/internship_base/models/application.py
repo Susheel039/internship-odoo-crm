@@ -24,7 +24,7 @@ class InternshipApplication(models.Model):
     _order = "application_date desc, name"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char(string="Application Reference", required=True, default="New", copy=False, index=True)
+    name = fields.Char(string="Name", required=True, default="New", copy=False, index=True)
     student_id = fields.Many2one(
         "internship.student",
         string="Student",
@@ -63,8 +63,8 @@ class InternshipApplication(models.Model):
     notes = fields.Text(string="Notes")
 
     # Submission
-    cv_attachment_id = fields.Many2one("ir.attachment", string="CV")
-    cover_letter_attachment_id = fields.Many2one("ir.attachment", string="Cover Letter")
+    cv_attachment_id = fields.Many2one("ir.attachment", string="CV Attachment")
+    cover_letter_attachment_id = fields.Many2one("ir.attachment", string="Cover Letter Attachment")
     screening_answers = fields.Text()
 
     # Interview
@@ -76,7 +76,7 @@ class InternshipApplication(models.Model):
     )
     interview_notes = fields.Text()
     interview_score = fields.Integer(help="0 to 10")
-    calendar_event_id = fields.Many2one("calendar.event", string="Interview Event", copy=False)
+    calendar_event_id = fields.Many2one("calendar.event", string="Calendar Event", copy=False)
 
     # Outcome
     offer_made = fields.Boolean(copy=False, tracking=True)

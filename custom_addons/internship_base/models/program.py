@@ -20,7 +20,7 @@ RULE_DEFAULTS = {
     "retention_years": 6,
 }
 
-RULE_HELP = "Leave at 0 to use the university default (or the system default)."
+RULE_HELP = "Set to 0 to use the university default, then the system default."
 
 
 class InternshipProgram(models.Model):
@@ -29,7 +29,7 @@ class InternshipProgram(models.Model):
     _order = "name"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char(string="Programme Name", required=True, tracking=True)
+    name = fields.Char(string="Name", required=True, tracking=True)
     university_id = fields.Many2one(
         "internship.university",
         string="University",
@@ -42,7 +42,7 @@ class InternshipProgram(models.Model):
     start_date = fields.Date(string="Start Date", tracking=True)
     end_date = fields.Date(string="End Date", tracking=True)
     application_deadline = fields.Date(string="Application Deadline", tracking=True)
-    opportunity_ids = fields.One2many("internship.opportunity", "program_id", string="Opportunities")
+    opportunity_ids = fields.One2many("internship.opportunity", "program_id", string="Opportunity")
     active = fields.Boolean(default=True, tracking=True)
     state = fields.Selection(
         [
@@ -51,7 +51,7 @@ class InternshipProgram(models.Model):
             ("closed", "Closed"),
             ("archived", "Archived"),
         ],
-        string="Status",
+        string="State",
         default="draft",
         tracking=True,
         index=True,
@@ -59,36 +59,36 @@ class InternshipProgram(models.Model):
 
     department = fields.Char()
     academic_year_id = fields.Many2one("internship.academic.year", string="Academic Year", index=True, tracking=True)
-    credit_value = fields.Integer(string="Credits")
+    credit_value = fields.Integer(string="Credit Value")
 
     # Internship rules
-    min_duration_weeks = fields.Integer(string="Minimum duration (weeks)")
-    max_duration_weeks = fields.Integer(string="Maximum duration (weeks)")
-    required_hours_per_week = fields.Float(string="Required hours per week")
-    allowed_start_from = fields.Date(string="Earliest start")
-    allowed_start_to = fields.Date(string="Latest start")
+    min_duration_weeks = fields.Integer(string="Min Duration Weeks")
+    max_duration_weeks = fields.Integer(string="Max Duration Weeks")
+    required_hours_per_week = fields.Float(string="Required Hours Per Week")
+    allowed_start_from = fields.Date(string="Allowed Start From")
+    allowed_start_to = fields.Date(string="Allowed Start To")
 
     # Workflow rules: 0 means "inherit" (see _get_rule)
-    form_due_days = fields.Integer(string="Form due (days)", help=RULE_HELP)
-    monthly_due_day = fields.Integer(string="Monthly record due (day of month)", help=RULE_HELP)
-    monthly_late_grace_days = fields.Integer(string="Monthly late grace (days)", help=RULE_HELP)
-    report_deadline_days = fields.Integer(string="Report deadline (days after end)", help=RULE_HELP)
-    resubmission_days = fields.Integer(string="Resubmission window (days)", help=RULE_HELP)
-    max_report_attempts = fields.Integer(string="Max report attempts", help=RULE_HELP)
-    tripartite_attendance_pct = fields.Float(string="Tripartite if attendance below (%)", help=RULE_HELP)
-    tripartite_rating_threshold = fields.Integer(string="Tripartite if rating at or below", help=RULE_HELP)
-    expiry_alert_days = fields.Integer(string="Expiry alert (days before)", help=RULE_HELP)
-    retention_years = fields.Integer(string="Data retention (years)", help=RULE_HELP)
+    form_due_days = fields.Integer(default=7, string="Form Due Days", help=RULE_HELP)
+    monthly_due_day = fields.Integer(default=5, string="Monthly Due Day", help=RULE_HELP)
+    monthly_late_grace_days = fields.Integer(default=3, string="Monthly Late Grace Days", help=RULE_HELP)
+    report_deadline_days = fields.Integer(default=14, string="Report Deadline Days", help=RULE_HELP)
+    resubmission_days = fields.Integer(default=14, string="Resubmission Days", help=RULE_HELP)
+    max_report_attempts = fields.Integer(default=2, string="Max Report Attempts", help=RULE_HELP)
+    tripartite_attendance_pct = fields.Float(default=80.0, string="Tripartite Attendance Pct", help=RULE_HELP)
+    tripartite_rating_threshold = fields.Integer(default=2, string="Tripartite Rating Threshold", help=RULE_HELP)
+    expiry_alert_days = fields.Integer(default=30, string="Expiry Alert Days", help=RULE_HELP)
+    retention_years = fields.Integer(default=6, string="Retention Years", help=RULE_HELP)
 
     # Templates
-    form_template_id = fields.Many2one("ir.attachment", string="Internship form template")
-    agreement_template_id = fields.Many2one("ir.attachment", string="Agreement template")
-    rubric_template_id = fields.Many2one("ir.attachment", string="Rubric template")
-    certificate_template_id = fields.Many2one("ir.attachment", string="Certificate template")
-    feedback_template_id = fields.Many2one("ir.attachment", string="Feedback template")
+    form_template_id = fields.Many2one("ir.attachment", string="Form Template")
+    agreement_template_id = fields.Many2one("ir.attachment", string="Agreement Template")
+    rubric_template_id = fields.Many2one("ir.attachment", string="Rubric Template")
+    certificate_template_id = fields.Many2one("ir.attachment", string="Certificate Template")
+    feedback_template_id = fields.Many2one("ir.attachment", string="Feedback Template")
 
-    rubric_criterion_ids = fields.One2many("internship.rubric.criterion", "program_id", string="Rubric Criteria")
-    placement_properties_definition = fields.PropertiesDefinition("Placement Properties")
+    rubric_criterion_ids = fields.One2many("internship.rubric.criterion", "program_id", string="Rubric Criterion")
+    placement_properties_definition = fields.PropertiesDefinition("Placement Properties Definition")
     student_properties_definition = fields.PropertiesDefinition("Student Properties")
 
     @api.constrains("start_date", "end_date", "application_deadline")

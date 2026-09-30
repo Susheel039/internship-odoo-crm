@@ -6,6 +6,7 @@ import pytz
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
+from ..services.calling_window import DEFAULT_WINDOW, parse_calling_window
 from ..services.phone import to_e164
 from ..services.vapi_client import VapiClient, VapiError
 
@@ -27,7 +28,7 @@ class InternshipCallLog(models.Model):
     _name = "internship.call.log"
     _description = "Internship Call Log"
     _order = "call_datetime desc, name"
-    _inherit = ["mail.thread", "mail.activity.mixin"]
+    _inherit = ["mail.thread", "mail.activity.mixin", "internship.external.ref.mixin"]
 
     name = fields.Char(string="Call Reference", required=True, default="New")
     external_call_id = fields.Char(string="External Call ID", index=True, copy=False, readonly=True)
@@ -63,18 +64,13 @@ class InternshipCallLog(models.Model):
         default="outbound",
         tracking=True,
     )
-    # v1 keys unchanged; v2 keys appended.
+    # v1 keys; v2 keys are added with selection_add in call_log_status_v2.py.
     status = fields.Selection(
         [
             ("scheduled", "Scheduled"),
             ("connected", "Connected"),
             ("missed", "Missed"),
             ("completed", "Completed"),
-            ("queued", "Queued"),
-            ("ringing", "Ringing"),
-            ("no_answer", "No answer"),
-            ("failed", "Failed"),
-            ("cancelled", "Cancelled"),
         ],
         string="Status",
         default="scheduled",
@@ -95,7 +91,7 @@ class InternshipCallLog(models.Model):
     direction = fields.Selection([("inbound", "Inbound"), ("outbound", "Outbound")], default="outbound", index=True)
     assistant_id = fields.Char()
     phone_number_id = fields.Char()
-    customer_number = fields.Char(string="Customer Number (E.164)")
+    customer_number = fields.Char(string="Customer Number")
     ended_reason = fields.Char()
     transcript = fields.Text()
     structured_data = fields.Json()
@@ -189,12 +185,15 @@ class InternshipCallLog(models.Model):
     @api.model
     def _settings(self):
         get = self.env["ir.config_parameter"].sudo().get_param
+        raw_window = get("internship_vapi.calling_window") or DEFAULT_WINDOW
+        try:
+            window = parse_calling_window(raw_window)
+        except ValueError:
+            _logger.warning("Invalid internship_vapi.calling_window %r; using the default", raw_window)
+            window = parse_calling_window(DEFAULT_WINDOW)
         return {
             "enabled": get("internship_vapi.enabled") in ("True", "true", "1"),
-            "window_start": float(get("internship_vapi.window_start", "9.0") or 9.0),
-            "window_end": float(get("internship_vapi.window_end", "20.0") or 20.0),
-            "window_days": get("internship_vapi.window_days", "0,1,2,3,4"),
-            "timezone": get("internship_vapi.timezone", "Europe/London") or "Europe/London",
+            "window": window,
             "max_attempts": int(get("internship_vapi.max_attempts", "3") or 3),
             "default_assistant_id": get("internship_vapi.default_assistant_id"),
             "chaser_assistant_id": get("internship_vapi.chaser_assistant_id"),
@@ -203,12 +202,12 @@ class InternshipCallLog(models.Model):
 
     @api.model
     def _in_calling_window(self, settings, now=None):
-        """Mon-Fri 09:00-20:00 Europe/London by default."""
+        """Inside `internship_vapi.calling_window` (default Mon-Fri 09:00-20:00 Europe/London)?"""
+        window = settings["window"]
         now = now or datetime.utcnow()
-        local = pytz.utc.localize(now).astimezone(pytz.timezone(settings["timezone"]))
-        days = {int(d) for d in str(settings["window_days"]).split(",") if d.strip().isdigit()}
+        local = pytz.utc.localize(now).astimezone(pytz.timezone(window["timezone"]))
         hour = local.hour + local.minute / 60.0
-        return local.weekday() in days and settings["window_start"] <= hour < settings["window_end"]
+        return local.weekday() in window["days"] and window["start"] <= hour < window["end"]
 
     def _blocked_reason(self, settings):
         """Why this call must not be dialled now (None when it may be)."""

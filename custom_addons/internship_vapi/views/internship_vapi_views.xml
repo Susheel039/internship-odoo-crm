@@ -109,7 +109,7 @@
     </record>
 
     <record id="action_internship_call_log" model="ir.actions.act_window">
-        <field name="name">Call Logs</field>
+        <field name="name">Call logs</field>
         <field name="res_model">internship.call.log</field>
         <field name="view_mode">list,form,pivot,graph</field>
     </record>
@@ -244,8 +244,6 @@
         <field name="code">action = records.filtered(lambda r: r.state != 'complete').action_chase_by_phone()</field>
     </record>
 
-    <menuitem id="menu_internship_call_logs" name="Call Logs" parent="internship_base.menu_internship_crm_main"
+    <menuitem id="menu_internship_call_logs" name="Call logs" parent="internship_base.menu_internship_crm_main"
               action="action_internship_call_log" sequence="20"/>
-    <menuitem id="menu_internship_vapi_events" name="Webhook Events" parent="internship_base.menu_internship_crm_main"
-              action="action_internship_vapi_event" sequence="90" groups="base.group_system"/>
 </odoo>

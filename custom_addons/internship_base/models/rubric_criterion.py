@@ -9,7 +9,7 @@ class InternshipRubricCriterion(models.Model):
     max_score = fields.Float(default=10.0, required=True)
     program_id = fields.Many2one(
         "internship.program",
-        string="Programme",
+        string="Program",
         index=True,
         ondelete="cascade",
         help="Leave empty for a criterion shared by every programme.",

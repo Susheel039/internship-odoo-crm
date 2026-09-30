@@ -55,7 +55,7 @@ class TestMonitoring(PlacementCommon):
         record.days_attended = 17
         self.assertAlmostEqual(record.attendance_pct, 100.0)
 
-    def _submit_and_approve(self, record, attended, rating="4", working="yes"):
+    def _submit_and_approve(self, record, attended, rating="4", working=True):
         record.days_attended = attended
         record.action_student_submit()
         record.write({"rating": rating, "working_as_required": working})
@@ -85,14 +85,14 @@ class TestMonitoring(PlacementCommon):
     def test_low_rating_and_not_working_trigger(self):
         record = self._submit_and_approve(self._month(2026, 8), 21, rating="2")
         self.assertEqual(record.meeting_id.trigger, "auto_rating")
-        record = self._submit_and_approve(self._month(2026, 7), 23, rating="4", working="no")
+        record = self._submit_and_approve(self._month(2026, 7), 23, rating="4", working=False)
         self.assertEqual(record.meeting_id.trigger, "auto_not_working")
 
     def test_company_approval_needs_confirmation_and_permission(self):
         record = self._month()
         record.action_student_submit()
         with self.assertRaises(UserError):
-            record.action_company_approve()
+            record.action_company_approve()  # rating missing
         manager_user = self.env["res.users"].create(
             {
                 "name": "LM User",
@@ -103,7 +103,7 @@ class TestMonitoring(PlacementCommon):
             }
         )
         self.line_manager.write({"user_id": manager_user.id, "can_approve_attendance": False})
-        record.write({"rating": "4", "working_as_required": "yes"})
+        record.write({"rating": "4", "working_as_required": True})
         with self.assertRaises(UserError):
             record.with_user(manager_user).sudo(False)._check_can_company_approve()
 

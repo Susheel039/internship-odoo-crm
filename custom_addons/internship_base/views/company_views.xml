@@ -234,11 +234,11 @@
     </record>
 
     <record id="action_internship_line_manager" model="ir.actions.act_window">
-        <field name="name">Line Managers</field>
+        <field name="name">Line managers</field>
         <field name="res_model">internship.line.manager</field>
         <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_internship_company" name="Companies" parent="menu_internship_people" action="action_internship_company" sequence="40"/>
-    <menuitem id="menu_internship_line_manager" name="Line Managers" parent="menu_internship_people" action="action_internship_line_manager" sequence="50"/>
+    <menuitem id="menu_internship_line_manager" name="Line managers" parent="menu_internship_people" action="action_internship_line_manager" sequence="50"/>
 </odoo>

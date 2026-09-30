@@ -10,19 +10,21 @@ class InternshipUniversityReview(models.Model):
     _inherit = ["mail.thread", "internship.placement.link.mixin"]
     _order = "placement_id, round_no desc"
 
-    round_no = fields.Integer(string="Round", default=1, required=True)
+    round_no = fields.Integer(string="Round No", default=1, required=True)
     reviewer_id = fields.Many2one("res.users", string="Reviewer", default=lambda self: self.env.user, tracking=True)
     review_date = fields.Datetime(default=fields.Datetime.now, tracking=True)
 
     # Checklist: computed from the placement when the review is opened, editable by the reviewer.
-    chk_company_vetted = fields.Boolean(string="Company vetted", compute="_compute_checks", store=True, readonly=False)
-    chk_insurance_valid = fields.Boolean(
-        string="Insurance valid", compute="_compute_checks", store=True, readonly=False
+    chk_company_vetted = fields.Boolean(
+        string="Chk Company Vetted", compute="_compute_checks", store=True, readonly=False
     )
-    chk_rtw_ok = fields.Boolean(string="Right to work verified", compute="_compute_checks", store=True, readonly=False)
-    chk_visa_ok = fields.Boolean(string="Visa conditions met", compute="_compute_checks", store=True, readonly=False)
+    chk_insurance_valid = fields.Boolean(
+        string="Chk Insurance Valid", compute="_compute_checks", store=True, readonly=False
+    )
+    chk_rtw_ok = fields.Boolean(string="Chk RTW OK", compute="_compute_checks", store=True, readonly=False)
+    chk_visa_ok = fields.Boolean(string="Chk Visa OK", compute="_compute_checks", store=True, readonly=False)
     chk_form_complete = fields.Boolean(
-        string="Internship form complete", compute="_compute_checks", store=True, readonly=False
+        string="Chk Form Complete", compute="_compute_checks", store=True, readonly=False
     )
 
     comments = fields.Text()

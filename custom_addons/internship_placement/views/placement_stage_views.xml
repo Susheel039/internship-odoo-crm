@@ -19,7 +19,7 @@
     </record>
 
     <record id="action_internship_placement_stage" model="ir.actions.act_window">
-        <field name="name">Placement Stages</field>
+        <field name="name">Stages</field>
         <field name="res_model">internship.placement.stage</field>
         <field name="view_mode">list</field>
         <field name="help" type="html">

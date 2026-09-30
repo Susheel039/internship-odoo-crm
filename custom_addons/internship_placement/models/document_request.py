@@ -10,7 +10,7 @@ class InternshipDocumentRequest(models.Model):
     _order = "requested_date desc, id desc"
 
     name = fields.Char(required=True, default="New", copy=False, readonly=True, index=True)
-    round_no = fields.Integer(string="Round", default=1)
+    round_no = fields.Integer(string="Round No", default=1)
     requested_by_id = fields.Many2one("res.users", default=lambda self: self.env.user, string="Requested By")
     requested_date = fields.Date(default=fields.Date.context_today, tracking=True)
     requested_from = fields.Selection(

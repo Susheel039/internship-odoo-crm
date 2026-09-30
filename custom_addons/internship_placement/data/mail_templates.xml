@@ -48,7 +48,7 @@
         <field name="name">Internship: university decision (student)</field>
         <field name="model_id" ref="model_internship_university_review"/>
         <field name="subject">Decision on your internship {{ object.placement_id.name }}</field>
-        <field name="email_to">{{ object.placement_id.student_id.email }}</field>
+        <field name="email_to">{{ ','.join(filter(None, [object.placement_id.student_id.email, object.placement_id.form_contact_email])) }}</field>
         <field name="body_html" type="html">
 <div>
     <p>Dear <t t-out="object.placement_id.student_id.name"/>,</p>

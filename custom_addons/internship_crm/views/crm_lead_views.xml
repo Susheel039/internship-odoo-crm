@@ -20,7 +20,9 @@
                             <field name="student_id"/>
                             <field name="internship_company_id"/>
                             <field name="university_id"/>
-                            <field name="internship_opportunity_id"/>
+                            <field name="opportunity_id"/>
+                            <field name="external_source" invisible="not external_source"/>
+                            <field name="external_ref" invisible="not external_ref"/>
                             <field name="placement_id"/>
                             <field name="legacy_internship_lead_id" invisible="not legacy_internship_lead_id"/>
                         </group>

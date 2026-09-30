@@ -10,6 +10,8 @@ from .common import InternshipCommon
 @tagged("post_install", "-at_install")
 class TestInternshipBase(InternshipCommon):
     def test_rule_fallback_programme_university_system(self):
+        self.assertEqual(self.program.form_due_days, 7, "programme default from the spec")
+        self.program.form_due_days = 0  # 0 = inherit
         self.assertEqual(self.program._get_rule("form_due_days"), 7, "university default")
         self.university.default_rules_form_due_days = 10
         self.assertEqual(self.program._get_rule("form_due_days"), 10)
@@ -17,6 +19,7 @@ class TestInternshipBase(InternshipCommon):
         self.assertEqual(self.program._get_rule("form_due_days"), 3)
         self.env["ir.config_parameter"].sudo().set_param("internship_base.rule_max_report_attempts", "4")
         self.university.default_rules_max_report_attempts = 0
+        self.program.max_report_attempts = 0
         self.assertEqual(self.program._get_rule("max_report_attempts"), 4, "system parameter")
         self.assertEqual(self.env["internship.program"]._get_rule("resubmission_days"), 14, "empty recordset")
 

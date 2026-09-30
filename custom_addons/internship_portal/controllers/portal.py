@@ -248,11 +248,11 @@ class InternshipPortal(CustomerPortal):
             raise request.not_found()
 
         def approve():
-            if working_as_required not in ("yes", "no") or rating not in ("1", "2", "3", "4", "5"):
-                raise UserError(request.env._("Answer 'working as required' and give a rating."))
+            if rating not in ("1", "2", "3", "4", "5"):
+                raise UserError(request.env._("Give a performance rating."))
             monthly.write(
                 {
-                    "working_as_required": working_as_required,
+                    "working_as_required": bool(working_as_required),
                     "rating": rating,
                     "strengths": strengths,
                     "improvement_areas": improvement_areas,

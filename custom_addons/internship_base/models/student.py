@@ -25,7 +25,7 @@ class InternshipStudent(models.Model):
     _order = "name"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char(string="Student Name", required=True, tracking=True)
+    name = fields.Char(string="Name", required=True, tracking=True)
     partner_id = fields.Many2one(
         "res.partner",
         string="Partner",
@@ -46,7 +46,7 @@ class InternshipStudent(models.Model):
     course = fields.Char(string="Course")
     department = fields.Char(string="Department")
     graduation_year = fields.Integer(string="Graduation Year")
-    application_ids = fields.One2many("internship.application", "student_id", string="Applications")
+    application_ids = fields.One2many("internship.application", "student_id", string="Application")
     active = fields.Boolean(default=True, tracking=True)
     notes = fields.Text(string="Notes")
 
@@ -55,11 +55,11 @@ class InternshipStudent(models.Model):
     image = fields.Binary(related="partner_id.image_1920", readonly=False)
 
     # Academic
-    program_id = fields.Many2one("internship.program", string="Programme", index=True, tracking=True)
-    academic_year_id = fields.Many2one("internship.academic.year", string="Cohort", index=True, tracking=True)
+    program_id = fields.Many2one("internship.program", string="Program", index=True, tracking=True)
+    academic_year_id = fields.Many2one("internship.academic.year", string="Academic Year", index=True, tracking=True)
     year_of_study = fields.Selection(
         [("1", "Year 1"), ("2", "Year 2"), ("3", "Year 3"), ("4", "Year 4"), ("5", "Year 5"), ("pg", "Postgraduate")],
-        string="Year of Study",
+        string="Year Of Study",
     )
     academic_tutor_id = fields.Many2one("res.users", string="Academic Tutor", index=True, tracking=True)
     expected_graduation = fields.Date()
@@ -67,18 +67,18 @@ class InternshipStudent(models.Model):
     # Compliance
     rtw_status = fields.Selection(
         [("not_checked", "Not checked"), ("pending", "Pending"), ("verified", "Verified"), ("failed", "Failed")],
-        string="Right to Work",
+        string="RTW Status",
         default="not_checked",
         tracking=True,
         index=True,
     )
     rtw_document_type = fields.Selection(
         [("uk_passport", "UK passport"), ("share_code", "Share code"), ("evisa", "eVisa"), ("other", "Other")],
-        string="RTW Evidence",
+        string="RTW Document Type",
     )
     rtw_expiry = fields.Date(string="RTW Expiry", tracking=True)
     rtw_checked_by_id = fields.Many2one("res.users", string="RTW Checked By", tracking=True)
-    rtw_checked_date = fields.Date(string="RTW Check Date", tracking=True)
+    rtw_checked_date = fields.Date(string="RTW Checked Date", tracking=True)
     dbs_required = fields.Boolean(string="DBS Required")
     dbs_status = fields.Selection(
         [("not_required", "Not required"), ("pending", "Pending"), ("clear", "Clear"), ("issue", "Issue raised")],
@@ -87,7 +87,7 @@ class InternshipStudent(models.Model):
         tracking=True,
     )
     gdpr_consent = fields.Boolean(string="GDPR Consent", tracking=True)
-    gdpr_consent_date = fields.Date(string="Consent Date", tracking=True)
+    gdpr_consent_date = fields.Date(string="GDPR Consent Date", tracking=True)
     consent_withdrawn_date = fields.Date(tracking=True)
     retention_until = fields.Date(
         compute="_compute_retention_until",
@@ -102,30 +102,30 @@ class InternshipStudent(models.Model):
     visa_required = fields.Boolean(groups=RESTRICTED_GROUPS, tracking=True)
     visa_type = fields.Char(groups=RESTRICTED_GROUPS)
     visa_expiry = fields.Date(groups=RESTRICTED_GROUPS, tracking=True)
-    term_time_hour_limit = fields.Float(string="Term-time Hour Limit", groups=RESTRICTED_GROUPS)
+    term_time_hour_limit = fields.Float(string="Term Time Hour Limit", groups=RESTRICTED_GROUPS)
     placement_permitted = fields.Boolean(groups=RESTRICTED_GROUPS, tracking=True)
     visa_checked_by_id = fields.Many2one("res.users", string="Visa Checked By", groups=RESTRICTED_GROUPS)
     visa_check_date = fields.Date(groups=RESTRICTED_GROUPS)
 
     # Reasonable adjustments (restricted to coordinators)
     adjustments_needed = fields.Boolean(string="Adjustments Needed", groups=RESTRICTED_GROUPS)
-    adjustments_notes = fields.Text(string="Adjustment Notes", groups=RESTRICTED_GROUPS)
+    adjustments_notes = fields.Text(string="Adjustments Notes", groups=RESTRICTED_GROUPS)
     adjustments_shared_with_company = fields.Boolean(
-        string="Share with Company",
+        string="Adjustments Shared With Company",
         groups=RESTRICTED_GROUPS,
         help="Only with the student's recorded consent.",
     )
 
     # Profile
-    cv_attachment_id = fields.Many2one("ir.attachment", string="CV")
-    skill_ids = fields.Many2many("internship.skill", string="Skills")
-    sector_ids = fields.Many2many("internship.sector", string="Preferred Sectors")
+    cv_attachment_id = fields.Many2one("ir.attachment", string="CV Attachment")
+    skill_ids = fields.Many2many("internship.skill", string="Skill")
+    sector_ids = fields.Many2many("internship.sector", string="Sector")
     preferred_locations = fields.Char()
     portfolio_url = fields.Char(string="Portfolio URL")
 
     # Emergency contact
-    emergency_name = fields.Char(string="Emergency Contact")
-    emergency_relationship = fields.Char(string="Relationship")
+    emergency_name = fields.Char(string="Emergency Name")
+    emergency_relationship = fields.Char(string="Emergency Relationship")
     emergency_phone = fields.Char(string="Emergency Phone")
 
     lifecycle_status = fields.Selection(

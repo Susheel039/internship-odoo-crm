@@ -37,19 +37,15 @@ class InternshipMeeting(models.Model):
         default=fields.Datetime.now,
         tracking=True,
     )
-    # Keys are only ever added (see CONTRIBUTING.md); the four originals are unchanged.
+    # v1 keys; v2 keys are added with selection_add in meeting_type_v2.py.
     meeting_type = fields.Selection(
         [
             ("checkin", "Check-in"),
             ("review", "Review"),
             ("feedback", "Feedback"),
             ("support", "Support"),
-            ("interview", "Interview"),
-            ("university_company", "University-company meeting"),
-            ("tripartite", "Tripartite meeting"),
-            ("exit", "Exit meeting"),
         ],
-        string="Type",
+        string="Meeting Type",
         default="review",
         tracking=True,
         index=True,
@@ -67,7 +63,7 @@ class InternshipMeeting(models.Model):
     title = fields.Char()
     duration_minutes = fields.Integer(default=60)
     calendar_event_id = fields.Many2one("calendar.event", copy=False, readonly=True)
-    video_url = fields.Char(string="Video Link")
+    video_url = fields.Char(string="Video URL")
     trigger = fields.Selection(
         [
             ("manual", "Manual"),
@@ -80,7 +76,7 @@ class InternshipMeeting(models.Model):
     )
     trigger_reason = fields.Char()
     monthly_id = fields.Many2one("internship.attendance.monthly", index=True, ondelete="set null")
-    attendee_ids = fields.One2many("internship.meeting.attendee", "meeting_id", string="Attendees")
+    attendee_ids = fields.One2many("internship.meeting.attendee", "meeting_id", string="Attendee")
     additional_docs_needed = fields.Boolean(help="On completion, open the document request wizard.")
     follow_up_date = fields.Date(tracking=True)
     state = fields.Selection(

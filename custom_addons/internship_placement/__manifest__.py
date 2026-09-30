@@ -1,6 +1,6 @@
 {
     "name": "Internship Placement",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.1.0",
     "category": "Custom",
     "summary": "Central placement hub: stages, university review, document requests, leave, changes, termination.",
     "author": "Internship CRM",

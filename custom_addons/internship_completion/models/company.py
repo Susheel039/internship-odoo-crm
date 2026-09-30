@@ -6,7 +6,7 @@ class InternshipCompany(models.Model):
 
     feedback_ids = fields.One2many("internship.student.feedback", "internship_company_id", string="Student Feedback")
     avg_feedback_score = fields.Float(
-        string="Average Student Rating", compute="_compute_avg_feedback_score", store=True, digits=(3, 2)
+        string="Avg Feedback Score", compute="_compute_avg_feedback_score", store=True, digits=(3, 2)
     )
 
     @api.depends("feedback_ids.overall_rating")

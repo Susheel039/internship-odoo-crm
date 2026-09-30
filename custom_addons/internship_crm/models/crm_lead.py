@@ -19,15 +19,17 @@ STAGES = {
     "qualified": ("crm.stage_lead2", "Qualified"),
     "interview": ("internship_crm.stage_interview", "Interview"),
     "won": ("crm.stage_lead4", "Won"),
+    "lost": ("internship_crm.stage_lost", "Lost"),
 }
 
 
 class CrmLead(models.Model):
-    _inherit = "crm.lead"
+    _inherit = ["crm.lead", "internship.external.ref.mixin"]
+    _name = "crm.lead"
 
     lead_category = fields.Selection(
         [("student", "Student"), ("company", "Company"), ("university", "University"), ("other", "Other")],
-        string="Internship Category",
+        string="Lead Category",
         index=True,
         tracking=True,
     )
@@ -36,26 +38,33 @@ class CrmLead(models.Model):
         "internship.company", string="Internship Company", index=True, tracking=True, ondelete="set null"
     )
     university_id = fields.Many2one("internship.university", index=True, tracking=True, ondelete="set null")
+    opportunity_id = fields.Many2one(
+        "internship.opportunity", string="Internship Opportunity", index=True, ondelete="set null", tracking=True
+    )
     internship_opportunity_id = fields.Many2one(
-        "internship.opportunity", string="Internship Opportunity", index=True, ondelete="set null"
+        "internship.opportunity",
+        string="Internship Opportunity (19.0.2.0)",
+        index=True,
+        ondelete="set null",
+        deprecated="Replaced by opportunity_id in 19.0.2.1",
     )
     placement_id = fields.Many2one("internship.placement", index=True, ondelete="set null")
     source_channel = fields.Selection(SOURCE_CHANNELS, index=True, tracking=True)
 
     # Voice AI outcome
     interest_level = fields.Selection([("cold", "Cold"), ("warm", "Warm"), ("hot", "Hot")], tracking=True)
-    callback_datetime = fields.Datetime(string="Callback At", tracking=True)
+    callback_datetime = fields.Datetime(string="Callback Datetime", tracking=True)
 
     # UK contact compliance (PECR / TPS / UK GDPR)
     do_not_call = fields.Boolean(string="Do Not Call", tracking=True)
-    tps_checked = fields.Boolean(string="TPS/CTPS Checked", tracking=True)
-    tps_checked_date = fields.Date(string="TPS Check Date")
+    tps_checked = fields.Boolean(string="TPS Checked", tracking=True)
+    tps_checked_date = fields.Date(string="TPS Checked Date")
     consent_to_contact = fields.Boolean(tracking=True)
     consent_date = fields.Datetime()
-    recording_consent = fields.Boolean(string="Call Recording Consent")
+    recording_consent = fields.Boolean(string="Recording Consent")
 
     legacy_internship_lead_id = fields.Many2one(
-        "internship.crm.lead", string="Legacy Lead", readonly=True, copy=False, index=True
+        "internship.crm.lead", string="Legacy Internship Lead", readonly=True, copy=False, index=True
     )
 
     @api.model

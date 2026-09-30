@@ -6,18 +6,22 @@ from odoo import api, fields, models
 class InternshipPlacement(models.Model):
     _inherit = "internship.placement"
 
-    monthly_ids = fields.One2many("internship.attendance.monthly", "placement_id", string="Monthly Records")
-    attendance_ids = fields.One2many("internship.attendance", "placement_id", string="Daily Attendance")
-    performance_ids = fields.One2many("internship.performance", "placement_id", string="Performance Reviews")
-    meeting_ids = fields.One2many("internship.meeting", "placement_id", string="Meetings")
+    monthly_ids = fields.One2many("internship.attendance.monthly", "placement_id", string="Monthly")
+    attendance_ids = fields.One2many("internship.attendance", "placement_id", string="Attendance")
+    performance_ids = fields.One2many("internship.performance", "placement_id", string="Performance")
+    meeting_ids = fields.One2many("internship.meeting", "placement_id", string="Meeting")
     exit_meeting_id = fields.Many2one("internship.meeting", readonly=True, copy=False)
     monthly_count = fields.Integer(compute="_compute_monitoring_counts")
     meeting_count = fields.Integer(compute="_compute_monitoring_counts")
+    attendance_count = fields.Integer(compute="_compute_monitoring_counts")
+    performance_count = fields.Integer(compute="_compute_monitoring_counts")
 
     def _compute_monitoring_counts(self):
         for placement in self:
             placement.monthly_count = len(placement.monthly_ids)
             placement.meeting_count = len(placement.meeting_ids)
+            placement.attendance_count = len(placement.attendance_ids)
+            placement.performance_count = len(placement.performance_ids)
 
     @api.depends("monthly_ids.state", "monthly_ids.tripartite_triggered", "meeting_ids.state")
     def _compute_risk_flag(self):
@@ -84,6 +88,12 @@ class InternshipPlacement(models.Model):
 
     def action_view_monthly(self):
         return self._action_related("internship.attendance.monthly", self.env._("Monthly Records"))
+
+    def action_view_attendance(self):
+        return self._action_related("internship.attendance", self.env._("Daily Attendance"))
+
+    def action_view_performance(self):
+        return self._action_related("internship.performance", self.env._("Performance Reviews"))
 
     def action_view_meetings(self):
         return self._action_related("internship.meeting", self.env._("Meetings"))

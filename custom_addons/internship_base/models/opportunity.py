@@ -10,7 +10,7 @@ class InternshipOpportunity(models.Model):
     _order = "application_deadline, name"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char(string="Opportunity Title", required=True, tracking=True)
+    name = fields.Char(string="Name", required=True, tracking=True)
     company_id = fields.Many2one(
         "internship.company",
         string="Company",
@@ -21,7 +21,7 @@ class InternshipOpportunity(models.Model):
     )
     program_id = fields.Many2one(
         "internship.program",
-        string="Programme",
+        string="Program",
         ondelete="restrict",
         tracking=True,
         index=True,
@@ -36,13 +36,13 @@ class InternshipOpportunity(models.Model):
             ("research", "Research"),
             ("project", "Project"),
         ],
-        string="Type",
+        string="Internship Type",
         default="internship",
     )
     start_date = fields.Date(string="Start Date")
     end_date = fields.Date(string="End Date")
     application_deadline = fields.Date(string="Application Deadline")
-    number_of_positions = fields.Integer(string="Available Positions", default=1)
+    number_of_positions = fields.Integer(string="Number Of Positions", default=1)
     skills_required = fields.Text(string="Skills Required")
     active = fields.Boolean(default=True, tracking=True)
     state = fields.Selection(
@@ -53,7 +53,7 @@ class InternshipOpportunity(models.Model):
             ("closed", "Closed"),
             ("cancelled", "Cancelled"),
         ],
-        string="Status",
+        string="State",
         default="draft",
         tracking=True,
         index=True,
@@ -65,14 +65,14 @@ class InternshipOpportunity(models.Model):
     )
     work_mode = fields.Selection(WORK_MODES, default="on_site")
     hours_per_week = fields.Float(default=37.5)
-    is_paid = fields.Boolean(string="Paid", default=True)
+    is_paid = fields.Boolean(string="Is Paid", default=True)
     currency_id = fields.Many2one("res.currency", default=lambda self: self._default_currency())
     salary_amount = fields.Monetary(currency_field="currency_id")
     salary_note = fields.Char(help="e.g. 'per annum, pro rata' or 'London Living Wage'.")
     duration_weeks = fields.Integer(compute="_compute_duration_weeks", store=True)
     posting_date = fields.Date(default=fields.Date.context_today)
     positions_filled = fields.Integer(compute="_compute_positions_filled")
-    skill_ids = fields.Many2many("internship.skill", string="Skills")
+    skill_ids = fields.Many2many("internship.skill", string="Skill")
     open_to_visa_holders = fields.Boolean(default=True)
     max_hours_per_week = fields.Float(help="Upper limit, e.g. for students on a term-time visa limit.")
 

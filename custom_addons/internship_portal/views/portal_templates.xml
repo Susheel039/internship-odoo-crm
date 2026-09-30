@@ -154,10 +154,10 @@
                                       method="post" class="row g-2 mt-2" t-attf-action="/my/placements/#{p.id}/monthly/#{m.id}/approve">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                     <p class="small mb-1">Student reported <t t-out="m.days_attended"/> of <t t-out="m.days_expected"/> days.</p>
-                                    <div class="col-md-4"><label class="form-label small">Working as required?</label>
-                                        <select name="working_as_required" class="form-select form-select-sm" required="required">
-                                            <option value="">Choose...</option><option value="yes">Yes</option><option value="no">No</option>
-                                        </select></div>
+                                    <div class="col-md-4 d-flex align-items-end"><div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="working_as_required" value="1" t-attf-id="war_#{m.id}"/>
+                                        <label class="form-check-label small" t-attf-for="war_#{m.id}">Working as required</label>
+                                    </div></div>
                                     <div class="col-md-4"><label class="form-label small">Rating (1–5)</label>
                                         <select name="rating" class="form-select form-select-sm" required="required">
                                             <option value="">Choose...</option>

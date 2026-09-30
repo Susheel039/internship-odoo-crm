@@ -82,8 +82,9 @@ push and pull request to `main` and `v2/**`.
 
 ## Voice AI (Vapi)
 
-1. Settings › Internship CRM › **Voice AI (Vapi)**: API key, webhook token, assistant IDs,
-   phone number ID, calling window. Leave *Enable calling* off until tested.
+1. CRM › Configuration › **Voice Assistant** (the Voice Assistant block of the CRM settings): API key, webhook token, assistant IDs,
+   phone number ID, calling window. Leave *Enabled* off until tested. The webhook and tool
+   URLs to paste into Vapi are shown there, with *Test Connection* and *Generate New Token*.
 2. In Vapi, set the server URL to `https://<host>/internship/call-tracking/webhook` and the
    tool URL to `https://<host>/internship/vapi/tool`, both with the header
    `Authorization: Bearer <webhook token>`.

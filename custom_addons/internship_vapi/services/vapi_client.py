@@ -23,7 +23,7 @@ class VapiClient:
         self.api_key = params.get_param("internship_vapi.api_key")
         self.base_url = params.get_param("internship_vapi.api_base", API_BASE).rstrip("/")
         if not self.api_key:
-            raise VapiError("The Vapi API key is not configured (Settings > Internship CRM > Voice AI).")
+            raise VapiError("The Vapi API key is not configured (CRM > Configuration > Settings > Voice Assistant).")
 
     def _request(self, method, path, json=None):
         url = f"{self.base_url}{path}"
@@ -61,3 +61,9 @@ class VapiClient:
 
     def get_call(self, call_id):
         return self._request("GET", f"/call/{call_id}")
+
+    def get_assistant(self, assistant_id):
+        return self._request("GET", f"/assistant/{assistant_id}")
+
+    def list_assistants(self):
+        return self._request("GET", "/assistant?limit=1")

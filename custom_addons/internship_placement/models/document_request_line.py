@@ -12,7 +12,7 @@ class InternshipDocumentRequestLine(models.Model):
     document_type_id = fields.Many2one("internship.document.type", required=True, string="Document Type")
     description = fields.Char()
     mandatory = fields.Boolean(default=True)
-    attachment_id = fields.Many2one("ir.attachment", string="File")
+    attachment_id = fields.Many2one("ir.attachment", string="Attachment")
     uploaded_date = fields.Datetime(readonly=True, copy=False)
     uploaded_by_id = fields.Many2one("res.users", readonly=True, copy=False)
     accepted = fields.Boolean(readonly=True, copy=False)

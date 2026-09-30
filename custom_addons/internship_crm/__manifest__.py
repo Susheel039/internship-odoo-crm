@@ -1,6 +1,6 @@
 {
     "name": "Internship CRM",
-    "version": "19.0.2.0.0",
+    "version": "19.0.2.1.0",
     "category": "Custom",
     "summary": "Internship leads on native CRM (crm.lead), conversions and UK contact compliance.",
     "author": "Internship CRM",

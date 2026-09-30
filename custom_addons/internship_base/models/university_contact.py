@@ -9,7 +9,7 @@ class InternshipUniversityContact(models.Model):
     university_id = fields.Many2one(
         "internship.university", required=True, index=True, ondelete="cascade", string="University"
     )
-    partner_id = fields.Many2one("res.partner", required=True, index=True, ondelete="restrict", string="Contact")
+    partner_id = fields.Many2one("res.partner", required=True, index=True, ondelete="restrict", string="Partner")
     name = fields.Char(related="partner_id.name", store=True)
     user_id = fields.Many2one("res.users", index=True, string="User")
     role = fields.Selection(

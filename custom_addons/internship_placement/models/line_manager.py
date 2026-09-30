@@ -4,7 +4,7 @@ from odoo import fields, models
 class InternshipLineManager(models.Model):
     _inherit = "internship.line.manager"
 
-    placement_ids = fields.One2many("internship.placement", "line_manager_id", string="Placements")
+    placement_ids = fields.One2many("internship.placement", "line_manager_id", string="Placement")
     placement_count = fields.Integer(compute="_compute_placement_count")
 
     def _compute_placement_count(self):

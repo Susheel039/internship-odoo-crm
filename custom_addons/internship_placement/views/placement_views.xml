@@ -148,8 +148,6 @@
                                 <group>
                                     <field name="academic_year_id"/>
                                     <field name="placement_source"/>
-                                    <field name="application_id"/>
-                                    <field name="opportunity_id"/>
                                 </group>
                                 <group string="Dates">
                                     <field name="planned_start"/>
@@ -163,22 +161,41 @@
                         </page>
                         <page string="Company &amp; Compliance" name="company">
                             <group>
-                                <group>
+                                <group string="Role">
                                     <field name="site_id"/>
                                     <field name="work_mode"/>
                                     <field name="hours_per_week"/>
-                                </group>
-                                <group>
                                     <field name="is_paid"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="salary_amount" invisible="not is_paid"/>
                                 </group>
+                                <group string="Compliance">
+                                    <field name="company_vetting_state" widget="badge"
+                                           decoration-success="company_vetting_state == 'approved'"
+                                           decoration-danger="company_vetting_state in ('rejected', 'expired')"/>
+                                    <field name="company_approved_until"/>
+                                    <field name="company_insurance_policy_no"/>
+                                    <field name="company_insurance_expiry"/>
+                                    <field name="company_risk_assessment_date"/>
+                                    <field name="student_rtw_status"/>
+                                </group>
                             </group>
                         </page>
-                        <page string="Application &amp; Interview" name="application" invisible="not application_id">
+                        <page string="Application &amp; Interview" name="application">
                             <group>
-                                <field name="application_id" readonly="1"/>
+                                <group>
+                                    <field name="application_id"/>
+                                    <field name="opportunity_id"/>
+                                    <field name="application_cv_attachment_id"/>
+                                </group>
+                                <group>
+                                    <field name="interview_mode"/>
+                                    <field name="interview_date"/>
+                                    <field name="interviewer_id"/>
+                                    <field name="interview_score"/>
+                                </group>
                             </group>
+                            <field name="interview_notes"/>
                         </page>
                         <page string="Offer &amp; Form" name="offer_form">
                             <group>
@@ -307,7 +324,7 @@
     </record>
 
     <record id="action_internship_placement" model="ir.actions.act_window">
-        <field name="name">Placements</field>
+        <field name="name">Placements pipeline</field>
         <field name="res_model">internship.placement</field>
         <field name="view_mode">kanban,list,form,pivot,graph</field>
         <field name="context">{'search_default_open': 1}</field>

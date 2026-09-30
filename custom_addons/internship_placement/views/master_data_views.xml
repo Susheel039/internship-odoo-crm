@@ -6,6 +6,10 @@
         <field name="model">internship.student</field>
         <field name="inherit_id" ref="internship_base.view_internship_student_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="%(internship_placement.action_internship_invite_company_wizard)d" type="action"
+                        string="Self-sourced Placement" context="{'default_student_id': id}" invisible="active_placement_id"/>
+            </xpath>
             <div name="button_box" position="inside">
                 <button name="action_view_placements" type="object" class="oe_stat_button" icon="fa-briefcase">
                     <field name="placement_count" widget="statinfo" string="Placements"/>

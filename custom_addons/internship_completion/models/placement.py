@@ -6,19 +6,23 @@ from odoo import api, fields, models
 class InternshipPlacement(models.Model):
     _inherit = "internship.placement"
 
-    report_attempt_ids = fields.One2many("internship.submission", "placement_id", string="Report Attempts")
-    evaluation_ids = fields.One2many("internship.company.evaluation", "placement_id", string="Company Evaluations")
+    report_attempt_ids = fields.One2many("internship.submission", "placement_id", string="Report Attempt")
+    evaluation_ids = fields.One2many("internship.company.evaluation", "placement_id", string="Evaluation")
     certificate_ids = fields.One2many("internship.certificate", "placement_id", string="Certificates")
-    feedback_ids = fields.One2many("internship.student.feedback", "placement_id", string="Student Feedback")
-    completion_ids = fields.One2many("internship.completion", "placement_id")
-    completion_id = fields.Many2one("internship.completion", compute="_compute_completion_id", string="Checklist")
+    feedback_ids = fields.One2many("internship.student.feedback", "placement_id", string="Feedback")
+    completion_ids = fields.One2many("internship.completion", "placement_id", string="Completion Records")
+    completion_id = fields.Many2one("internship.completion", compute="_compute_completion_id", string="Completion")
     report_attempt_count = fields.Integer(compute="_compute_completion_id")
+    evaluation_count = fields.Integer(compute="_compute_completion_id")
+    feedback_count = fields.Integer(compute="_compute_completion_id")
 
-    @api.depends("completion_ids", "report_attempt_ids")
+    @api.depends("completion_ids", "report_attempt_ids", "evaluation_ids", "feedback_ids")
     def _compute_completion_id(self):
         for placement in self:
             placement.completion_id = placement.completion_ids[:1]
             placement.report_attempt_count = len(placement.report_attempt_ids)
+            placement.evaluation_count = len(placement.evaluation_ids)
+            placement.feedback_count = len(placement.feedback_ids)
 
     @api.depends("report_attempt_ids.is_late", "report_attempt_ids.status")
     def _compute_risk_flag(self):
@@ -60,6 +64,12 @@ class InternshipPlacement(models.Model):
 
     def action_view_report_attempts(self):
         return self._action_related("internship.submission", self.env._("Report Attempts"))
+
+    def action_view_evaluations(self):
+        return self._action_related("internship.company.evaluation", self.env._("Evaluations"))
+
+    def action_view_feedback(self):
+        return self._action_related("internship.student.feedback", self.env._("Feedback"))
 
     def action_open_completion(self):
         self.ensure_one()

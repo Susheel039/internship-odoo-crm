@@ -21,7 +21,7 @@ STAGE_LIFECYCLE = {
 class InternshipStudent(models.Model):
     _inherit = "internship.student"
 
-    placement_ids = fields.One2many("internship.placement", "student_id", string="Placements")
+    placement_ids = fields.One2many("internship.placement", "student_id", string="Placement")
     active_placement_id = fields.Many2one("internship.placement", compute="_compute_active_placement_id")
     placement_count = fields.Integer(compute="_compute_active_placement_id")
 

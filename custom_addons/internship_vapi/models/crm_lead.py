@@ -4,7 +4,7 @@ from odoo import api, fields, models
 class CrmLead(models.Model):
     _inherit = "crm.lead"
 
-    call_log_ids = fields.One2many("internship.call.log", "lead_id", string="Calls")
+    call_log_ids = fields.One2many("internship.call.log", "lead_id", string="Call Log")
     call_count = fields.Integer(compute="_compute_call_count")
     last_call_date = fields.Datetime(compute="_compute_last_call", store=True)
     last_call_outcome = fields.Char(compute="_compute_last_call", store=True)

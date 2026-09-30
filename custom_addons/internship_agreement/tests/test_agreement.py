@@ -112,6 +112,7 @@ class TestAgreement(PlacementCommon):
         amendment = placement.agreement_id
         self.assertNotEqual(amendment, agreement)
         self.assertEqual(amendment.amendment_of_id, agreement)
+        self.assertEqual(change.agreement_id, amendment)
         self.assertEqual(amendment.version, 2)
         self.assertEqual(amendment.state, "sent_company")
         self.assertEqual(agreement.state, "fully_signed", "the signed original stays on record")

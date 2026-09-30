@@ -50,7 +50,7 @@
         </field>
     </record>
     <record id="action_internship_document_type" model="ir.actions.act_window">
-        <field name="name">Document Types</field>
+        <field name="name">Document types</field>
         <field name="res_model">internship.document.type</field>
         <field name="view_mode">list</field>
     </record>
@@ -70,7 +70,7 @@
         </field>
     </record>
     <record id="action_internship_academic_year" model="ir.actions.act_window">
-        <field name="name">Academic Years</field>
+        <field name="name">Academic years</field>
         <field name="res_model">internship.academic.year</field>
         <field name="view_mode">list</field>
     </record>
@@ -129,16 +129,16 @@
         </field>
     </record>
     <record id="action_internship_rubric_criterion" model="ir.actions.act_window">
-        <field name="name">Rubric Criteria</field>
+        <field name="name">Rubric criteria</field>
         <field name="res_model">internship.rubric.criterion</field>
         <field name="view_mode">list</field>
     </record>
 
 
     <menuitem id="menu_internship_config_reason" name="Reasons" parent="menu_internship_config" action="action_internship_reason" sequence="20"/>
-    <menuitem id="menu_internship_config_document_type" name="Document Types" parent="menu_internship_config" action="action_internship_document_type" sequence="30"/>
-    <menuitem id="menu_internship_config_academic_year" name="Academic Years" parent="menu_internship_config" action="action_internship_academic_year" sequence="40"/>
+    <menuitem id="menu_internship_config_document_type" name="Document types" parent="menu_internship_config" action="action_internship_document_type" sequence="30"/>
+    <menuitem id="menu_internship_config_academic_year" name="Academic years" parent="menu_internship_config" action="action_internship_academic_year" sequence="40"/>
     <menuitem id="menu_internship_config_skill" name="Skills" parent="menu_internship_config" action="action_internship_skill" sequence="50"/>
     <menuitem id="menu_internship_config_sector" name="Sectors" parent="menu_internship_config" action="action_internship_sector" sequence="60"/>
-    <menuitem id="menu_internship_config_rubric" name="Rubric Criteria" parent="menu_internship_config" action="action_internship_rubric_criterion" sequence="70"/>
+    <menuitem id="menu_internship_config_rubric" name="Rubric criteria" parent="menu_internship_config" action="action_internship_rubric_criterion" sequence="70"/>
 </odoo>

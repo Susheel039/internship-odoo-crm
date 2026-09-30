@@ -191,16 +191,16 @@
     </record>
 
     <record id="action_internship_submission" model="ir.actions.act_window">
-        <field name="name">Final Reports</field>
+        <field name="name">Reports</field>
         <field name="res_model">internship.submission</field>
         <field name="view_mode">list,form</field>
     </record>
 
     <record id="action_internship_completion" model="ir.actions.act_window">
-        <field name="name">Completion Checklists</field>
+        <field name="name">Checklists</field>
         <field name="res_model">internship.completion</field>
         <field name="view_mode">list,form</field>
     </record>
-    <menuitem id="menu_internship_submission" name="Final Reports" parent="internship_base.menu_internship_completion_main" action="action_internship_submission" sequence="10"/>
-    <menuitem id="menu_internship_completion" name="Completion Checklists" parent="internship_base.menu_internship_completion_main" action="action_internship_completion" sequence="50"/>
+    <menuitem id="menu_internship_submission" name="Reports" parent="internship_base.menu_internship_completion_main" action="action_internship_submission" sequence="10"/>
+    <menuitem id="menu_internship_completion" name="Checklists" parent="internship_base.menu_internship_completion_main" action="action_internship_completion" sequence="50"/>
 </odoo>

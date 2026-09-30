@@ -12,15 +12,17 @@ class InternshipDocument(models.Model):
 
     name = fields.Char(required=True, tracking=True)
     document_type_id = fields.Many2one("internship.document.type", required=True, index=True, tracking=True)
-    attachment_id = fields.Many2one("ir.attachment", required=True, ondelete="restrict", string="File")
+    attachment_id = fields.Many2one("ir.attachment", required=True, ondelete="restrict", string="Attachment")
     version = fields.Integer(default=1, readonly=True, copy=False)
     previous_version_id = fields.Many2one("internship.document", readonly=True, copy=False, index=True)
 
     placement_id = fields.Many2one("internship.placement", index=True, ondelete="restrict")
     student_id = fields.Many2one("internship.student", index=True, ondelete="restrict")
-    internship_company_id = fields.Many2one("internship.company", string="Company", index=True, ondelete="restrict")
-    res_model = fields.Char(string="Source Model", index=True)
-    res_id = fields.Integer(string="Source Record")
+    internship_company_id = fields.Many2one(
+        "internship.company", string="Internship Company", index=True, ondelete="restrict"
+    )
+    res_model = fields.Char(string="Res Model", index=True)
+    res_id = fields.Integer(string="Res ID")
 
     uploaded_by_id = fields.Many2one("res.users", default=lambda self: self.env.user, readonly=True)
     upload_date = fields.Datetime(default=fields.Datetime.now, readonly=True)

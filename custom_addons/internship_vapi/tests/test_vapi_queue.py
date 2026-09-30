@@ -7,6 +7,7 @@ from odoo.tests import tagged
 from odoo.addons.internship_placement.tests.common import PlacementCommon
 
 from ..services import tools
+from ..services.calling_window import parse_calling_window
 from ..services.vapi_adapter import ToolCall
 
 
@@ -31,6 +32,9 @@ class TestVapiQueue(PlacementCommon):
         return client
 
     def test_calling_window(self):
+        with self.assertRaises(ValueError):
+            parse_calling_window("weekdays 9 to 5")
+        self.assertEqual(parse_calling_window("Sat-Sun 10:30-12:00 UTC")["days"], {5, 6})
         settings = self.CallLog._settings()
         self.assertTrue(self.CallLog._in_calling_window(settings, datetime(2026, 9, 30, 10, 0)))  # Wed 11:00 BST
         self.assertFalse(self.CallLog._in_calling_window(settings, datetime(2026, 9, 30, 20, 0)))  # 21:00 BST

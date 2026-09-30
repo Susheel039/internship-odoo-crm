@@ -14,7 +14,7 @@ class InternshipCompany(models.Model):
     _order = "name"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char(string="Company Name", required=True, tracking=True)
+    name = fields.Char(string="Name", required=True, tracking=True)
     partner_id = fields.Many2one(
         "res.partner",
         string="Partner",
@@ -27,8 +27,8 @@ class InternshipCompany(models.Model):
     contact_person = fields.Char(string="HR Contact")
     contact_email = fields.Char(string="Contact Email")
     phone = fields.Char(string="Phone")
-    user_ids = fields.Many2many("res.users", string="Company Users")
-    opportunity_ids = fields.One2many("internship.opportunity", "company_id", string="Opportunities")
+    user_ids = fields.Many2many("res.users", string="User")
+    opportunity_ids = fields.One2many("internship.opportunity", "company_id", string="Opportunity")
     active = fields.Boolean(default=True, tracking=True)
     notes = fields.Text(string="Notes")
 
@@ -36,16 +36,16 @@ class InternshipCompany(models.Model):
         [("1_10", "1-10"), ("11_50", "11-50"), ("51_200", "51-200"), ("201_500", "201-500"), ("500_plus", "500+")],
         string="Company Size",
     )
-    website = fields.Char(related="partner_id.website", readonly=False)
-    sector_ids = fields.Many2many("internship.sector", string="Sectors")
-    site_ids = fields.One2many("internship.company.site", "company_id", string="Sites")
-    line_manager_ids = fields.One2many("internship.line.manager", "company_id", string="Line Managers")
+    website = fields.Char(related="partner_id.website", readonly=False, string="Website")
+    sector_ids = fields.Many2many("internship.sector", string="Sector")
+    site_ids = fields.One2many("internship.company.site", "company_id", string="Site")
+    line_manager_ids = fields.One2many("internship.line.manager", "company_id", string="Line Manager")
 
     # Compliance
-    insurance_policy_no = fields.Char(string="Insurance Policy No.")
+    insurance_policy_no = fields.Char(string="Insurance Policy No")
     insurance_expiry = fields.Date(tracking=True)
-    insurance_attachment_id = fields.Many2one("ir.attachment", string="Insurance Certificate")
-    risk_assessment_attachment_id = fields.Many2one("ir.attachment", string="Risk Assessment")
+    insurance_attachment_id = fields.Many2one("ir.attachment", string="Insurance Attachment")
+    risk_assessment_attachment_id = fields.Many2one("ir.attachment", string="Risk Assessment Attachment")
     risk_assessment_date = fields.Date(tracking=True)
 
     # Vetting / pre-approval
@@ -56,8 +56,8 @@ class InternshipCompany(models.Model):
         tracking=True,
         index=True,
     )
-    vetting_approved_by_id = fields.Many2one("res.users", string="Vetted By", tracking=True, copy=False)
-    vetting_approved_date = fields.Date(string="Vetting Date", tracking=True, copy=False)
+    vetting_approved_by_id = fields.Many2one("res.users", string="Vetting Approved By", tracking=True, copy=False)
+    vetting_approved_date = fields.Date(string="Vetting Approved Date", tracking=True, copy=False)
     approved_until = fields.Date(tracking=True, copy=False)
     vetting_rejection_reason_id = fields.Many2one(
         "internship.reason",
@@ -65,7 +65,7 @@ class InternshipCompany(models.Model):
         domain=[("reason_type", "=", "company_rejection")],
         tracking=True,
     )
-    framework_agreement_attachment_id = fields.Many2one("ir.attachment", string="Framework Agreement")
+    framework_agreement_attachment_id = fields.Many2one("ir.attachment", string="Framework Agreement Attachment")
 
     # Registration
     registration_source = fields.Selection(

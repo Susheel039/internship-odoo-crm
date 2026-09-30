@@ -1,6 +1,6 @@
 {
     "name": "Internship Portal",
-    "version": "19.0.1.0.0",
+    "version": "19.0.1.1.0",
     "category": "Custom",
     "summary": "Portal pages for students and line managers: placement, documents, monthly records, leave, "
     "agreement, final report, evaluation, certificate and feedback.",

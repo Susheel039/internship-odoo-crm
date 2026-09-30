@@ -13,9 +13,9 @@ class InternshipPlacementStage(models.Model):
         default="1",
         index=True,
     )
-    fold = fields.Boolean(string="Folded in Kanban")
-    is_closed = fields.Boolean(string="Closed Stage", help="Placements in this stage are finished.")
-    is_won = fields.Boolean(string="Successful Outcome")
+    fold = fields.Boolean(string="Fold")
+    is_closed = fields.Boolean(string="Is Closed", help="Placements in this stage are finished.")
+    is_won = fields.Boolean(string="Is Won")
 
     @api.model
     def _get_by_code(self, code):

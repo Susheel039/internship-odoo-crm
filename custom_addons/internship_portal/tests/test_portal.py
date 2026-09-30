@@ -74,10 +74,11 @@ class TestInternshipPortal(PlacementCommon, HttpCase):
         self.authenticate("portal_manager", "portal_manager_pw1")
         self.url_open(
             f"/my/placements/{placement.id}/monthly/{monthly.id}/approve",
-            data={"working_as_required": "yes", "rating": "4", "csrf_token": self._csrf()},
+            data={"working_as_required": "1", "rating": "4", "csrf_token": self._csrf()},
         )
         self.assertEqual(monthly.state, "company_approved")
         self.assertEqual(monthly.company_approved_by_id, self.manager_user)
+        self.assertTrue(monthly.working_as_required)
 
     def test_student_uploads_requested_document_and_requests_leave(self):
         placement = self._submit_form(self._accepted_placement())
