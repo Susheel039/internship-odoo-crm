@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="report_live_dashboard" model="internship.report">
+        <field name="name">Live dashboard (all time)</field>
+    </record>
+</odoo>

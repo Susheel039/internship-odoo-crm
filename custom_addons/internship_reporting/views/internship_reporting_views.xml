@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_internship_report_tree" model="ir.ui.view">
-        <field name="name">internship.report.tree</field>
+        <field name="name">internship.report.list</field>
         <field name="model">internship.report</field>
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
-                <field name="university_id"/>
-                <field name="company_id"/>
-                <field name="program_id"/>
-                <field name="total_students"/>
-                <field name="total_opportunities"/>
+                <field name="university_id" optional="show"/>
+                <field name="company_id" optional="show"/>
+                <field name="program_id" optional="hide"/>
                 <field name="total_applications"/>
                 <field name="total_placed"/>
                 <field name="total_completed"/>
                 <field name="placement_rate"/>
                 <field name="completion_rate"/>
+                <field name="red_risk" optional="show"/>
             </list>
         </field>
     </record>
@@ -26,12 +25,10 @@
         <field name="name">internship.report.form</field>
         <field name="model">internship.report</field>
         <field name="arch" type="xml">
-            <form string="Internship KPI Snapshot">
+            <form string="Internship KPIs">
                 <sheet>
-                    <group>
-                        <field name="name"/>
-                    </group>
-                    <group string="Report Scope">
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group string="Scope">
                         <group>
                             <field name="date_from"/>
                             <field name="date_to"/>
@@ -42,14 +39,35 @@
                             <field name="program_id"/>
                         </group>
                     </group>
-                    <group string="Live Key Performance Indicators" col="4">
-                        <field name="total_students"/>
-                        <field name="total_opportunities"/>
-                        <field name="total_applications"/>
-                        <field name="total_placed"/>
-                        <field name="total_completed"/>
-                        <field name="placement_rate" widget="percentage"/>
-                        <field name="completion_rate" widget="percentage"/>
+                    <group>
+                        <group string="Admission">
+                            <field name="total_students"/>
+                            <field name="total_opportunities"/>
+                            <field name="total_applications"/>
+                            <field name="total_placed"/>
+                            <field name="placement_rate"/>
+                        </group>
+                        <group string="Pipeline (open placements)">
+                            <field name="placements_phase_1"/>
+                            <field name="placements_phase_2"/>
+                            <field name="placements_phase_3"/>
+                            <field name="red_risk"/>
+                            <field name="late_monthly"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Outcomes">
+                            <field name="total_completed"/>
+                            <field name="total_failed"/>
+                            <field name="completion_rate"/>
+                            <field name="failed_rate"/>
+                            <field name="avg_company_feedback"/>
+                        </group>
+                        <group string="Voice AI">
+                            <field name="total_calls"/>
+                            <field name="leads_from_calls"/>
+                            <field name="students_from_calls"/>
+                        </group>
                     </group>
                     <field name="notes" placeholder="Notes about this report scope..."/>
                 </sheet>
@@ -66,10 +84,6 @@
                 <field name="university_id"/>
                 <field name="company_id"/>
                 <field name="program_id"/>
-                <separator/>
-                <filter name="group_university" string="By University" context="{'group_by': 'university_id'}"/>
-                <filter name="group_company" string="By Company" context="{'group_by': 'company_id'}"/>
-                <filter name="group_program" string="By Program" context="{'group_by': 'program_id'}"/>
             </search>
         </field>
     </record>
@@ -81,6 +95,109 @@
         <field name="view_mode">list,form</field>
     </record>
 
+    <record id="action_internship_dashboard" model="ir.actions.server">
+        <field name="name">Dashboard</field>
+        <field name="model_id" ref="model_internship_report"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_open_dashboard()</field>
+    </record>
+
+    <!-- Placements -->
+    <record id="view_internship_placement_graph" model="ir.ui.view">
+        <field name="name">internship.placement.graph</field>
+        <field name="model">internship.placement</field>
+        <field name="arch" type="xml">
+            <graph string="Placements by Stage" type="bar" stacked="1">
+                <field name="stage_id" type="row"/>
+                <field name="risk_flag" type="col"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_internship_placement_pivot" model="ir.ui.view">
+        <field name="name">internship.placement.pivot</field>
+        <field name="model">internship.placement</field>
+        <field name="arch" type="xml">
+            <pivot string="Placement Analysis">
+                <field name="university_id" type="row"/>
+                <field name="phase" type="col"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_internship_placement_analysis" model="ir.actions.act_window">
+        <field name="name">Placement Analysis</field>
+        <field name="res_model">internship.placement</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'graph', 'view_id': ref('view_internship_placement_graph')}), (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_internship_placement_pivot')})]"/>
+    </record>
+
+    <!-- Monthly attendance -->
+    <record id="view_internship_monthly_graph" model="ir.ui.view">
+        <field name="name">internship.attendance.monthly.graph</field>
+        <field name="model">internship.attendance.monthly</field>
+        <field name="arch" type="xml">
+            <graph string="Monthly Records" type="line">
+                <field name="date_start" interval="month" type="row"/>
+                <field name="attendance_pct" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_internship_monthly_pivot" model="ir.ui.view">
+        <field name="name">internship.attendance.monthly.pivot</field>
+        <field name="model">internship.attendance.monthly</field>
+        <field name="arch" type="xml">
+            <pivot string="Monthly Attendance Analysis">
+                <field name="university_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="attendance_pct" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_internship_monthly_analysis" model="ir.actions.act_window">
+        <field name="name">Monthly Attendance Analysis</field>
+        <field name="res_model">internship.attendance.monthly</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'graph', 'view_id': ref('view_internship_monthly_graph')}), (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_internship_monthly_pivot')})]"/>
+    </record>
+
+    <!-- Calls -->
+    <record id="view_internship_call_log_graph" model="ir.ui.view">
+        <field name="name">internship.call.log.graph</field>
+        <field name="model">internship.call.log</field>
+        <field name="arch" type="xml">
+            <graph string="Calls" type="bar" stacked="1">
+                <field name="call_datetime" interval="week" type="row"/>
+                <field name="status" type="col"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_internship_call_log_pivot" model="ir.ui.view">
+        <field name="name">internship.call.log.pivot</field>
+        <field name="model">internship.call.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Call Analysis">
+                <field name="purpose" type="row"/>
+                <field name="status" type="col"/>
+                <field name="cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_internship_call_analysis" model="ir.actions.act_window">
+        <field name="name">Call Analysis</field>
+        <field name="res_model">internship.call.log</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'graph', 'view_id': ref('view_internship_call_log_graph')}), (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_internship_call_log_pivot')})]"/>
+    </record>
+
+    <!-- Leads -->
+    <record id="action_internship_lead_analysis" model="ir.actions.act_window">
+        <field name="name">Lead Analysis</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="domain">[('lead_category', '!=', False)]</field>
+        <field name="context">{'pivot_row_groupby': ['lead_category'], 'pivot_column_groupby': ['source_channel'], 'graph_groupbys': ['lead_category', 'source_channel'], 'active_test': False}</field>
+    </record>
+
+    <!-- v1 analyses kept -->
     <record id="view_internship_application_report_graph" model="ir.ui.view">
         <field name="name">internship.application.report.graph</field>
         <field name="model">internship.application</field>
@@ -91,7 +208,6 @@
             </graph>
         </field>
     </record>
-
     <record id="view_internship_application_report_pivot" model="ir.ui.view">
         <field name="name">internship.application.report.pivot</field>
         <field name="model">internship.application</field>
@@ -103,13 +219,11 @@
             </pivot>
         </field>
     </record>
-
     <record id="action_internship_application_analysis" model="ir.actions.act_window">
         <field name="name">Application Analysis</field>
         <field name="res_model">internship.application</field>
         <field name="view_mode">graph,pivot,list</field>
     </record>
-
     <record id="view_internship_completion_report_graph" model="ir.ui.view">
         <field name="name">internship.completion.report.graph</field>
         <field name="model">internship.completion</field>
@@ -120,24 +234,29 @@
             </graph>
         </field>
     </record>
-
     <record id="view_internship_completion_report_pivot" model="ir.ui.view">
         <field name="name">internship.completion.report.pivot</field>
         <field name="model">internship.completion</field>
         <field name="arch" type="xml">
             <pivot string="Completion Analysis">
-                <field name="company_id" type="row"/>
-                <field name="status" type="col"/>
+                <field name="university_id" type="row"/>
+                <field name="final_result" type="col"/>
             </pivot>
         </field>
     </record>
-
     <record id="action_internship_completion_analysis" model="ir.actions.act_window">
         <field name="name">Completion Analysis</field>
         <field name="res_model">internship.completion</field>
         <field name="view_mode">graph,pivot,list</field>
     </record>
+
+    <menuitem id="menu_internship_dashboard" name="Dashboard" parent="internship_base.menu_internship_root"
+              action="action_internship_dashboard" sequence="1"/>
     <menuitem id="menu_internship_report" name="KPI Snapshots" parent="internship_base.menu_internship_reports_main" action="action_internship_report" sequence="10"/>
-    <menuitem id="menu_internship_application_analysis" name="Application Analysis" parent="internship_base.menu_internship_reports_main" action="action_internship_application_analysis" sequence="20"/>
-    <menuitem id="menu_internship_completion_analysis" name="Completion Analysis" parent="internship_base.menu_internship_reports_main" action="action_internship_completion_analysis" sequence="30"/>
+    <menuitem id="menu_internship_placement_analysis" name="Placements" parent="internship_base.menu_internship_reports_main" action="action_internship_placement_analysis" sequence="20"/>
+    <menuitem id="menu_internship_monthly_analysis" name="Monthly Attendance" parent="internship_base.menu_internship_reports_main" action="action_internship_monthly_analysis" sequence="30"/>
+    <menuitem id="menu_internship_application_analysis" name="Applications" parent="internship_base.menu_internship_reports_main" action="action_internship_application_analysis" sequence="40"/>
+    <menuitem id="menu_internship_completion_analysis" name="Completions" parent="internship_base.menu_internship_reports_main" action="action_internship_completion_analysis" sequence="50"/>
+    <menuitem id="menu_internship_call_analysis" name="Calls" parent="internship_base.menu_internship_reports_main" action="action_internship_call_analysis" sequence="60"/>
+    <menuitem id="menu_internship_lead_analysis" name="Leads" parent="internship_base.menu_internship_reports_main" action="action_internship_lead_analysis" sequence="70"/>
 </odoo>

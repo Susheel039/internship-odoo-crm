@@ -1,81 +1,74 @@
-from odoo import fields
 from odoo.exceptions import UserError
-from odoo.tests import TransactionCase, tagged
+from odoo.tests import tagged
+
+from odoo.addons.internship_placement.tests.common import PlacementCommon
 
 
 @tagged("post_install", "-at_install")
-class TestInternshipReporting(TransactionCase):
-    def test_lifecycle_updates_live_kpis_and_certificate_action(self):
-        partner = self.env["res.partner"].create({"name": "KPI Test Company"})
-        university_partner = self.env["res.partner"].create({"name": "KPI Test University"})
-        university = self.env["internship.university"].create(
+class TestInternshipReporting(PlacementCommon):
+    """KPIs follow the v2 lifecycle: applications -> placements -> completion."""
+
+    def _report(self):
+        return self.env["internship.report"].create(
             {
-                "name": "KPI Test University",
-                "partner_id": university_partner.id,
+                "name": "KPI Test Snapshot",
+                "university_id": self.university.id,
+                "company_id": self.company.id,
+                "program_id": self.program.id,
             }
         )
-        student = self.env["internship.student"].create(
-            {
-                "name": "KPI Test Student",
-                "partner_id": partner.id,
-                "university_id": university.id,
-            }
-        )
-        company = self.env["internship.company"].create(
-            {
-                "name": "KPI Test Company",
-                "partner_id": partner.id,
-            }
-        )
-        today = fields.Date.context_today(self)
-        program = self.env["internship.program"].create(
-            {
-                "name": "KPI Test Program",
-                "university_id": university.id,
-                "start_date": today,
-                "end_date": today,
-            }
-        )
-        opportunity = self.env["internship.opportunity"].create(
-            {
-                "name": "KPI Test Opportunity",
-                "company_id": company.id,
-                "program_id": program.id,
-                "start_date": today,
-                "end_date": today,
-            }
-        )
-        application = self.env["internship.application"].create(
-            {
-                "name": "KPI-APP-PLACED",
-                "student_id": student.id,
-                "opportunity_id": opportunity.id,
-            }
-        )
+
+    def test_lifecycle_updates_live_kpis(self):
+        application = self._new_application()
         with self.assertRaises(UserError):
             application.action_review()
-
-        application.action_submit()
-        application.action_shortlist()
-        application.action_interview()
-        application.action_offer()
+        self._offer(application)
         application.action_student_accept()
+        placement = application.placement_id
+        self._new_application(status="submitted")
+        report = self._report()
+        self.assertEqual(report.total_applications, 2)
+        self.assertEqual(report.total_placed, 0, "not placed until approved")
+        self.assertEqual(report.placements_phase_1, 1)
 
-        self.env["internship.application"].create(
-            {
-                "name": "KPI-APP-SUBMITTED",
-                "student_id": student.id,
-                "opportunity_id": opportunity.id,
-                "status": "submitted",
-            }
-        )
+        self._submit_form(placement)
+        self._review(placement, "approve")
+        placement._mark_agreement_complete()
+        placement.action_start()
+        report = self._report()
+        self.assertEqual(report.total_students, 1)
+        self.assertEqual(report.total_opportunities, 1)
+        self.assertEqual(report.total_placed, 1)
+        self.assertEqual(report.placement_rate, 50.0)
+        self.assertEqual(report.placements_phase_2, 1)
+
+        placement.action_to_completion()
+        attempt = placement.report_attempt_ids
+        attempt.action_submit()
+        attempt.action_mark_pass()
+        self.env["internship.company.evaluation"].create(
+            {"placement_id": placement.id, "overall_rating": "5"}
+        ).action_submit()
+        self.env["internship.certificate"].create({"placement_id": placement.id}).action_issue()
+        self.env["internship.student.feedback"].create({"placement_id": placement.id, "overall_rating": "4"})
+        placement.completion_id.action_university_accept()
+
+        report = self._report()
+        self.assertEqual(report.total_completed, 1)
+        self.assertEqual(report.completion_rate, 100.0)
+        self.assertEqual(report.failed_rate, 0.0)
+        self.assertEqual(report.avg_company_feedback, 4.0)
+
+    def test_dashboard_and_legacy_certificate(self):
+        action = self.env["internship.report"].action_open_dashboard()
+        self.assertEqual(action["res_model"], "internship.report")
         completion = self.env["internship.completion"].create(
             {
-                "name": "KPI-COMPLETION",
-                "student_id": student.id,
-                "opportunity_id": opportunity.id,
-                "start_date": today,
-                "end_date": today,
+                "name": "V1 completion",
+                "student_id": self.student.id,
+                "opportunity_id": self.opportunity.id,
+                "start_date": self.today,
+                "end_date": self.today,
                 "final_report": "Completed the assigned project and handover.",
                 "evaluation_score": 92,
             }
@@ -83,24 +76,6 @@ class TestInternshipReporting(TransactionCase):
         completion.action_start()
         completion.action_complete()
         completion.action_approve()
-
-        report = self.env["internship.report"].create(
-            {
-                "name": "KPI Test Snapshot",
-                "date_from": today,
-                "date_to": today,
-                "university_id": university.id,
-                "company_id": company.id,
-                "program_id": program.id,
-            }
-        )
-        self.assertEqual(report.total_students, 1)
-        self.assertEqual(report.total_opportunities, 1)
-        self.assertEqual(report.total_applications, 2)
-        self.assertEqual(report.total_placed, 1)
-        self.assertEqual(report.total_completed, 1)
-        self.assertEqual(report.placement_rate, 50.0)
-        self.assertEqual(report.completion_rate, 100.0)
         self.assertTrue(completion.certificate_issued)
         self.assertEqual(completion.approved_by, self.env.user)
         self.assertTrue(completion.action_print_certificate())
