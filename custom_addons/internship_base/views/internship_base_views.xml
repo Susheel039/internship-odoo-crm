@@ -343,7 +343,7 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_internship_root" name="INTERNTION CRM" sequence="10"/>
+    <menuitem id="menu_internship_root" name="Internship CRM" sequence="10"/>
     <menuitem id="menu_internship_people" name="People" parent="menu_internship_root" sequence="10"/>
     <menuitem id="menu_internship_university" name="Universities" parent="menu_internship_people" action="action_internship_university" sequence="10"/>
     <menuitem id="menu_internship_student" name="Students" parent="menu_internship_people" action="action_internship_student" sequence="20"/>

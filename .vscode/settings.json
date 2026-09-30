@@ -1,0 +1,37 @@
+{
+  // Python: ruff formats and lints; line length comes from pyproject.toml.
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  "ruff.configuration": "${workspaceFolder}/pyproject.toml",
+
+  // Odoo source for code completion and go-to-definition. Optional: copy it out of the
+  // container once with
+  //   docker cp internship_odoo:/usr/lib/python3/dist-packages/odoo .odoo-src/odoo
+  // (.odoo-src/ is gitignored). Without it, Pylance simply reports odoo imports as unresolved.
+  "python.analysis.extraPaths": ["${workspaceFolder}/.odoo-src"],
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "information"
+  },
+
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml",
+    "editor.tabSize": 4
+  },
+  "xml.format.maxLineWidth": 0,
+
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.ruff_cache": true
+  },
+  "search.exclude": {
+    "backups/**": true,
+    ".odoo-src/**": true
+  }
+}

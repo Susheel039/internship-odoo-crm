@@ -1,6 +1,6 @@
 {
     "name": "Internship Monitoring",
-    "version": "0.1.0",
+    "version": "19.0.2.0.0",
     "category": "Custom",
     "summary": "Monitoring, attendance, meetings, and performance management for internships.",
     "author": "Internship CRM",

@@ -64,9 +64,9 @@ class InternshipApplication(models.Model):
     def _check_required_records(self):
         for rec in self:
             if not rec.student_id:
-                raise ValidationError("A student is required for every application.")
+                raise ValidationError(self.env._("A student is required for every application."))
             if not rec.opportunity_id:
-                raise ValidationError("An opportunity is required for every application.")
+                raise ValidationError(self.env._("An opportunity is required for every application."))
 
     def action_submit(self):
         return self.write({"status": "submitted"})
@@ -111,12 +111,15 @@ class InternshipApplication(models.Model):
 
     def action_cancel(self):
         if any(application.status in ("placed", "rejected", "cancelled") for application in self):
-            raise ValidationError("Placed, rejected, or cancelled applications cannot be cancelled again.")
+            raise ValidationError(self.env._("Placed, rejected, or cancelled applications cannot be cancelled again."))
         return self.write({"status": "cancelled"})
 
     def _check_status(self, expected_status):
         invalid = self.filtered(lambda application: application.status != expected_status)
         if invalid:
             raise ValidationError(
-                "This action is only available when the application is %s." % expected_status.replace("_", " ")
+                self.env._(
+                    "This action is only available when the application is %(status)s.",
+                    status=expected_status.replace("_", " "),
+                )
             )

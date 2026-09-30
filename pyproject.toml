@@ -1,0 +1,34 @@
+# Tooling configuration only; the add-ons are not a Python package.
+
+[tool.ruff]
+line-length = 120
+# Odoo 19 image runs Python 3.12.
+target-version = "py312"
+extend-exclude = ["backups", ".odoo-src"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # import sorting
+    "B",   # bugbear
+    "UP",  # pyupgrade
+    "C4",  # comprehensions
+]
+
+[tool.ruff.lint.per-file-ignores]
+# `from . import x` lines in __init__ files register models; keep them one per line, in load order.
+"**/__init__.py" = ["F401", "I001"]
+# A manifest is a bare dict literal.
+"**/__manifest__.py" = ["B018"]
+
+[tool.ruff.lint.isort]
+section-order = ["future", "standard-library", "third-party", "odoo", "odoo-addons", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+"odoo" = ["odoo"]
+"odoo-addons" = ["odoo.addons"]
+
+[tool.ruff.format]
+quote-style = "double"

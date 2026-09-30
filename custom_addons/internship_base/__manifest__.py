@@ -1,6 +1,6 @@
 {
     "name": "Internship Base",
-    "version": "0.1.0",
+    "version": "19.0.2.0.0",
     "category": "Custom",
     "summary": "Base models and shared structures for the internship management platform.",
     "author": "Internship CRM",
@@ -10,9 +10,10 @@
         "security/ir.model.access.csv",
         "security/internship_record_rules.xml",
         "views/internship_base_views.xml",
+    ],
+    "demo": [
         "data/demo_data.xml",
     ],
-    "post_init_hook": "_post_init_hook",
     "installable": True,
     "application": False,
     "license": "LGPL-3",

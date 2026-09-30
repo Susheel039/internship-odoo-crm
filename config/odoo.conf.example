@@ -1,0 +1,47 @@
+; Copy to config/odoo.conf (gitignored): `make config` or `cp config/odoo.conf.example config/odoo.conf`.
+;
+; Database connection: do NOT put db_host/db_user/db_password here. The odoo image
+; entrypoint passes them from HOST/PORT/USER/PASSWORD, which docker-compose.yml fills
+; from .env. Keeping them out of this file keeps credentials in one gitignored place.
+;
+; Logging: there is deliberately no `logfile` option, so logs go to stderr and show up
+; in `docker logs internship_odoo` / `make logs`.
+
+[options]
+addons_path = /mnt/extra-addons
+data_dir = /var/lib/odoo
+
+; Master password for the database manager (create/drop/backup DBs in the web UI).
+; Change it. Odoo replaces it with a hash if you change it from the UI.
+admin_passwd = change-this-local-master-password
+
+; Only databases matching this regexp are served over HTTP (the CLI -d flag is not
+; affected). Covers internship_dev plus test clones such as internship_dev_upgrade_test.
+dbfilter = ^internship_.*$
+
+; --- Development defaults -------------------------------------------------------
+; Single-process server: needed for the debugger and --dev=reload.
+workers = 0
+; Wall-clock limit per request (seconds). Only enforced when workers > 0.
+limit_time_real = 600
+list_db = True
+
+; --- Production (uncomment and adjust) --------------------------------------------
+; Behind a reverse proxy (nginx/Traefik) that terminates HTTPS:
+; proxy_mode = True
+; Hide the database manager and database list:
+; list_db = False
+; Serve a single database:
+; dbfilter = ^internship_prod$
+; Multi-process: roughly (CPU cores * 2) + 1, plus the matching memory limits:
+; workers = 5
+; max_cron_threads = 1
+; limit_time_cpu = 120
+; limit_time_real = 240
+; limit_memory_soft = 2147483648
+; limit_memory_hard = 2684354560
+
+; --- Logging ----------------------------------------------------------------------
+; Odoo's own options. (Python fileConfig sections like [loggers]/[handlers] are ignored.)
+log_level = info
+log_handler = :INFO,werkzeug:WARNING

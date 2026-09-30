@@ -1,18 +1,21 @@
-# INTERNTION CRM
+# Internship CRM
 
 Custom Odoo 19 Community add-ons for internship admissions, CRM, monitoring,
 completion, call tracking, and management reporting. Odoo core is not modified.
 
 ## Run locally
 
-1. Copy `.env.example` to `.env` and set local database credentials.
-2. Start the stack with `docker compose up -d`.
-3. Open <http://localhost:8069> and sign in with the administrator account
-	 configured when the database was created.
-4. Install or upgrade the add-ons from Apps, or run the update command below.
+```sh
+make up            # creates .env and config/odoo.conf from the examples, starts Docker
+make init DEMO=1   # new database internship_dev with all modules (+ UK demo data)
+```
 
-The local defaults in `.env.example` are for development only. Change them
-before exposing this stack outside your machine.
+Open <http://localhost:8069> and sign in as `admin` / `admin`, then change the
+password. `make help` lists every shortcut.
+
+Database credentials live only in `.env` (gitignored); `config/odoo.conf` is
+also gitignored and created from `config/odoo.conf.example`. The defaults are
+for development only. PostgreSQL is published on `127.0.0.1:5432` only.
 
 ## Included add-ons
 
@@ -29,21 +32,24 @@ before exposing this stack outside your machine.
 
 ## Update and test
 
-Upgrade all installed custom modules:
+Never upgrade the working database blind. `make upgrade` backs it up into
+`backups/`, clones it to `internship_dev_upgrade_test`, upgrades and tests the
+clone, and leaves `internship_dev` untouched:
 
 ```sh
-docker exec internship_odoo odoo --config /etc/odoo/odoo.conf \
-	--database internship_dev --stop-after-init \
-	-u internship_base,internship_crm,internship_monitoring,internship_completion,internship_vapi,internship_reporting
+make upgrade           # safe: clone only
+make upgrade-apply     # after the above passes: upgrade internship_dev too
 ```
 
-Run the reporting/lifecycle regression test on an unused HTTP port:
+Run the test suite on a fresh throwaway database with demo data (as CI does):
 
 ```sh
-docker exec internship_odoo odoo --config /etc/odoo/odoo.conf \
-	--http-port=8070 --database internship_dev --stop-after-init \
-	--test-enable --test-tags /internship_reporting -u internship_reporting
+make test                              # all modules
+make test MODULE=internship_reporting  # one module
 ```
+
+Backups: `make backup`, `make restore BACKUP=backups/<dir>`. Lint: `make lint`.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for branching, commits and migration rules.
 
 ## Vapi webhook setup
 

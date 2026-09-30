@@ -1,8 +1,9 @@
 {
     "name": "Internship CRM",
-    "version": "0.1.0",
+    "version": "19.0.2.0.0",
     "category": "Custom",
     "summary": "CRM and lead management layer for the internship platform.",
+    "author": "Internship CRM",
     "depends": ["base", "crm", "mail", "calendar", "internship_base"],
     "data": [
         "security/internship_crm_security.xml",

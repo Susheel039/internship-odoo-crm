@@ -1,0 +1,28 @@
+# Development overrides. Copy to docker-compose.override.yml (gitignored);
+# `docker compose up -d --build` then merges it automatically.
+#
+#   --dev=reload,xml  restart on Python changes, re-read view XML from disk
+#   debugpy on 5678   attach with the "Attach to Odoo (debugpy)" VS Code launch config.
+#                     Odoo starts immediately; the debugger can attach at any time.
+#
+# Note: debugpy + --dev=reload each spawn processes; if breakpoints stop binding
+# after a reload, re-attach the debugger.
+services:
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: internship-odoo-dev:19.0
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - ./custom_addons:/mnt/extra-addons:rw
+    entrypoint: ["/bin/bash", "-c"]
+    # Reproduce what the image's entrypoint does (DB args from env), wrapped in debugpy.
+    command:
+      - >-
+        wait-for-psql.py --db_host "$$HOST" --db_port "$$PORT" --db_user "$$USER"
+        --db_password "$$PASSWORD" --timeout=30 &&
+        exec python3 -m debugpy --listen 0.0.0.0:5678 /usr/bin/odoo
+        --config /etc/odoo/odoo.conf --dev=reload,xml
+        --db_host "$$HOST" --db_port "$$PORT" --db_user "$$USER" --db_password "$$PASSWORD"

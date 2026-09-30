@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "v2/**"]
+  pull_request:
+    branches: [main, "v2/**"]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - run: pip install pre-commit
+      - run: pre-commit run --all-files --show-diff-on-failure
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U odoo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      MODULES: internship_base,internship_crm,internship_monitoring,internship_completion,internship_vapi,internship_reporting
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install modules and run tests (with demo data)
+        run: |
+          # Test tags: "/internship_base,/internship_crm,..."
+          TAGS="/${MODULES//,/,/}"
+          # The image entrypoint builds the DB connection from HOST/USER/PASSWORD.
+          # --with-demo: Odoo 19 no longer loads demo data by default.
+          docker run --rm --network host \
+            -e HOST=localhost -e PORT=5432 -e USER=odoo -e PASSWORD=odoo \
+            -v "$PWD/custom_addons:/mnt/extra-addons:ro" \
+            odoo:19.0 odoo \
+              -d ci -i "$MODULES" --with-demo \
+              --test-enable --test-tags "$TAGS" \
+              --stop-after-init --log-level=test \
+            2>&1 | tee odoo-test.log
+          exit "${PIPESTATUS[0]}"
+
+      - name: Fail on errors or test failures in the log
+        run: |
+          if grep -E "^[0-9-]+ [0-9:,]+ [0-9]+ (ERROR|CRITICAL) |FAIL:" odoo-test.log; then
+            echo "::error::Odoo logged errors or failing tests (see above)."
+            exit 1
+          fi
+          grep -E "tests? .*(passed|failed)|[0-9]+ failed, [0-9]+ error" odoo-test.log | tail -3 || true
+
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: odoo-test-log
+          path: odoo-test.log

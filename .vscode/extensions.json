@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "charliermarsh.ruff",
+    "redhat.vscode-xml",
+    "ms-azuretools.vscode-docker",
+    "eamodio.gitlens",
+    "trinhanhngoc.vscode-odoo"
+  ]
+}

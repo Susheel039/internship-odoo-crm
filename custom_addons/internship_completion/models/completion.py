@@ -56,9 +56,9 @@ class InternshipCompletion(models.Model):
     def _check_completion_values(self):
         for completion in self:
             if completion.start_date and completion.end_date and completion.start_date > completion.end_date:
-                raise ValidationError("The internship start date cannot be after its end date.")
+                raise ValidationError(self.env._("The internship start date cannot be after its end date."))
             if not 0 <= completion.evaluation_score <= 100:
-                raise ValidationError("The evaluation score must be between 0 and 100.")
+                raise ValidationError(self.env._("The evaluation score must be between 0 and 100."))
 
     def action_start(self):
         self._check_status("draft")
@@ -67,20 +67,22 @@ class InternshipCompletion(models.Model):
     def action_complete(self):
         self._check_status("in_progress")
         if any(not completion.final_report for completion in self):
-            raise UserError("Add the final report before completing the internship.")
+            raise UserError(self.env._("Add the final report before completing the internship."))
         if any(completion.end_date and completion.end_date > fields.Date.context_today(self) for completion in self):
-            raise UserError("An internship cannot be completed before its end date.")
+            raise UserError(self.env._("An internship cannot be completed before its end date."))
         return self.write({"status": "completed", "completion_date": fields.Date.context_today(self)})
 
     def action_approve(self):
         self._check_status("completed")
         if any(not completion.final_report for completion in self):
-            raise UserError("A final report is required before approval.")
-        return self.write({
-            "status": "approved",
-            "certificate_issued": True,
-            "approved_by": self.env.user.id,
-        })
+            raise UserError(self.env._("A final report is required before approval."))
+        return self.write(
+            {
+                "status": "approved",
+                "certificate_issued": True,
+                "approved_by": self.env.user.id,
+            }
+        )
 
     def action_close(self):
         self._check_status("approved")
@@ -89,9 +91,14 @@ class InternshipCompletion(models.Model):
     def action_print_certificate(self):
         self.ensure_one()
         if not self.certificate_issued or self.status not in ("approved", "closed"):
-            raise UserError("The certificate is available after completion approval.")
+            raise UserError(self.env._("The certificate is available after completion approval."))
         return self.env.ref("internship_completion.action_report_completion_certificate").report_action(self)
 
     def _check_status(self, expected_status):
         if any(completion.status != expected_status for completion in self):
-            raise UserError("This action is only available when the record is %s." % expected_status.replace("_", " "))
+            raise UserError(
+                self.env._(
+                    "This action is only available when the record is %(status)s.",
+                    status=expected_status.replace("_", " "),
+                )
+            )

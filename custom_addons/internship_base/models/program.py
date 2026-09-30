@@ -38,9 +38,9 @@ class InternshipProgram(models.Model):
     def _check_dates(self):
         for rec in self:
             if rec.start_date and rec.end_date and rec.start_date > rec.end_date:
-                raise ValidationError("The program start date cannot be after the end date.")
+                raise ValidationError(self.env._("The program start date cannot be after the end date."))
             if rec.application_deadline and rec.start_date and rec.application_deadline > rec.start_date:
-                raise ValidationError("The application deadline must be before the program starts.")
+                raise ValidationError(self.env._("The application deadline must be before the program starts."))
 
     def action_open(self):
         return self.write({"state": "open"})

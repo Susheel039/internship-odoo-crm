@@ -1,10 +1,31 @@
+# Secrets and local configuration
 .env
+config/odoo.conf
+docker-compose.override.yml
+
+# Python
 *.pyc
 __pycache__/
-.idea/
-.vscode/
-.DS_Store
-*.log
+.venv/
+.ruff_cache/
+.pytest_cache/
+
+# Local data
+backups/
 postgres_data/
 odoo_data/
-custom_addons/*/__pycache__/
+*.log
+
+# Local copy of Odoo source for IDE code completion (see .vscode/settings.json)
+.odoo-src/
+
+# Editors: the shared .vscode/{settings,extensions,launch}.json are committed
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+*.code-workspace
+
+# OS
+.DS_Store

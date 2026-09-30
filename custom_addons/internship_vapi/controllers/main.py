@@ -1,5 +1,5 @@
 import hmac
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from odoo import fields, http
 from odoo.http import request
@@ -55,7 +55,7 @@ class InternshipCallTrackingWebhook(http.Controller):
 
         call_type = call.get("type", "")
         values = {
-            "name": "VAPI-%s" % external_call_id,
+            "name": f"VAPI-{external_call_id}",
             "external_call_id": str(external_call_id),
             "call_datetime": started_at or fields.Datetime.now(),
             "call_type": "inbound" if "inbound" in call_type.lower() else "outbound",
@@ -82,7 +82,7 @@ class InternshipCallTrackingWebhook(http.Controller):
         except (AttributeError, TypeError, ValueError):
             return False
         if parsed.tzinfo:
-            parsed = parsed.astimezone(timezone.utc).replace(tzinfo=None)
+            parsed = parsed.astimezone(UTC).replace(tzinfo=None)
         return parsed
 
     @staticmethod

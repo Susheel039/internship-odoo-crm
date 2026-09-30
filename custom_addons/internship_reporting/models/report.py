@@ -45,7 +45,8 @@ class InternshipReport(models.Model):
                 application_domain.append(("opportunity_id.program_id", "=", report.program_id.id))
                 completion_domain.append(("opportunity_id.program_id", "=", report.program_id.id))
             if report.company_id or report.program_id:
-                matching_student_ids = self.env["internship.application"].search(application_domain).mapped("student_id").ids
+                applications = self.env["internship.application"].search(application_domain)
+                matching_student_ids = applications.mapped("student_id").ids
                 student_domain.append(("id", "in", matching_student_ids))
 
             ranges = (

@@ -1,6 +1,6 @@
 {
     "name": "Internship Completion",
-    "version": "0.1.0",
+    "version": "19.0.2.0.0",
     "category": "Custom",
     "summary": "Final submissions, evaluations, and completion workflow.",
     "author": "Internship CRM",

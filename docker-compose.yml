@@ -10,7 +10,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-odoo}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-odoo}
     ports:
-      - "5432:5432"
+      # Loopback only: reachable from this machine (psql, IDE) but not from the network.
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

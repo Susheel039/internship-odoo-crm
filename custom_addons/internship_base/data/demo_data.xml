@@ -1,86 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Demo data (loaded only with demo data enabled, never in production).
+    All organisations and people are fictional. Phone numbers use Ofcom's
+    drama range (+44 7700 900xxx) and e-mail domains use the reserved .example TLD.
+-->
 <odoo noupdate="1">
     <record id="demo_partner_university" model="res.partner">
-        <field name="name">Greenfield University</field>
-        <field name="email">admissions@greenfield.edu</field>
-        <field name="phone">+1-555-0100</field>
+        <field name="name">Northbridge University</field>
+        <field name="is_company" eval="True"/>
+        <field name="email">placements@northbridge-university.example</field>
+        <field name="phone">+44 7700 900100</field>
+        <field name="street">12 College Road</field>
+        <field name="city">Leeds</field>
+        <field name="zip">LS2 9ZZ</field>
+        <field name="country_id" ref="base.uk"/>
     </record>
 
     <record id="demo_partner_student" model="res.partner">
-        <field name="name">Aisha Rahman</field>
-        <field name="email">aisha.rahman@student.example</field>
-        <field name="phone">+1-555-0101</field>
+        <field name="name">Amelia Clarke</field>
+        <field name="email">amelia.clarke@students.northbridge-university.example</field>
+        <field name="phone">+44 7700 900101</field>
+        <field name="country_id" ref="base.uk"/>
     </record>
 
     <record id="demo_partner_company" model="res.partner">
-        <field name="name">Northwind Systems</field>
-        <field name="email">careers@northwind.example</field>
-        <field name="phone">+1-555-0102</field>
+        <field name="name">Thameside Digital Ltd</field>
+        <field name="is_company" eval="True"/>
+        <field name="email">early.careers@thameside-digital.example</field>
+        <field name="phone">+44 7700 900102</field>
+        <field name="street">4 Wharf Street</field>
+        <field name="city">Manchester</field>
+        <field name="zip">M1 9ZZ</field>
+        <field name="country_id" ref="base.uk"/>
     </record>
 
     <record id="demo_university" model="internship.university">
-        <field name="name">Greenfield University</field>
-        <field name="code">GFU</field>
+        <field name="name">Northbridge University</field>
+        <field name="code">NBU</field>
         <field name="partner_id" ref="demo_partner_university"/>
-        <field name="contact_email">admissions@greenfield.edu</field>
-        <field name="phone">+1-555-0100</field>
-        <field name="address">42 Learning Avenue, Springfield</field>
+        <field name="contact_email">placements@northbridge-university.example</field>
+        <field name="phone">+44 7700 900100</field>
+        <field name="address">12 College Road, Leeds LS2 9ZZ</field>
     </record>
 
     <record id="demo_student" model="internship.student">
-        <field name="name">Aisha Rahman</field>
+        <field name="name">Amelia Clarke</field>
         <field name="partner_id" ref="demo_partner_student"/>
-        <field name="student_id">STU-1042</field>
+        <field name="student_id">NBU-2104577</field>
         <field name="university_id" ref="demo_university"/>
-        <field name="email">aisha.rahman@student.example</field>
-        <field name="phone">+1-555-0101</field>
-        <field name="course">Computer Science</field>
-        <field name="department">Software Engineering</field>
-        <field name="graduation_year">2027</field>
+        <field name="email">amelia.clarke@students.northbridge-university.example</field>
+        <field name="phone">+44 7700 900101</field>
+        <field name="course">BSc (Hons) Computer Science</field>
+        <field name="department">School of Computing</field>
+        <field name="graduation_year">2028</field>
     </record>
 
     <record id="demo_company" model="internship.company">
-        <field name="name">Northwind Systems</field>
+        <field name="name">Thameside Digital Ltd</field>
         <field name="partner_id" ref="demo_partner_company"/>
-        <field name="company_registration_number">NW-2027-100</field>
-        <field name="industry">Technology</field>
-        <field name="contact_person">James Keller</field>
-        <field name="contact_email">careers@northwind.example</field>
-        <field name="phone">+1-555-0102</field>
+        <field name="company_registration_number">09876543</field>
+        <field name="industry">Software and IT services</field>
+        <field name="contact_person">Oliver Bennett</field>
+        <field name="contact_email">early.careers@thameside-digital.example</field>
+        <field name="phone">+44 7700 900102</field>
     </record>
 
     <record id="demo_program" model="internship.program">
-        <field name="name">Summer Internship 2027</field>
+        <field name="name">Summer Placement 2027</field>
         <field name="university_id" ref="demo_university"/>
-        <field name="description">Placement program for final-year students to work on software and operations projects.</field>
-        <field name="start_date">2027-02-01</field>
-        <field name="end_date">2027-06-30</field>
-        <field name="application_deadline">2027-01-15</field>
+        <field name="description">Twelve-week summer placement for second-year undergraduates in software, data and operations roles.</field>
+        <field name="start_date">2027-06-07</field>
+        <field name="end_date">2027-08-27</field>
+        <field name="application_deadline">2027-03-31</field>
         <field name="state">open</field>
     </record>
 
     <record id="demo_opportunity" model="internship.opportunity">
-        <field name="name">Software Engineering Intern</field>
+        <field name="name">Software Engineering Placement</field>
         <field name="company_id" ref="demo_company"/>
         <field name="program_id" ref="demo_program"/>
         <field name="job_title">Software Engineering Intern</field>
-        <field name="description">Work on backend systems, database integrations, and product quality work.</field>
-        <field name="location">Remote / Hybrid</field>
+        <field name="description">Work with the platform team on backend services, database integrations and automated testing.</field>
+        <field name="location">Manchester (hybrid)</field>
         <field name="internship_type">internship</field>
-        <field name="start_date">2027-02-01</field>
-        <field name="end_date">2027-06-30</field>
-        <field name="application_deadline">2027-01-15</field>
+        <field name="start_date">2027-06-07</field>
+        <field name="end_date">2027-08-27</field>
+        <field name="application_deadline">2027-03-31</field>
         <field name="number_of_positions">3</field>
-        <field name="skills_required">Python, Odoo, SQL, teamwork, communication</field>
+        <field name="skills_required">Python, SQL, Git, teamwork, written communication</field>
         <field name="state">open</field>
     </record>
 
     <record id="demo_application" model="internship.application">
-        <field name="name">APP-2027-001</field>
+        <field name="name">APP-2027-00001</field>
         <field name="student_id" ref="demo_student"/>
         <field name="opportunity_id" ref="demo_opportunity"/>
-        <field name="application_date">2027-01-01</field>
+        <field name="application_date">2026-09-28</field>
         <field name="status">submitted</field>
-        <field name="notes">Strong academic record and relevant project experience.</field>
+        <field name="notes">Strong second-year results and a relevant group project on API design.</field>
     </record>
 </odoo>

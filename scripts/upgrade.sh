@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Safe upgrade: backup -> clone -> upgrade + test the clone -> (optionally) upgrade the real DB.
+# Usage: scripts/upgrade.sh [db] [--apply]
+#   Without --apply only the clone <db>_upgrade_test is touched.
+source "$(dirname "$0")/_lib.sh"
+
+APPLY=0
+DB="$DEFAULT_DB"
+for arg in "$@"; do
+  case "$arg" in
+    --apply) APPLY=1 ;;
+    -*) die "Unknown option: $arg" ;;
+    *) DB="$arg" ;;
+  esac
+done
+CLONE="${DB}_upgrade_test"
+MODULES="$(all_modules_csv)"
+
+require_running "$DB_CONTAINER" "$ODOO_CONTAINER"
+db_exists "$DB" || die "Database '$DB' does not exist."
+
+log "Step 1/4: backup '$DB'"
+"$REPO_ROOT/scripts/backup_db.sh" "$DB" | tail -1
+
+log "Step 2/4: clone '$DB' -> '$CLONE'"
+"$REPO_ROOT/scripts/clone_db.sh" "$DB" "$CLONE"
+
+log "Step 3/4: upgrade + test on '$CLONE'"
+run_odoo_tests "$CLONE" -u "$MODULES" "$(test_tags_for "${INTERNSHIP_MODULES[@]}")"
+
+log "Module versions on '$CLONE':"
+pg_exec "$DB_CONTAINER" psql -U "$PG_USER" -d "$CLONE" -Atc \
+  "SELECT name || '  ' || state || '  ' || coalesce(latest_version, '-') FROM ir_module_module WHERE name LIKE 'internship%' ORDER BY name"
+
+if [[ $APPLY -eq 0 ]]; then
+  log "Clone upgrade OK. '$DB' was NOT changed. Re-run with --apply to upgrade it."
+  exit 0
+fi
+
+log "Step 4/4: upgrading '$DB' (backup taken in step 1)"
+odoo_cli -d "$DB" -u "$MODULES" --stop-after-init --http-port="$CLI_HTTP_PORT"
+log "Restart Odoo to load the new registry: docker restart $ODOO_CONTAINER"
+log "Upgrade of '$DB' complete."

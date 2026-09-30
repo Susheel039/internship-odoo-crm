@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Needs docker-compose.override.yml (from the .example) so Odoo runs under debugpy.
+      "name": "Attach to Odoo (debugpy)",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": { "host": "localhost", "port": 5678 },
+      "pathMappings": [
+        { "localRoot": "${workspaceFolder}/custom_addons", "remoteRoot": "/mnt/extra-addons" },
+        { "localRoot": "${workspaceFolder}/.odoo-src/odoo", "remoteRoot": "/usr/lib/python3/dist-packages/odoo" }
+      ],
+      "justMyCode": false
+    }
+  ]
+}

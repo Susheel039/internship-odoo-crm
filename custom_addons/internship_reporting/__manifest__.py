@@ -1,6 +1,6 @@
 {
     "name": "Internship Reporting",
-    "version": "0.1.0",
+    "version": "19.0.2.0.0",
     "category": "Custom",
     "summary": "Phase 6 reporting and KPI dashboard for the internship platform.",
     "author": "Internship CRM",
