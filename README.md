@@ -39,7 +39,7 @@ Dependency graph, models and conventions: [docs/DATA_MODEL.md](docs/DATA_MODEL.m
 
 ## Dashboard and demo data
 
-**Internship CRM › Dashboard** shows KPI cards (students, open applications, placements in
+**INTERNTION › Dashboard** shows KPI cards (students, open applications, placements in
 admission and on placement, at-risk placements, completion rate, hot leads, AI calls this
 month) and charts: the placement pipeline by stage, open placements by phase, monthly
 attendance against the tripartite threshold, placement health, applications by status, the

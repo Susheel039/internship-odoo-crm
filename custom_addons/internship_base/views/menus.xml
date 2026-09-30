@@ -4,7 +4,7 @@
     Dashboard · Admission · Monitoring · Completion · CRM · Master data · Configuration · Reports
 -->
 <odoo>
-    <menuitem id="menu_internship_root" name="Internship CRM" sequence="10" web_icon="internship_base,static/description/icon.png"/>
+    <menuitem id="menu_internship_root" name="INTERNTION" sequence="10" web_icon="internship_base,static/description/icon.png"/>
     <menuitem id="menu_internship_admissions" name="Admission" parent="menu_internship_root" sequence="10"/>
     <menuitem id="menu_internship_monitoring_main" name="Monitoring" parent="menu_internship_root" sequence="20"/>
     <menuitem id="menu_internship_completion_main" name="Completion" parent="menu_internship_root" sequence="30"/>

@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
-                <app data-string="Internship CRM" string="Internship CRM" name="internship_base" groups="base.group_system">
+                <app data-string="INTERNTION" string="INTERNTION" name="internship_base" groups="base.group_system">
                     <block title="Workflow defaults" name="internship_rules"
                            help="System-wide fallback when neither the programme nor the university sets a value.">
                         <setting string="Deadlines" help="Form, monthly record and final report deadlines.">
