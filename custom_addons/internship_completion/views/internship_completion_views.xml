@@ -7,10 +7,14 @@
             <list>
                 <field name="name"/>
                 <field name="student_id"/>
-                <field name="opportunity_id"/>
+                <field name="placement_id" optional="show"/>
+                <field name="attempt_no" optional="show"/>
                 <field name="due_date"/>
                 <field name="submitted_date"/>
-                <field name="status"/>
+                <field name="is_late" optional="show"/>
+                <field name="grade" optional="show"/>
+                <field name="result" optional="show"/>
+                <field name="status" widget="badge"/>
             </list>
         </field>
     </record>
@@ -19,36 +23,86 @@
         <field name="name">internship.submission.form</field>
         <field name="model">internship.submission</field>
         <field name="arch" type="xml">
-            <form string="Submission">
+            <form string="Report Attempt">
+                <header>
+                    <button name="action_submit" type="object" string="Submit Report" class="btn-primary"
+                            invisible="status not in ('draft', 'returned')"/>
+                    <button name="action_mark_pass" type="object" string="Mark: Pass" class="btn-primary"
+                            invisible="status not in ('submitted', 'under_review')"/>
+                    <button name="action_mark_fail" type="object" string="Mark: Fail"
+                            invisible="status not in ('submitted', 'under_review')"
+                            confirm="Record a fail? A resubmission attempt is created if attempts remain."/>
+                    <button name="action_release" type="object" string="Release to Student"
+                            invisible="not result or released_to_student"/>
+                    <button name="action_load_rubric" type="object" string="Load Rubric"
+                            invisible="not placement_id or status not in ('submitted', 'under_review')"/>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
+                </header>
                 <sheet>
+                    <widget name="web_ribbon" title="Late" bg_color="text-bg-warning" invisible="not is_late"/>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="placement_id"/>
                             <field name="student_id"/>
-                            <field name="opportunity_id"/>
-                            <field name="company_id"/>
+                            <field name="opportunity_id" invisible="placement_id"/>
+                            <field name="company_id" invisible="placement_id"/>
+                            <field name="attempt_no"/>
                         </group>
                         <group>
-                            <field name="title"/>
+                            <field name="report_title"/>
+                            <field name="title" invisible="placement_id"/>
                             <field name="due_date"/>
                             <field name="submitted_date"/>
-                            <field name="status"/>
-                            <field name="active"/>
+                            <field name="is_late"/>
+                            <field name="active" invisible="1"/>
                         </group>
                     </group>
                     <group>
                         <field name="document" filename="document_filename"/>
                         <field name="document_filename" invisible="1"/>
-                        <field name="document_url"/>
-                        <field name="evaluation_score"/>
+                        <field name="document_url" widget="url"/>
                     </group>
-                    <field name="supervisor_feedback"/>
-                    <field name="notes"/>
+                    <notebook>
+                        <page string="Marking" name="marking">
+                            <group>
+                                <group>
+                                    <field name="marker_id"/>
+                                    <field name="grade"/>
+                                    <field name="evaluation_score"/>
+                                    <field name="rubric_total"/>
+                                </group>
+                                <group>
+                                    <field name="result"/>
+                                    <field name="marked_date"/>
+                                    <field name="released_to_student"/>
+                                    <field name="release_date"/>
+                                </group>
+                            </group>
+                            <field name="rubric_score_ids">
+                                <list editable="bottom">
+                                    <field name="criterion_id"/>
+                                    <field name="max_score"/>
+                                    <field name="score"/>
+                                    <field name="comment"/>
+                                </list>
+                            </field>
+                            <field name="feedback" placeholder="Feedback for the student"/>
+                        </page>
+                        <page string="Resubmission" name="resubmission" invisible="not resubmission_allowed">
+                            <group>
+                                <field name="resubmission_allowed"/>
+                                <field name="resubmission_deadline"/>
+                                <field name="next_attempt_id"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="supervisor_feedback" placeholder="Supervisor feedback"/>
+                            <field name="notes" placeholder="Notes"/>
+                        </page>
+                    </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -60,9 +114,12 @@
             <list>
                 <field name="name"/>
                 <field name="student_id"/>
-                <field name="opportunity_id"/>
+                <field name="placement_id" optional="show"/>
+                <field name="opportunity_id" optional="hide"/>
                 <field name="completion_date"/>
-                <field name="status"/>
+                <field name="all_checks_done" optional="show"/>
+                <field name="final_result" optional="show"/>
+                <field name="status" widget="badge"/>
             </list>
         </field>
     </record>
@@ -73,9 +130,12 @@
         <field name="arch" type="xml">
             <form string="Completion Record">
                 <header>
-                    <button name="action_start" type="object" string="Start" class="btn-primary" invisible="status != 'draft'"/>
-                    <button name="action_complete" type="object" string="Mark Complete" class="btn-primary" invisible="status != 'in_progress'"/>
-                    <button name="action_approve" type="object" string="Approve &amp; Issue Certificate" class="btn-primary" invisible="status != 'completed'"/>
+                    <button name="action_university_accept" type="object" string="University Accepts" class="btn-primary"
+                            invisible="not placement_id or status == 'closed' or not all_checks_done"
+                            groups="internship_base.group_platform_administrator,internship_base.group_university_administrator,internship_base.group_university_staff"/>
+                    <button name="action_start" type="object" string="Start" class="btn-primary" invisible="placement_id or status != 'draft'"/>
+                    <button name="action_complete" type="object" string="Mark Complete" class="btn-primary" invisible="placement_id or status != 'in_progress'"/>
+                    <button name="action_approve" type="object" string="Approve &amp; Issue Certificate" class="btn-primary" invisible="placement_id or status != 'completed'"/>
                     <button name="action_close" type="object" string="Close" invisible="status != 'approved'"/>
                     <button name="action_print_certificate" type="object" string="Print Certificate" invisible="not certificate_issued"/>
                     <field name="status" widget="statusbar" statusbar_visible="draft,in_progress,completed,approved,closed"/>
@@ -98,38 +158,49 @@
                             <field name="active"/>
                         </group>
                     </group>
+                    <group string="Checklist" invisible="not placement_id">
+                        <group>
+                            <field name="placement_id"/>
+                            <field name="chk_report_passed"/>
+                            <field name="chk_evaluation_received"/>
+                            <field name="chk_certificate_issued"/>
+                            <field name="chk_feedback_submitted"/>
+                            <field name="all_checks_done" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="final_result"/>
+                            <field name="accepted_by_id"/>
+                            <field name="accepted_date"/>
+                            <field name="acceptance_comments"/>
+                        </group>
+                    </group>
                     <notebook>
-                        <page string="Final Evaluation">
+                        <page string="Final Evaluation (v1)" invisible="placement_id">
                             <group>
-                                <field name="evaluation_score"/>
                                 <field name="supervisor_feedback"/>
                             </group>
-                            <field name="final_report"/>
                         </page>
                         <page string="Notes">
                             <field name="notes"/>
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
 
     <record id="action_internship_submission" model="ir.actions.act_window">
-        <field name="name">Submissions</field>
+        <field name="name">Final Reports</field>
         <field name="res_model">internship.submission</field>
         <field name="view_mode">list,form</field>
     </record>
 
     <record id="action_internship_completion" model="ir.actions.act_window">
-        <field name="name">Completion Records</field>
+        <field name="name">Completion Checklists</field>
         <field name="res_model">internship.completion</field>
         <field name="view_mode">list,form</field>
     </record>
-    <menuitem id="menu_internship_submission" name="Submissions" parent="internship_base.menu_internship_completion_main" action="action_internship_submission" sequence="10"/>
-    <menuitem id="menu_internship_completion" name="Completion Records" parent="internship_base.menu_internship_completion_main" action="action_internship_completion" sequence="20"/>
+    <menuitem id="menu_internship_submission" name="Final Reports" parent="internship_base.menu_internship_completion_main" action="action_internship_submission" sequence="10"/>
+    <menuitem id="menu_internship_completion" name="Completion Checklists" parent="internship_base.menu_internship_completion_main" action="action_internship_completion" sequence="50"/>
 </odoo>

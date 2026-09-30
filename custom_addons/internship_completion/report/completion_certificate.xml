@@ -19,9 +19,9 @@
                             <h1>Certificate of Internship Completion</h1>
                             <p class="mt-4">This certifies that</p>
                             <h2 t-esc="doc.student_id.name"/>
-                            <p class="mt-4">has successfully completed an internship with</p>
-                            <h3 t-esc="doc.company_id.name or doc.opportunity_id.company_id.name"/>
-                            <p t-if="doc.opportunity_id" t-esc="doc.opportunity_id.name"/>
+                            <p class="mt-4">has successfully completed a work placement with</p>
+                            <h3 t-esc="doc.placement_id.internship_company_id.name or doc.company_id.name or doc.opportunity_id.company_id.name"/>
+                            <p t-if="doc.placement_id.role_title or doc.opportunity_id" t-esc="doc.placement_id.role_title or doc.opportunity_id.name"/>
                             <p t-if="doc.start_date and doc.end_date">
                                 from <span t-field="doc.start_date"/> to <span t-field="doc.end_date"/>
                             </p>

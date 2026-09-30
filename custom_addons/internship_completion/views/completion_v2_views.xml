@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Company evaluation -->
+    <record id="view_internship_company_evaluation_list" model="ir.ui.view">
+        <field name="name">internship.company.evaluation.list</field>
+        <field name="model">internship.company.evaluation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="placement_id"/>
+                <field name="student_id"/>
+                <field name="internship_company_id"/>
+                <field name="overall_rating"/>
+                <field name="would_rehire"/>
+                <field name="submitted_date"/>
+                <field name="state" widget="badge" decoration-success="state == 'submitted'"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_internship_company_evaluation_form" model="ir.ui.view">
+        <field name="name">internship.company.evaluation.form</field>
+        <field name="model">internship.company.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="Company Evaluation">
+                <header>
+                    <button name="action_submit" type="object" string="Submit" class="btn-primary" invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="placement_id"/>
+                            <field name="student_id"/>
+                            <field name="submitted_by_id"/>
+                            <field name="submitted_date"/>
+                        </group>
+                        <group>
+                            <field name="overall_rating"/>
+                            <field name="would_rehire"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="skills_gained"/>
+                        <field name="final_feedback"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_internship_company_evaluation" model="ir.actions.act_window">
+        <field name="name">Company Evaluations</field>
+        <field name="res_model">internship.company.evaluation</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Certificates -->
+    <record id="view_internship_certificate_list" model="ir.ui.view">
+        <field name="name">internship.certificate.list</field>
+        <field name="model">internship.certificate</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="placement_id"/>
+                <field name="student_id"/>
+                <field name="internship_company_id"/>
+                <field name="issue_date"/>
+                <field name="issued_by_id"/>
+                <field name="attachment_id"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_internship_certificate_form" model="ir.ui.view">
+        <field name="name">internship.certificate.form</field>
+        <field name="model">internship.certificate</field>
+        <field name="arch" type="xml">
+            <form string="Certificate">
+                <header>
+                    <button name="action_issue" type="object" string="Issue Certificate" class="btn-primary" invisible="attachment_id"/>
+                    <button name="action_print" type="object" string="Print" invisible="not attachment_id"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="placement_id"/>
+                            <field name="student_id"/>
+                            <field name="internship_company_id"/>
+                        </group>
+                        <group>
+                            <field name="issue_date"/>
+                            <field name="issued_by_id"/>
+                            <field name="attachment_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_internship_certificate" model="ir.actions.act_window">
+        <field name="name">Certificates</field>
+        <field name="res_model">internship.certificate</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Student feedback -->
+    <record id="view_internship_student_feedback_list" model="ir.ui.view">
+        <field name="name">internship.student.feedback.list</field>
+        <field name="model">internship.student.feedback</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="placement_id"/>
+                <field name="student_id"/>
+                <field name="internship_company_id"/>
+                <field name="overall_rating"/>
+                <field name="learning_quality" optional="show"/>
+                <field name="supervision_quality" optional="show"/>
+                <field name="would_recommend"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_internship_student_feedback_form" model="ir.ui.view">
+        <field name="name">internship.student.feedback.form</field>
+        <field name="model">internship.student.feedback</field>
+        <field name="arch" type="xml">
+            <form string="Student Feedback">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="placement_id"/>
+                            <field name="student_id"/>
+                            <field name="anonymous_to_company"/>
+                        </group>
+                        <group>
+                            <field name="overall_rating"/>
+                            <field name="learning_quality"/>
+                            <field name="supervision_quality"/>
+                            <field name="would_recommend"/>
+                        </group>
+                    </group>
+                    <field name="comments" placeholder="Comments"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_internship_student_feedback" model="ir.actions.act_window">
+        <field name="name">Student Feedback</field>
+        <field name="res_model">internship.student.feedback</field>
+        <field name="view_mode">list,form,pivot</field>
+    </record>
+
+    <!-- Placement: completion page and smart buttons -->
+    <record id="view_internship_placement_form_completion" model="ir.ui.view">
+        <field name="name">internship.placement.form.completion</field>
+        <field name="model">internship.placement</field>
+        <field name="inherit_id" ref="internship_placement.view_internship_placement_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_report_attempts" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                    <field name="report_attempt_count" widget="statinfo" string="Reports"/>
+                </button>
+                <button name="action_open_completion" type="object" class="oe_stat_button" icon="fa-flag-checkered"
+                        invisible="not completion_id" string="Checklist"/>
+            </div>
+            <page name="documents" position="before">
+                <page string="Completion" name="completion">
+                    <group>
+                        <field name="completion_id"/>
+                    </group>
+                    <field name="report_attempt_ids" context="{'default_placement_id': id}">
+                        <list>
+                            <field name="attempt_no"/>
+                            <field name="due_date"/>
+                            <field name="submitted_date"/>
+                            <field name="grade"/>
+                            <field name="result"/>
+                            <field name="is_late"/>
+                            <field name="status" widget="badge"/>
+                        </list>
+                    </field>
+                    <field name="evaluation_ids" context="{'default_placement_id': id}">
+                        <list>
+                            <field name="overall_rating"/>
+                            <field name="would_rehire"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                    <field name="certificate_ids" context="{'default_placement_id': id}">
+                        <list>
+                            <field name="name"/>
+                            <field name="issue_date"/>
+                            <field name="issued_by_id"/>
+                        </list>
+                    </field>
+                    <field name="feedback_ids" context="{'default_placement_id': id}">
+                        <list>
+                            <field name="overall_rating"/>
+                            <field name="would_recommend"/>
+                        </list>
+                    </field>
+                </page>
+            </page>
+        </field>
+    </record>
+
+    <record id="view_internship_company_form_feedback" model="ir.ui.view">
+        <field name="name">internship.company.form.feedback</field>
+        <field name="model">internship.company</field>
+        <field name="inherit_id" ref="internship_base.view_internship_company_form"/>
+        <field name="arch" type="xml">
+            <field name="company_size" position="after">
+                <field name="avg_feedback_score"/>
+            </field>
+        </field>
+    </record>
+
+    <menuitem id="menu_internship_evaluations" name="Company Evaluations" parent="internship_base.menu_internship_completion_main"
+              action="action_internship_company_evaluation" sequence="20"/>
+    <menuitem id="menu_internship_certificates" name="Certificates" parent="internship_base.menu_internship_completion_main"
+              action="action_internship_certificate" sequence="30"/>
+    <menuitem id="menu_internship_feedback" name="Student Feedback" parent="internship_base.menu_internship_completion_main"
+              action="action_internship_student_feedback" sequence="40"/>
+</odoo>
