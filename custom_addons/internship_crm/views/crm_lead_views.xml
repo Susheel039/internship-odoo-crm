@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="crm_lead_view_form_internship" model="ir.ui.view">
+        <field name="name">crm.lead.form.internship</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_convert_to_student" type="object" string="Convert to Student"
+                        invisible="student_id or lead_category not in ('student', False)"/>
+                <button name="action_convert_to_company" type="object" string="Convert to Company"
+                        invisible="internship_company_id or lead_category not in ('company', False)"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Internship" name="internship">
+                    <group>
+                        <group string="Links">
+                            <field name="lead_category"/>
+                            <field name="source_channel"/>
+                            <field name="student_id"/>
+                            <field name="internship_company_id"/>
+                            <field name="university_id"/>
+                            <field name="internship_opportunity_id"/>
+                            <field name="placement_id"/>
+                            <field name="legacy_internship_lead_id" invisible="not legacy_internship_lead_id"/>
+                        </group>
+                        <group string="Voice AI">
+                            <field name="interest_level" widget="badge" decoration-success="interest_level == 'hot'"
+                                   decoration-warning="interest_level == 'warm'"/>
+                            <field name="callback_datetime"/>
+                        </group>
+                        <group string="Contact compliance (UK)">
+                            <field name="do_not_call"/>
+                            <field name="tps_checked"/>
+                            <field name="tps_checked_date" invisible="not tps_checked"/>
+                            <field name="consent_to_contact"/>
+                            <field name="consent_date" invisible="not consent_to_contact"/>
+                            <field name="recording_consent"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_list_internship" model="ir.ui.view">
+        <field name="name">crm.lead.list.internship</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="lead_category" optional="show"/>
+                <field name="source_channel" optional="show"/>
+                <field name="interest_level" optional="show"/>
+                <field name="do_not_call" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="crm_lead_view_search_internship" model="ir.ui.view">
+        <field name="name">crm.lead.search.internship</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="student_id"/>
+                <field name="internship_company_id"/>
+                <separator/>
+                <filter name="internship_student" string="Student Leads" domain="[('lead_category', '=', 'student')]"/>
+                <filter name="internship_company" string="Company Leads" domain="[('lead_category', '=', 'company')]"/>
+                <filter name="internship_university" string="University Leads" domain="[('lead_category', '=', 'university')]"/>
+                <filter name="hot" string="Hot" domain="[('interest_level', '=', 'hot')]"/>
+                <filter name="callback_due" string="Callback Due" domain="[('callback_datetime', '!=', False)]"/>
+                <filter name="callable" string="OK to Call" domain="[('do_not_call', '=', False)]"/>
+                <filter name="group_category" string="Internship Category" context="{'group_by': 'lead_category'}"/>
+                <filter name="group_channel" string="Source Channel" context="{'group_by': 'source_channel'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_internship_crm_leads" model="ir.actions.act_window">
+        <field name="name">Internship Leads</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,list,form,pivot,graph</field>
+        <field name="domain">[('lead_category', '!=', False)]</field>
+        <field name="context">{'default_type': 'opportunity', 'default_lead_category': 'student'}</field>
+        <field name="search_view_id" ref="crm.view_crm_case_opportunities_filter"/>
+    </record>
+
+    <menuitem id="menu_internship_crm_native_leads" name="Leads" parent="internship_base.menu_internship_crm_main"
+              action="action_internship_crm_leads" sequence="10"/>
+</odoo>

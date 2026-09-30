@@ -4,7 +4,7 @@
         <field name="name">internship.crm.lead.kanban</field>
         <field name="model">internship.crm.lead</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="stage" class="o_kanban_small_column">
+            <kanban default_group_by="stage" class="o_kanban_small_column" create="false" edit="false">
                 <field name="name"/>
                 <field name="student_id"/>
                 <field name="company_id"/>
@@ -31,7 +31,7 @@
         <field name="name">internship.crm.lead.tree</field>
         <field name="model">internship.crm.lead</field>
         <field name="arch" type="xml">
-            <list>
+            <list create="false" edit="false">
                 <field name="name"/>
                 <field name="student_id"/>
                 <field name="company_id"/>
@@ -48,7 +48,7 @@
         <field name="name">internship.crm.lead.form</field>
         <field name="model">internship.crm.lead</field>
         <field name="arch" type="xml">
-            <form string="Internship CRM Lead">
+            <form string="Legacy Internship Lead" create="false" edit="false">
                 <sheet>
                     <group>
                         <group>
@@ -57,6 +57,7 @@
                             <field name="company_id"/>
                             <field name="opportunity_id"/>
                             <field name="crm_id"/>
+                            <field name="crm_lead_ids" widget="many2many_tags"/>
                         </group>
                         <group>
                             <field name="lead_source"/>
@@ -68,18 +69,14 @@
                     </group>
                     <field name="notes"/>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
 
     <record id="action_internship_crm_lead" model="ir.actions.act_window">
-        <field name="name">CRM Leads</field>
+        <field name="name">Legacy Internship Leads</field>
         <field name="res_model">internship.crm.lead</field>
         <field name="view_mode">kanban,list,form</field>
     </record>
-    <menuitem id="menu_internship_crm_leads" name="CRM Leads" parent="internship_base.menu_internship_crm_main" action="action_internship_crm_lead" sequence="10"/>
 </odoo>

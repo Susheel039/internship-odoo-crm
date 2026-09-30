@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_internship_crm_lead_system,internship.crm.lead system,model_internship_crm_lead,base.group_system,1,1,1,1
-access_internship_crm_lead_platform,internship.crm.lead platform,model_internship_crm_lead,internship_base.group_platform_administrator,1,1,1,1
-access_internship_crm_lead_university,internship.crm.lead university,model_internship_crm_lead,internship_base.group_university_administrator,1,1,1,1
-access_internship_crm_lead_staff,internship.crm.lead staff,model_internship_crm_lead,internship_base.group_university_staff,1,1,0,0
-access_internship_crm_lead_company,internship.crm.lead company,model_internship_crm_lead,internship_base.group_company_manager,1,1,0,0
+access_internship_crm_lead_system,internship.crm.lead system,model_internship_crm_lead,base.group_system,1,0,0,0
+access_internship_crm_lead_platform,internship.crm.lead platform,model_internship_crm_lead,internship_base.group_platform_administrator,1,0,0,0
+access_internship_crm_lead_university,internship.crm.lead university,model_internship_crm_lead,internship_base.group_university_administrator,1,0,0,0
+access_internship_crm_lead_staff,internship.crm.lead staff,model_internship_crm_lead,internship_base.group_university_staff,1,0,0,0
+access_internship_crm_lead_company,internship.crm.lead company,model_internship_crm_lead,internship_base.group_company_manager,1,0,0,0
+access_internship_crm_lead_sales,internship.crm.lead sales,model_internship_crm_lead,sales_team.group_sale_salesman,1,0,0,0

@@ -2,8 +2,13 @@ from odoo import api, fields, models
 
 
 class InternshipCRMLead(models.Model):
+    """DEPRECATED since 19.0.2: replaced by crm.lead (see internship_crm migrations).
+
+    Kept read-only for one release so no data is lost; the table is never dropped here.
+    """
+
     _name = "internship.crm.lead"
-    _description = "Internship CRM Lead"
+    _description = "Internship CRM Lead (legacy)"
     _order = "priority desc, expected_start_date, name"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
@@ -76,6 +81,7 @@ class InternshipCRMLead(models.Model):
     expected_start_date = fields.Date(string="Expected Start Date")
     notes = fields.Text(string="Notes")
     active = fields.Boolean(default=True, tracking=True)
+    crm_lead_ids = fields.One2many("crm.lead", "legacy_internship_lead_id", string="Migrated To")
 
     @api.onchange("student_id")
     def _onchange_student_id(self):

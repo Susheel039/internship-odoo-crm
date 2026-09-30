@@ -3,4 +3,12 @@
     <record id="group_internship_crm_manager" model="res.groups">
         <field name="name">Internship CRM Manager</field>
     </record>
+
+    <!-- CRM agents work native crm.lead records: give them the salesman role. -->
+    <record id="internship_base.group_crm_agent" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+    </record>
+    <record id="internship_base.group_platform_administrator" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('sales_team.group_sale_manager'))]"/>
+    </record>
 </odoo>
