@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_vapi" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.internship_vapi</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="internship_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <block name="internship_rules" position="after">
+                <block title="Voice AI (Vapi)" name="internship_vapi">
+                    <setting string="Enable calling" help="Kill switch: nothing is dialled while this is off.">
+                        <field name="internship_vapi_enabled"/>
+                    </setting>
+                    <setting string="Credentials" help="Stored as system parameters; never logged.">
+                        <div class="content-group">
+                            <div class="row mt8"><label for="internship_vapi_api_key" class="col-lg-5"/>
+                                <field name="internship_vapi_api_key" password="True"/></div>
+                            <div class="row"><label for="internship_vapi_webhook_token" class="col-lg-5"/>
+                                <field name="internship_vapi_webhook_token" password="True"/></div>
+                            <div class="row"><label for="internship_vapi_phone_number_id" class="col-lg-5"/>
+                                <field name="internship_vapi_phone_number_id"/></div>
+                            <div class="row"><label for="internship_vapi_default_assistant_id" class="col-lg-5"/>
+                                <field name="internship_vapi_default_assistant_id"/></div>
+                            <div class="row"><label for="internship_vapi_chaser_assistant_id" class="col-lg-5"/>
+                                <field name="internship_vapi_chaser_assistant_id"/></div>
+                        </div>
+                    </setting>
+                    <setting string="Calling window" help="Queued calls are only dialled inside this window.">
+                        <div class="content-group">
+                            <div class="row mt8"><label for="internship_vapi_window_start" class="col-lg-5"/>
+                                <field name="internship_vapi_window_start" widget="float_time"/></div>
+                            <div class="row"><label for="internship_vapi_window_end" class="col-lg-5"/>
+                                <field name="internship_vapi_window_end" widget="float_time"/></div>
+                            <div class="row"><label for="internship_vapi_window_days" class="col-lg-5"/>
+                                <field name="internship_vapi_window_days"/></div>
+                            <div class="row"><label for="internship_vapi_timezone" class="col-lg-5"/>
+                                <field name="internship_vapi_timezone"/></div>
+                            <div class="row"><label for="internship_vapi_max_attempts" class="col-lg-5"/>
+                                <field name="internship_vapi_max_attempts"/></div>
+                        </div>
+                    </setting>
+                </block>
+            </block>
+        </field>
+    </record>
+</odoo>

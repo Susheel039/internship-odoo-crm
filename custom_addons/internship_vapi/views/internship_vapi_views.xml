@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_internship_call_log_tree" model="ir.ui.view">
-        <field name="name">internship.call.log.tree</field>
+        <field name="name">internship.call.log.list</field>
         <field name="model">internship.call.log</field>
         <field name="arch" type="xml">
-            <list>
-                <field name="name"/>
-                <field name="student_id"/>
-                <field name="company_id"/>
+            <list decoration-danger="status == 'failed'" decoration-muted="status == 'cancelled'">
                 <field name="call_datetime"/>
-                <field name="call_type"/>
-                <field name="status"/>
+                <field name="name"/>
+                <field name="purpose" optional="show"/>
+                <field name="direction" optional="show"/>
+                <field name="lead_id" optional="show"/>
+                <field name="student_id" optional="show"/>
+                <field name="placement_id" optional="hide"/>
+                <field name="customer_number" optional="hide"/>
+                <field name="duration_seconds" optional="show"/>
+                <field name="cost" optional="hide" sum="Total"/>
+                <field name="attempt_count" optional="hide"/>
+                <field name="status" widget="badge" decoration-success="status == 'completed'"
+                       decoration-info="status in ('queued', 'scheduled', 'ringing')" decoration-warning="status in ('no_answer', 'missed')"/>
             </list>
         </field>
     </record>
@@ -20,38 +27,225 @@
         <field name="model">internship.call.log</field>
         <field name="arch" type="xml">
             <form string="Call Log">
+                <header>
+                    <button name="action_dial_now" type="object" string="Dial Now" class="btn-primary" invisible="status != 'queued'"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="status != 'queued'"/>
+                    <field name="status" widget="statusbar" statusbar_visible="queued,ringing,connected,completed"/>
+                </header>
                 <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="purpose"/>
+                            <field name="direction"/>
+                            <field name="customer_number"/>
+                            <field name="lead_id"/>
                             <field name="student_id"/>
-                            <field name="opportunity_id"/>
-                            <field name="company_id"/>
+                            <field name="placement_id"/>
+                            <field name="line_manager_id"/>
+                            <field name="opportunity_id" optional="hide"/>
                         </group>
                         <group>
                             <field name="call_datetime"/>
-                            <field name="call_type"/>
-                            <field name="status"/>
+                            <field name="scheduled_at"/>
+                            <field name="attempt_count"/>
                             <field name="duration_seconds"/>
-                            <field name="recording_url"/>
-                            <field name="active"/>
+                            <field name="cost"/>
+                            <field name="ended_reason"/>
+                            <field name="recording_url" widget="url"/>
+                            <field name="external_call_id"/>
+                            <field name="active" invisible="1"/>
                         </group>
                     </group>
-                    <field name="summary"/>
-                    <field name="notes"/>
+                    <div class="alert alert-warning" role="alert" invisible="not error_message">
+                        <field name="error_message" readonly="1"/>
+                    </div>
+                    <notebook>
+                        <page string="Summary" name="summary">
+                            <field name="summary"/>
+                            <field name="notes" placeholder="Notes"/>
+                        </page>
+                        <page string="Transcript" name="transcript">
+                            <field name="transcript"/>
+                        </page>
+                        <page string="Structured Data" name="structured">
+                            <field name="structured_data" widget="json"/>
+                        </page>
+                        <page string="Technical" name="technical" groups="base.group_no_one">
+                            <group>
+                                <field name="assistant_id"/>
+                                <field name="phone_number_id"/>
+                                <field name="call_type"/>
+                                <field name="target_model"/>
+                                <field name="target_id"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                </div>
+                <chatter/>
             </form>
+        </field>
+    </record>
+
+    <record id="view_internship_call_log_search" model="ir.ui.view">
+        <field name="name">internship.call.log.search</field>
+        <field name="model">internship.call.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="lead_id"/>
+                <field name="student_id"/>
+                <field name="customer_number"/>
+                <filter name="queued" string="Queued" domain="[('status', '=', 'queued')]"/>
+                <filter name="completed" string="Completed" domain="[('status', '=', 'completed')]"/>
+                <filter name="problems" string="No answer / Failed" domain="[('status', 'in', ('no_answer', 'failed', 'missed'))]"/>
+                <separator/>
+                <filter name="inbound" string="Inbound" domain="[('direction', '=', 'inbound')]"/>
+                <filter name="outbound" string="Outbound" domain="[('direction', '=', 'outbound')]"/>
+                <filter name="group_purpose" string="Purpose" context="{'group_by': 'purpose'}"/>
+                <filter name="group_status" string="Status" context="{'group_by': 'status'}"/>
+            </search>
         </field>
     </record>
 
     <record id="action_internship_call_log" model="ir.actions.act_window">
         <field name="name">Call Logs</field>
         <field name="res_model">internship.call.log</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+    </record>
+
+    <record id="view_internship_vapi_event_list" model="ir.ui.view">
+        <field name="name">internship.vapi.event.list</field>
+        <field name="model">internship.vapi.event</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-danger="error">
+                <field name="received_at"/>
+                <field name="event_type"/>
+                <field name="external_call_id"/>
+                <field name="processed"/>
+                <field name="call_log_id"/>
+                <field name="error" optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_internship_vapi_event" model="ir.actions.act_window">
+        <field name="name">Webhook Events</field>
+        <field name="res_model">internship.vapi.event</field>
         <field name="view_mode">list,form</field>
     </record>
-    <menuitem id="menu_internship_call_logs" name="Call Logs" parent="internship_base.menu_internship_crm_main" action="action_internship_call_log" sequence="10"/>
+
+    <!-- Buttons -->
+    <record id="crm_lead_view_form_vapi" model="ir.ui.view">
+        <field name="name">crm.lead.form.vapi</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_call_with_ai" type="object" string="Call with AI" icon="fa-phone" invisible="do_not_call"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_calls" type="object" class="oe_stat_button" icon="fa-phone">
+                    <field name="call_count" widget="statinfo" string="Calls"/>
+                </button>
+            </xpath>
+            <field name="interest_level" position="after">
+                <field name="last_call_date"/>
+                <field name="last_call_outcome"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_internship_student_form_vapi" model="ir.ui.view">
+        <field name="name">internship.student.form.vapi</field>
+        <field name="model">internship.student</field>
+        <field name="inherit_id" ref="internship_base.view_internship_student_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_call_with_ai" type="object" string="Call with AI" icon="fa-phone"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_internship_line_manager_form_vapi" model="ir.ui.view">
+        <field name="name">internship.line.manager.form.vapi</field>
+        <field name="model">internship.line.manager</field>
+        <field name="inherit_id" ref="internship_base.view_internship_line_manager_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_call_with_ai" type="object" string="Call with AI" icon="fa-phone"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_internship_placement_form_vapi" model="ir.ui.view">
+        <field name="name">internship.placement.form.vapi</field>
+        <field name="model">internship.placement</field>
+        <field name="inherit_id" ref="internship_placement.view_internship_placement_form"/>
+        <field name="arch" type="xml">
+            <button name="action_submit_form" position="after">
+                <button name="action_chase_form_by_phone" type="object" string="Chase by Phone" icon="fa-phone"
+                        invisible="stage_code != 'form_requested'"/>
+            </button>
+            <div name="button_box" position="inside">
+                <button name="action_view_calls" type="object" class="oe_stat_button" icon="fa-phone">
+                    <field name="call_count" widget="statinfo" string="Calls"/>
+                </button>
+            </div>
+        </field>
+    </record>
+
+    <record id="view_internship_document_request_form_vapi" model="ir.ui.view">
+        <field name="name">internship.document.request.form.vapi</field>
+        <field name="model">internship.document.request</field>
+        <field name="inherit_id" ref="internship_placement.view_internship_document_request_form"/>
+        <field name="arch" type="xml">
+            <button name="action_send" position="after">
+                <button name="action_chase_by_phone" type="object" string="Chase by Phone" icon="fa-phone"
+                        invisible="state not in ('overdue', 'open', 'partial')"/>
+            </button>
+        </field>
+    </record>
+
+    <record id="view_internship_attendance_monthly_form_vapi" model="ir.ui.view">
+        <field name="name">internship.attendance.monthly.form.vapi</field>
+        <field name="model">internship.attendance.monthly</field>
+        <field name="inherit_id" ref="internship_monitoring.view_internship_attendance_monthly_form"/>
+        <field name="arch" type="xml">
+            <button name="action_student_submit" position="after">
+                <button name="action_chase_by_phone" type="object" string="Chase by Phone" icon="fa-phone"
+                        invisible="state not in ('pending', 'late')"/>
+            </button>
+        </field>
+    </record>
+
+    <!-- Bulk queueing from list views -->
+    <record id="action_server_queue_lead_calls" model="ir.actions.server">
+        <field name="name">Call with AI</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="binding_model_id" ref="crm.model_crm_lead"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.filtered(lambda r: not r.do_not_call and r.phone).action_call_with_ai()</field>
+    </record>
+    <record id="action_server_queue_monthly_calls" model="ir.actions.server">
+        <field name="name">Chase by Phone</field>
+        <field name="model_id" ref="internship_monitoring.model_internship_attendance_monthly"/>
+        <field name="binding_model_id" ref="internship_monitoring.model_internship_attendance_monthly"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.filtered(lambda r: r.state in ('pending', 'late')).action_chase_by_phone()</field>
+    </record>
+    <record id="action_server_queue_document_calls" model="ir.actions.server">
+        <field name="name">Chase by Phone</field>
+        <field name="model_id" ref="internship_placement.model_internship_document_request"/>
+        <field name="binding_model_id" ref="internship_placement.model_internship_document_request"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.filtered(lambda r: r.state != 'complete').action_chase_by_phone()</field>
+    </record>
+
+    <menuitem id="menu_internship_call_logs" name="Call Logs" parent="internship_base.menu_internship_crm_main"
+              action="action_internship_call_log" sequence="20"/>
+    <menuitem id="menu_internship_vapi_events" name="Webhook Events" parent="internship_base.menu_internship_crm_main"
+              action="action_internship_vapi_event" sequence="90" groups="base.group_system"/>
 </odoo>
