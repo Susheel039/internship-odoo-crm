@@ -26,6 +26,7 @@ CLI_HTTP_PORT="${CLI_HTTP_PORT:-8070}"
 INTERNSHIP_MODULES=(
   internship_base
   internship_placement
+  internship_agreement
   internship_crm
   internship_monitoring
   internship_completion

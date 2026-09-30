@@ -1,0 +1,21 @@
+{
+    "name": "Internship Agreement",
+    "version": "19.0.1.0.0",
+    "category": "Custom",
+    "summary": "Three-party placement agreement with in-app sequential e-signature.",
+    "author": "Internship CRM",
+    "depends": ["internship_placement", "portal"],
+    "data": [
+        "security/ir.model.access.csv",
+        "security/internship_agreement_rules.xml",
+        "data/ir_sequence_data.xml",
+        "data/mail_templates.xml",
+        "data/cron.xml",
+        "report/agreement_report.xml",
+        "views/agreement_views.xml",
+        "views/portal_templates.xml",
+    ],
+    "installable": True,
+    "application": False,
+    "license": "LGPL-3",
+}

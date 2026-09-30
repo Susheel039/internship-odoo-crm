@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_agreement_platform" model="ir.rule">
+        <field name="name">internship.agreement: platform administrators</field>
+        <field name="model_id" ref="model_internship_agreement"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_agreement_university" model="ir.rule">
+        <field name="name">internship.agreement: university users</field>
+        <field name="model_id" ref="model_internship_agreement"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_university_administrator')), (4, ref('internship_base.group_university_staff'))]"/>
+        <field name="domain_force">[('placement_id.university_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_agreement_company" model="ir.rule">
+        <field name="name">internship.agreement: company managers</field>
+        <field name="model_id" ref="model_internship_agreement"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_company_manager'))]"/>
+        <field name="domain_force">[('placement_id.internship_company_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_agreement_line_manager" model="ir.rule">
+        <field name="name">internship.agreement: line managers</field>
+        <field name="model_id" ref="model_internship_agreement"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_line_manager'))]"/>
+        <field name="domain_force">[('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_agreement_student" model="ir.rule">
+        <field name="name">internship.agreement: students</field>
+        <field name="model_id" ref="model_internship_agreement"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_student'))]"/>
+        <field name="domain_force">[('placement_id.student_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+
+    <record id="rule_agreement_signer_platform" model="ir.rule">
+        <field name="name">internship.agreement.signer: platform administrators</field>
+        <field name="model_id" ref="model_internship_agreement_signer"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_platform_administrator'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_agreement_signer_university" model="ir.rule">
+        <field name="name">internship.agreement.signer: university users</field>
+        <field name="model_id" ref="model_internship_agreement_signer"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_university_administrator')), (4, ref('internship_base.group_university_staff'))]"/>
+        <field name="domain_force">[('placement_id.university_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_agreement_signer_company" model="ir.rule">
+        <field name="name">internship.agreement.signer: company managers</field>
+        <field name="model_id" ref="model_internship_agreement_signer"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_company_manager'))]"/>
+        <field name="domain_force">[('placement_id.internship_company_id.user_ids', 'in', user.id)]</field>
+    </record>
+
+    <record id="rule_agreement_signer_line_manager" model="ir.rule">
+        <field name="name">internship.agreement.signer: line managers</field>
+        <field name="model_id" ref="model_internship_agreement_signer"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_line_manager'))]"/>
+        <field name="domain_force">[('placement_id.line_manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_agreement_signer_student" model="ir.rule">
+        <field name="name">internship.agreement.signer: students</field>
+        <field name="model_id" ref="model_internship_agreement_signer"/>
+        <field name="groups" eval="[(4, ref('internship_base.group_student'))]"/>
+        <field name="domain_force">[('placement_id.student_id.partner_id', '=', user.partner_id.id)]</field>
+    </record>
+
+</odoo>

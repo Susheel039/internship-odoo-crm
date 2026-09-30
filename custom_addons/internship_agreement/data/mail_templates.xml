@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="mail_template_agreement_sign_request" model="mail.template">
+        <field name="name">Internship: agreement signature request</field>
+        <field name="model_id" ref="model_internship_agreement_signer"/>
+        <field name="subject">Please sign the placement agreement {{ object.agreement_id.name }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="body_html" type="html">
+<div>
+    <p>Dear <t t-out="object.partner_id.name"/>,</p>
+    <p>The three-party placement agreement for <strong t-out="object.agreement_id.placement_id.student_id.name"/>
+        at <t t-out="object.agreement_id.placement_id.internship_company_id.name"/> is ready for your signature.</p>
+    <p style="margin: 24px 0;">
+        <a t-att-href="object._sign_url()"
+           style="background-color:#2E5EAA; padding:10px 16px; color:#fff; text-decoration:none; border-radius:4px;">
+            Review and sign
+        </a>
+    </p>
+    <p>This link is personal to you. Please do not forward it.</p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <record id="mail_template_agreement_completed" model="mail.template">
+        <field name="name">Internship: agreement fully signed</field>
+        <field name="model_id" ref="model_internship_agreement"/>
+        <field name="subject">Placement agreement {{ object.name }} is fully signed</field>
+        <field name="email_to">{{ ','.join(object.signer_ids.partner_id.filtered('email').mapped('email')) }}</field>
+        <field name="body_html" type="html">
+<div>
+    <p>Hello,</p>
+    <p>All three parties have signed the placement agreement <strong t-out="object.name"/> for
+        <t t-out="object.placement_id.student_id.name"/>. The signed copy is kept on the placement record.</p>
+</div>
+        </field>
+        <field name="attachment_ids" eval="[]"/>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

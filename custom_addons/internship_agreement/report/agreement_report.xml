@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_agreement" model="ir.actions.report">
+        <field name="name">Placement Agreement</field>
+        <field name="model">internship.agreement</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_agreement.report_agreement</field>
+        <field name="report_file">internship_agreement.report_agreement</field>
+        <field name="print_report_name">'%s' % object.name</field>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <record id="action_report_agreement_signatures" model="ir.actions.report">
+        <field name="name">Agreement Signature Certificate</field>
+        <field name="model">internship.agreement</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">internship_agreement.report_agreement_signatures</field>
+        <field name="report_file">internship_agreement.report_agreement_signatures</field>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <template id="report_agreement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-set="p" t-value="doc.placement_id"/>
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Three-Party Placement Agreement</h2>
+                        <p>
+                            Reference <strong t-out="doc.name"/> · Placement <t t-out="p.name"/> · Version <t t-out="doc.version"/>
+                            <t t-if="doc.amendment_of_id"> · Amends <t t-out="doc.amendment_of_id.name"/></t>
+                        </p>
+
+                        <h4>1. Parties</h4>
+                        <table class="table table-sm">
+                            <tr><th style="width:25%">University</th>
+                                <td><t t-out="p.university_id.name"/> <t t-if="p.university_id.ukprn">(UKPRN <t t-out="p.university_id.ukprn"/>)</t></td></tr>
+                            <tr><th>Host organisation</th>
+                                <td><t t-out="p.internship_company_id.name"/>
+                                    <t t-if="p.internship_company_id.company_registration_number">(Companies House No. <t t-out="p.internship_company_id.company_registration_number"/>)</t></td></tr>
+                            <tr><th>Student</th>
+                                <td><t t-out="p.student_id.name"/> <t t-if="p.student_id.student_id">(Student ID <t t-out="p.student_id.student_id"/>)</t></td></tr>
+                        </table>
+
+                        <h4>2. The placement</h4>
+                        <table class="table table-sm">
+                            <tr><th style="width:25%">Role</th><td t-out="p.role_title or ''"/></tr>
+                            <tr><th>Programme</th><td t-out="p.program_id.name or ''"/></tr>
+                            <tr><th>Dates</th><td><span t-field="p.planned_start"/> to <span t-field="p.planned_end"/> (<t t-out="p.duration_weeks"/> weeks)</td></tr>
+                            <tr><th>Hours per week</th><td t-out="p.hours_per_week"/></tr>
+                            <tr><th>Working pattern</th><td><span t-field="p.work_mode"/><t t-if="p.site_id">, <t t-out="p.site_id.name"/></t></td></tr>
+                            <tr><th>Pay</th><td><t t-if="p.is_paid"><span t-field="p.salary_amount"/></t><t t-else="">Unpaid</t></td></tr>
+                            <tr><th>Line manager</th><td t-out="p.line_manager_id.name or ''"/></tr>
+                            <tr><th>Academic tutor</th><td t-out="p.tutor_id.name or ''"/></tr>
+                        </table>
+
+                        <h4>3. Learning objectives</h4>
+                        <div t-field="p.learning_objectives"/>
+
+                        <h4>4. Responsibilities</h4>
+                        <p><strong>The host organisation</strong> will provide a safe working environment and induction, hold valid
+                            employer's liability insurance, supervise the student through the named line manager, confirm
+                            monthly attendance and performance, and tell the university promptly about any concern.</p>
+                        <p><strong>The student</strong> will follow the host's policies, attend as agreed, submit monthly records and the
+                            final report on time, and tell the university about any change or difficulty.</p>
+                        <p><strong>The university</strong> will support the student through the academic tutor, review monthly records,
+                            arrange meetings when concerns arise, and assess the final report.</p>
+
+                        <h4>5. Data protection and equality</h4>
+                        <p>Each party processes personal data under the UK GDPR and the Data Protection Act 2018 only for the
+                            purposes of this placement. Reasonable adjustments are made in line with the Equality Act 2010, and
+                            are shared with the host only with the student's consent.</p>
+
+                        <h4>6. Changes and termination</h4>
+                        <p>Changes to dates, hours or role need the written agreement of all three parties. Any party may end the
+                            placement with notice to the others; the university will arrange an exit meeting.</p>
+
+                        <h4>7. Signatures</h4>
+                        <table class="table table-sm">
+                            <thead><tr><th>Party</th><th>Name</th><th>Signed</th></tr></thead>
+                            <tr t-foreach="doc.signer_ids" t-as="s">
+                                <td><span t-field="s.role"/></td>
+                                <td t-out="s.partner_id.name"/>
+                                <td>See signature certificate</td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_agreement_signatures">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Signature Certificate</h2>
+                        <p>Agreement <strong t-out="doc.name"/> (version <t t-out="doc.version"/>)</p>
+                        <p>SHA-256 of the signed document: <code t-out="doc.pdf_sha256"/></p>
+                        <table class="table table-sm">
+                            <thead><tr><th>Order</th><th>Party</th><th>Name</th><th>Signature</th><th>Signed at (UTC)</th><th>IP address</th></tr></thead>
+                            <tr t-foreach="doc.signer_ids" t-as="s">
+                                <td t-out="s.sequence"/>
+                                <td><span t-field="s.role"/></td>
+                                <td t-out="s.signed_name or s.partner_id.name"/>
+                                <td><img t-if="s.signature" t-att-src="image_data_uri(s.signature)" style="max-height:50px"/>
+                                    <span t-else="" t-field="s.state"/></td>
+                                <td t-out="s.signed_at or ''"/>
+                                <td t-out="s.signed_ip or ''"/>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

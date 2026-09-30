@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="agreement_sign_page" name="Sign Placement Agreement">
+        <t t-call="web.frontend_layout">
+            <div class="container py-4">
+                <h1 class="h3">Placement agreement <t t-out="agreement.name"/></h1>
+                <p class="text-muted">
+                    <t t-out="agreement.placement_id.student_id.name"/> at <t t-out="agreement.placement_id.internship_company_id.name"/>
+                    · version <t t-out="agreement.version"/>
+                </p>
+
+                <div t-if="message == 'signed'" class="alert alert-success">Thank you, your signature has been recorded.</div>
+                <div t-if="message == 'declined'" class="alert alert-warning">You declined this agreement. The university has been told.</div>
+
+                <table class="table table-sm w-auto">
+                    <tr t-foreach="agreement.signer_ids" t-as="s">
+                        <td><span t-field="s.role"/></td>
+                        <td t-out="s.partner_id.name"/>
+                        <td>
+                            <span t-if="s.state == 'signed'" class="badge text-bg-success">Signed</span>
+                            <span t-elif="s.state == 'declined'" class="badge text-bg-danger">Declined</span>
+                            <span t-elif="s == agreement.current_signer_id" class="badge text-bg-primary">Waiting</span>
+                            <span t-else="" class="badge text-bg-secondary">Pending</span>
+                        </td>
+                    </tr>
+                </table>
+
+                <p><a t-att-href="document_url" target="_blank" class="btn btn-secondary">Open the agreement</a></p>
+                <iframe t-if="agreement.pdf_attachment_id.mimetype == 'application/pdf'" t-att-src="document_url"
+                        style="width:100%; height:70vh; border:1px solid #ddd;" title="Agreement"/>
+
+                <div t-if="can_sign" class="mt-4">
+                    <h2 class="h5">Sign as <t t-out="signer.partner_id.name"/> (<span t-field="signer.role"/>)</h2>
+                    <p class="text-muted small">By signing you confirm you have read the agreement and accept it. Your name,
+                        signature, the time and your IP address are recorded.</p>
+                    <t t-call="portal.signature_form">
+                        <t t-set="call_url" t-value="call_url"/>
+                        <t t-set="default_name" t-value="signer.partner_id.name"/>
+                        <t t-set="send_label">Sign agreement</t>
+                    </t>
+                    <form t-att-action="decline_url" method="post" class="mt-4">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <label for="reason" class="form-label">Not willing to sign? Tell us why:</label>
+                        <textarea id="reason" name="reason" class="form-control mb-2" rows="2" required="required"/>
+                        <button type="submit" class="btn btn-outline-danger">Decline</button>
+                    </form>
+                </div>
+                <div t-elif="agreement.state == 'fully_signed'" class="alert alert-success mt-4">This agreement is fully signed.</div>
+                <div t-elif="signer.state == 'signed'" class="alert alert-info mt-4">You have signed. Waiting for the other parties.</div>
+            </div>
+        </t>
+    </template>
+</odoo>
