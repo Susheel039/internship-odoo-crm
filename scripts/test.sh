@@ -33,10 +33,8 @@ if [[ -n "$DB" ]]; then
   run_odoo_tests "$DB" -u "$MODULES_CSV" "$TAGS"
 else
   DB="internship_test"
-  if db_exists "$DB"; then
-    psql_q "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$DB' AND pid <> pg_backend_pid()" > /dev/null
-    pg_exec "$DB_CONTAINER" dropdb -U "$PG_USER" "$DB"
-    docker exec "$ODOO_CONTAINER" rm -rf "$FILESTORE_ROOT/$DB"
-  fi
-  run_odoo_tests "$DB" -i "$MODULES_CSV" "$TAGS" --with-demo
+  drop_db "$DB"
+  # Throwaway database: removed afterwards, pass or fail (KEEP_TEST_DB=1 keeps it for debugging).
+  [[ "${KEEP_TEST_DB:-0}" == "1" ]] || trap 'drop_db "$DB"' EXIT
+  run_odoo_tests "$DB" -i "$MODULES_CSV" "$TAGS" --without-demo=False
 fi

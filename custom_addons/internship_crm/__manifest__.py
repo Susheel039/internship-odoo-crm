@@ -1,6 +1,6 @@
 {
     "name": "Internship CRM",
-    "version": "19.0.2.1.0",
+    "version": "19.0.2.2.0",
     "category": "Custom",
     "summary": "Internship leads on native CRM (crm.lead), conversions and UK contact compliance.",
     "author": "Internship CRM",
@@ -9,6 +9,7 @@
         "security/internship_crm_security.xml",
         "security/ir.model.access.csv",
         "data/crm_data.xml",
+        "data/crm_stage_cleanup.xml",
         "views/internship_crm_views.xml",
         "views/crm_lead_views.xml",
     ],

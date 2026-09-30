@@ -15,9 +15,9 @@ data_dir = /var/lib/odoo
 ; Change it. Odoo replaces it with a hash if you change it from the UI.
 admin_passwd = change-this-local-master-password
 
-; Only databases matching this regexp are served over HTTP (the CLI -d flag is not
-; affected). Covers internship_dev plus test clones such as internship_dev_upgrade_test.
-dbfilter = ^internship_.*$
+; Only this database is served over HTTP, so the login page opens it directly (no
+; database list). The CLI -d flag used by the scripts is not affected.
+dbfilter = ^internship_dev$
 
 ; --- Development defaults -------------------------------------------------------
 ; Single-process server: needed for the debugger and --dev=reload.

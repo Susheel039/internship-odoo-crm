@@ -56,7 +56,7 @@ test: ## Run tests on a fresh throwaway DB (make test MODULE=internship_base)
 test-db: ## Upgrade + test an existing clone (make test-db DB=internship_dev_upgrade_test)
 	scripts/test.sh $(MODULE) --db $(DB)
 
-demo-data: ## Load workflow demo data into a DEMO database (make demo-data DB=internship_v2_demo)
+demo-data: ## Load the demo story (workflow + 30 CRM lead journeys) into DB (default internship_dev)
 	scripts/demo_data.sh $(DB)
 
 backup: ## Back up DB + filestore into backups/

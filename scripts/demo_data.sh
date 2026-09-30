@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
-# Load the workflow demo data (leads, placements in every stage, calls, ...) into a DEMO database.
-# Usage: scripts/demo_data.sh <db>   Refuses to run on internship_dev.
+# Load the demo story: the workflow (universities, companies, students, placements in every
+# stage) and 30 CRM leads with their pipeline journeys.
+# Usage: scripts/demo_data.sh [db]   (default: internship_dev). Takes a backup first.
 source "$(dirname "$0")/_lib.sh"
 
-DB="${1:-}"
-[[ -n "$DB" ]] || die "Usage: $0 <demo_db>"
-[[ "$DB" != "$DEFAULT_DB" ]] || die "Refusing to load demo data into '$DEFAULT_DB'. Use a demo database."
-require_running "$ODOO_CONTAINER"
-db_exists "$DB" || die "Database '$DB' does not exist. Create it with: scripts/init_db.sh $DB --demo"
+DB="${1:-$DEFAULT_DB}"
+require_running "$ODOO_CONTAINER" "$DB_CONTAINER"
+db_exists "$DB" || die "Database '$DB' does not exist. Create it with: scripts/init_db.sh $DB"
 
-docker cp "$REPO_ROOT/scripts/demo/seed_workflow_demo.py" "$ODOO_CONTAINER:/tmp/seed_workflow_demo.py"
-docker exec -i "$ODOO_CONTAINER" bash -c \
-  'odoo shell --config /etc/odoo/odoo.conf --db_host "$HOST" --db_port "${PORT:-5432}" --db_user "$USER" --db_password "$PASSWORD" -d "$1" --no-http < /tmp/seed_workflow_demo.py' \
-  odoo "$DB" 2>&1 | grep -E '^SEED|Traceback|Error' || true
+log "Backing up '$DB' first"
+"$REPO_ROOT/scripts/backup_db.sh" "$DB" | tail -1
+
+for script in seed_workflow_demo.py seed_crm_journeys.py; do
+  log "Running $script on '$DB'"
+  docker cp "$REPO_ROOT/scripts/demo/$script" "$ODOO_CONTAINER:/tmp/$script"
+  docker exec -i "$ODOO_CONTAINER" bash -c \
+    'odoo shell --config /etc/odoo/odoo.conf --db_host "$HOST" --db_port "${PORT:-5432}" --db_user "$USER" --db_password "$PASSWORD" -d "$1" --no-http < "/tmp/$2"' \
+    odoo "$DB" "$script" 2>&1 | grep -E '^SEED|Traceback|Error:' || true
+done

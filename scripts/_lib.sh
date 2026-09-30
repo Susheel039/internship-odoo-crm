@@ -56,6 +56,15 @@ pg_exec() { docker exec -e LC_ALL=C.UTF-8 "$@"; }
 psql_q() { pg_exec -i "$DB_CONTAINER" psql -v ON_ERROR_STOP=1 -U "$PG_USER" -d postgres -Atc "$1"; }
 db_exists() { [[ "$(psql_q "SELECT 1 FROM pg_database WHERE datname = '$1'")" == "1" ]]; }
 
+# Drop a database and its filestore (used to clean up temporary test copies).
+drop_db() {
+  local db="$1"
+  db_exists "$db" || return 0
+  psql_q "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db' AND pid <> pg_backend_pid()" > /dev/null
+  pg_exec "$DB_CONTAINER" dropdb -U "$PG_USER" "$db"
+  docker exec "$ODOO_CONTAINER" rm -rf "$FILESTORE_ROOT/$db"
+}
+
 # Run the odoo CLI inside the running container. `docker exec` bypasses the image
 # entrypoint, so pass the DB connection explicitly from the container's own env.
 odoo_cli() {
@@ -75,7 +84,8 @@ run_odoo_tests() {
   local mode_args=("$mode" "$modules")
   # On upgrade, also install modules that are new in this version (a no-op for installed ones).
   [[ "$mode" == "-u" ]] && mode_args=(-i "$modules" -u "$modules")
-  odoo_cli -d "$db" "${mode_args[@]}" --test-enable --test-tags "$tags" \
+  # --db-filter: the web tests must reach this temporary database (the live server only serves internship_dev).
+  odoo_cli -d "$db" "${mode_args[@]}" --db-filter "^${db}\$" --test-enable --test-tags "$tags" \
     --stop-after-init --http-port="$CLI_HTTP_PORT" --log-level=test "$@" 2>&1 | tee "$logfile" || status=$?
   if [[ $status -ne 0 ]] || grep -qE '^[0-9-]+ [0-9:,]+ [0-9]+ (ERROR|CRITICAL) ' "$logfile"; then
     echo

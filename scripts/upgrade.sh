@@ -27,6 +27,9 @@ db_exists "$DB" || die "Database '$DB' does not exist."
 log "Step 1/4: backup '$DB'"
 "$REPO_ROOT/scripts/backup_db.sh" "$DB" | tail -1
 
+# The clone is temporary: removed when the script ends (KEEP_CLONE=1 keeps it for inspection).
+[[ "${KEEP_CLONE:-0}" == "1" ]] || trap 'drop_db "$CLONE"' EXIT
+
 log "Step 2/4: clone '$DB' -> '$CLONE'"
 "$REPO_ROOT/scripts/clone_db.sh" "$DB" "$CLONE"
 if [[ $FIXTURE -eq 1 ]]; then

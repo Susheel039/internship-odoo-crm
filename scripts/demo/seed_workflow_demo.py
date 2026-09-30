@@ -1,13 +1,11 @@
 """Demo data that walks through the whole Internship CRM v2 workflow.
 
-Run on a DEMO database only (never on real data):
+    make demo-data            (loads this and seed_crm_journeys.py into internship_dev)
 
-    make demo-data DB=internship_v2_demo
-
-Creates fictional UK universities, companies, line managers, students, CRM leads at every
-stage (with notes explaining each step), AI call logs over the last 8 weeks, applications at
-every status, and placements in every stage with monthly attendance history, an escalation,
+Creates fictional UK universities, companies, line managers, students, applications at every
+status, and placements in every stage with monthly attendance history, an escalation,
 document requests, leave, meetings, report marking, evaluations, certificates and feedback.
+CRM leads come from seed_crm_journeys.py.
 Idempotent: does nothing if the demo marker company already exists.
 """
 
@@ -33,6 +31,9 @@ if env["internship.company"].search_count([("name", "=", MARKER)]):
 
 Partner = env["res.partner"]
 uk = env.ref("base.uk")
+gbp = env.ref("base.GBP")
+gbp.active = True
+env.company.write({"name": "INTERNTION", "currency_id": gbp.id, "country_id": uk.id})
 admin = env.ref("base.user_admin")
 PDF = env["ir.attachment"].create(
     {"name": "demo-document.pdf", "datas": base64.b64encode(b"%PDF-1.4 demo document"), "mimetype": "application/pdf"}
@@ -183,174 +184,7 @@ for index, role in enumerate(roles):
         )
     )
 
-# ----------------------------------------------------------------------
-# CRM: leads at every stage, explaining the funnel
-# ----------------------------------------------------------------------
-Lead = env["crm.lead"]
-stage = Lead._internship_stage
-STORY = {
-    "new": "NEW: captured but not yet contacted. Next: call or e-mail within 2 working days (Call with AI).",
-    "contacted": "CONTACTED: first conversation done. Next: qualify (roles, sites, dates, eligibility).",
-    "qualified": "QUALIFIED: real need confirmed. Next: book an interview / site visit with the coordinator.",
-    "interview": "INTERVIEW: meeting booked or held. Next: agree to host (company) or apply (student).",
-    "won": "WON: converted. Companies become internship.company records and get an invitation; "
-    "students become internship.student records and can apply.",
-    "lost": "LOST: not going ahead this year. Reason recorded; eligible for next year's campaign.",
-}
-lead_specs = [
-    # (name, category, stage, channel, interest, contact, organisation)
-    ("Harbour Health: clinical informatics interns", "company", "won", "referral", "hot", "Dr Nia Rees", MARKER),
-    (
-        "Riverside Analytics: data placements",
-        "company",
-        "won",
-        "vapi_outbound",
-        "hot",
-        "Sam Patel",
-        "Riverside Analytics Ltd",
-    ),
-    (
-        "Brightwater: summer engineering scheme",
-        "company",
-        "interview",
-        "campus_event",
-        "hot",
-        "Kate Owens",
-        "Brightwater Engineering plc",
-    ),
-    (
-        "Oakline Retail: store operations interns",
-        "company",
-        "qualified",
-        "vapi_outbound",
-        "warm",
-        "Liam Carter",
-        "Oakline Retail Group",
-    ),
-    (
-        "Meridian Finance: audit intern",
-        "company",
-        "qualified",
-        "referral",
-        "warm",
-        "Hannah Webb",
-        "Meridian Finance LLP",
-    ),
-    (
-        "Northern Lights Studio: UX intern",
-        "company",
-        "contacted",
-        "vapi_inbound",
-        "warm",
-        "Eve Marsh",
-        "Northern Lights Studio",
-    ),
-    ("Castleford Logistics", "company", "contacted", "vapi_outbound", "cold", "Rob Hale", "Castleford Logistics"),
-    ("Greenway Energy", "company", "new", "campus_event", "warm", "Zara Khan", "Greenway Energy"),
-    ("Pinewood Care Homes", "company", "new", "vapi_outbound", "cold", "Mark Doyle", "Pinewood Care Homes"),
-    ("Atlas Legal Services", "company", "lost", "referral", "cold", "Jo Briggs", "Atlas Legal Services"),
-    ("Enquiry: Chloe Evans (Computing)", "student", "won", "vapi_inbound", "hot", "Chloe Evans", False),
-    ("Enquiry: Ravi Shah (Business)", "student", "won", "portal", "warm", "Ravi Shah", False),
-    ("Enquiry: Ella Price (Design)", "student", "interview", "vapi_inbound", "warm", "Ella Price", False),
-    ("Enquiry: Noah Clarke (Engineering)", "student", "qualified", "campus_event", "warm", "Noah Clarke", False),
-    ("Enquiry: Mia Hughes (Finance)", "student", "contacted", "vapi_inbound", "cold", "Mia Hughes", False),
-    ("Enquiry: Leo Ahmed (Computing)", "student", "new", "vapi_inbound", "warm", "Leo Ahmed", False),
-    ("Enquiry: Ruby Scott (Marketing)", "student", "new", "portal", "cold", "Ruby Scott", False),
-    ("Enquiry: Finn Walsh (Data)", "student", "lost", "vapi_inbound", "cold", "Finn Walsh", False),
-    (
-        "Westfield University partnership",
-        "university",
-        "qualified",
-        "university",
-        "warm",
-        "Prof. Anne Moss",
-        "Westfield University",
-    ),
-    (
-        "Do-not-call example: Blue Harbour Cafe",
-        "company",
-        "contacted",
-        "vapi_outbound",
-        "cold",
-        "Owner",
-        "Blue Harbour Cafe",
-    ),
-]
-leads = Lead
-for index, (name, category, stage_code, channel, interest, contact, organisation) in enumerate(lead_specs):
-    lead = Lead.create(
-        {
-            "name": name,
-            "type": "opportunity",
-            "lead_category": category,
-            "stage_id": stage(stage_code).id,
-            "source_channel": channel,
-            "interest_level": interest,
-            "contact_name": contact,
-            "partner_name": organisation or False,
-            "email_from": f"{contact.split()[-1].lower()}@{(organisation or 'students').split()[0].lower()}.example",
-            "phone": phone(),
-            "consent_to_contact": stage_code not in ("new", "lost"),
-            "consent_date": NOW - timedelta(days=10) if stage_code not in ("new", "lost") else False,
-            "recording_consent": channel.startswith("vapi"),
-            "tps_checked": category == "company",
-            "tps_checked_date": TODAY - relativedelta(days=20) if category == "company" else False,
-            "do_not_call": name.startswith("Do-not-call"),
-            "university_id": universities["NBU"].id if category == "student" else False,
-            "description": STORY[stage_code],
-            "priority": {"hot": "3", "warm": "2", "cold": "1"}[interest],
-            "expected_revenue": 0,
-        }
-    )
-    if stage_code == "lost":
-        lead.lost_reason_id = env.ref("internship_crm.lost_reason_legacy_closed", raise_if_not_found=False)
-    if interest == "hot" and stage_code in ("interview", "qualified"):
-        lead.callback_datetime = NOW + timedelta(days=random.randint(1, 6), hours=random.randint(1, 5))
-    set_create_date(lead, NOW - timedelta(days=60 - index * 3))
-    lead.message_post(body=STORY[stage_code])
-    leads |= lead
-
-# won leads -> real records (the conversion step of the funnel)
-for lead in leads.filtered(lambda lead: lead.stage_id == stage("won")):
-    if lead.lead_category == "company":
-        company = env["internship.company"].search([("name", "=", lead.partner_name)], limit=1)
-        lead.write({"internship_company_id": company.id})
-        lead.message_post(body=f"Converted: company record {company.name} (vetted and hosting placements).")
-    else:
-        lead.action_convert_to_student()
-
-# ----------------------------------------------------------------------
-# Voice AI call log over the last 8 weeks
-# ----------------------------------------------------------------------
-CallLog = env["internship.call.log"]
-outcomes = ["completed"] * 6 + ["no_answer"] * 2 + ["failed"]
-for index in range(46):
-    lead = leads[index % len(leads)]
-    when = NOW - timedelta(days=random.randint(0, 55), hours=random.randint(0, 8))
-    status = random.choice(outcomes)
-    CallLog.create(
-        {
-            "name": f"Call {index + 1:03d}: {lead.contact_name}",
-            "lead_id": lead.id,
-            "purpose": "inbound_enquiry" if lead.source_channel == "vapi_inbound" else "lead_generation",
-            "direction": "inbound" if lead.source_channel == "vapi_inbound" else "outbound",
-            "call_type": "inbound" if lead.source_channel == "vapi_inbound" else "outbound",
-            "status": status,
-            "call_datetime": when,
-            "duration_seconds": random.randint(60, 420) if status == "completed" else 0,
-            "customer_number": lead.phone,
-            "cost": round(random.uniform(0.04, 0.35), 2) if status == "completed" else 0.0,
-            "ended_reason": {
-                "completed": "customer-ended-call",
-                "no_answer": "customer-did-not-answer",
-                "failed": "pipeline-error",
-            }[status],
-            "summary": "Discussed internship hosting and next steps." if status == "completed" else False,
-            "attempt_count": 1,
-        }
-    )
-for lead in leads.filtered(lambda lead: lead.stage_id == stage("new") and not lead.do_not_call)[:2]:
-    CallLog.action_queue_call("lead_generation", lead, scheduled_at=NOW + timedelta(hours=2))
+# CRM leads and AI calls are created by seed_crm_journeys.py (30 leads with their journeys).
 
 # ----------------------------------------------------------------------
 # Students, applications and placements in every stage
@@ -667,11 +501,7 @@ for status in ("draft", "submitted", "submitted", "under_review", "interview", "
 
 env["internship.placement"].search([])._recompute_risk()
 env.cr.commit()
-print("SEED: done")
-print(
-    "SEED: leads by stage",
-    {s.name: c for s, c in Lead._read_group([("lead_category", "!=", False)], ["stage_id"], ["__count"])},
-)
+print("SEED: workflow done")
 print(
     "SEED: placements by stage",
     {s.code: c for s, c in env["internship.placement"]._read_group([], ["stage_id"], ["__count"])},

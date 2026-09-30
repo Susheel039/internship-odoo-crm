@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Runs on every install/upgrade: drop the unused default "Proposition" stage. -->
+    <function model="crm.stage" name="_internship_remove_unused_default_stages"/>
+</odoo>

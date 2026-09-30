@@ -47,20 +47,25 @@ CRM pipeline, leads by source and AI calls per week, plus the placements needing
 and upcoming callbacks. Filter by university. Click any card, bar or slice to open the
 records behind it.
 
-To explore the workflow with realistic data, load the demo story into a **demo** database
-(never into real data):
+There is one database, `internship_dev`: the login page opens it directly (no database
+list). To (re)load the demo story into it:
 
 ```sh
-make init DB=internship_v2_demo DEMO=1
-make demo-data DB=internship_v2_demo
+make demo-data     # takes a backup first
 ```
 
-It creates 20 CRM leads across New → Contacted → Qualified → Interview → Won / Lost (each
-lead's notes explain what that stage means and the next step), won leads converted into
-companies and students, two months of AI call logs, applications at every status, and
-placements in every stage: form requested through agreement, active with monthly attendance
-history (one escalated to a tripartite meeting, some late), on hold, terminated, final report,
-completed with certificate and feedback, and failed after resubmission.
+It creates universities, companies, line managers and students; placements in every stage
+(form requested through agreement, active with monthly attendance history including an
+escalation and late records, on hold, terminated, final report, completed with certificate
+and feedback, failed after resubmission); and **30 CRM leads (J01–J30)**, each walked through
+its pipeline journey with dated stage changes, notes and AI calls in its history. They cover:
+happy paths and fast-track referrals, conversion to company and student records, losses at
+every stage with reasons, unanswered calls up to the attempt limit, Do Not Call, missing TPS
+check, missing and withdrawn consent, upcoming and overdue callbacks, duplicates matched by
+phone and e-mail, a re-opened lead, inbound AI enquiries, an n8n automation lead, a visa
+question handed to a human, and a student whose placement was later rejected.
+
+Test and upgrade runs use temporary databases that are deleted when they finish.
 
 ## Workflow
 
