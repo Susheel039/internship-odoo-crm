@@ -37,6 +37,31 @@ Open <http://localhost:8069>, sign in as `admin` / `admin`, then change the pass
 
 Dependency graph, models and conventions: [docs/DATA_MODEL.md](docs/DATA_MODEL.md).
 
+## Dashboard and demo data
+
+**Internship CRM › Dashboard** shows KPI cards (students, open applications, placements in
+admission and on placement, at-risk placements, completion rate, hot leads, AI calls this
+month) and charts: the placement pipeline by stage, open placements by phase, monthly
+attendance against the tripartite threshold, placement health, applications by status, the
+CRM pipeline, leads by source and AI calls per week, plus the placements needing attention
+and upcoming callbacks. Filter by university. Click any card, bar or slice to open the
+records behind it.
+
+To explore the workflow with realistic data, load the demo story into a **demo** database
+(never into real data):
+
+```sh
+make init DB=internship_v2_demo DEMO=1
+make demo-data DB=internship_v2_demo
+```
+
+It creates 20 CRM leads across New → Contacted → Qualified → Interview → Won / Lost (each
+lead's notes explain what that stage means and the next step), won leads converted into
+companies and students, two months of AI call logs, applications at every status, and
+placements in every stage: form requested through agreement, active with monthly attendance
+history (one escalated to a tripartite meeting, some late), on hold, terminated, final report,
+completed with certificate and feedback, and failed after resubmission.
+
 ## Workflow
 
 ```

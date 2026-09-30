@@ -19,6 +19,13 @@
         "data/report_data.xml",
         "views/internship_reporting_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "internship_reporting/static/src/dashboard/dashboard.js",
+            "internship_reporting/static/src/dashboard/dashboard.xml",
+            "internship_reporting/static/src/dashboard/dashboard.scss",
+        ],
+    },
     "installable": True,
     "application": False,
     "license": "LGPL-3",

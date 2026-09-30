@@ -8,7 +8,7 @@ ODOO := internship_odoo
 PG := internship_postgres
 
 .PHONY: help config up down restart logs shell odoo-shell psql init upgrade upgrade-apply \
-        upgrade-legacy test test-db backup restore clone lint format
+        upgrade-legacy test test-db demo-data backup restore clone lint format
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -55,6 +55,9 @@ test: ## Run tests on a fresh throwaway DB (make test MODULE=internship_base)
 
 test-db: ## Upgrade + test an existing clone (make test-db DB=internship_dev_upgrade_test)
 	scripts/test.sh $(MODULE) --db $(DB)
+
+demo-data: ## Load workflow demo data into a DEMO database (make demo-data DB=internship_v2_demo)
+	scripts/demo_data.sh $(DB)
 
 backup: ## Back up DB + filestore into backups/
 	scripts/backup_db.sh $(DB)

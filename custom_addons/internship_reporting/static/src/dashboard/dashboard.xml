@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="internship_reporting.Dashboard">
+        <div class="o_internship_dashboard o_action h-100 overflow-auto">
+            <div class="container-fluid py-3">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <h2 class="mb-0 me-auto">Internship CRM dashboard</h2>
+                    <select class="form-select w-auto" t-on-change="onUniversityChange" aria-label="University">
+                        <option value="">All universities</option>
+                        <t t-if="state.data">
+                            <t t-foreach="state.data.universities" t-as="university" t-key="university.id">
+                                <option t-att-value="university.id" t-att-selected="state.universityId == university.id"
+                                        t-esc="university.name"/>
+                            </t>
+                        </t>
+                    </select>
+                </div>
+
+                <t t-if="state.data">
+                    <!-- KPI cards -->
+                    <div class="row g-3 mb-3">
+                        <t t-foreach="state.data.kpis" t-as="kpi" t-key="kpi.key">
+                            <div class="col-6 col-md-4 col-xl-3">
+                                <div t-attf-class="card o_dash_kpi h-100 #{kpi.tone ? 'o_dash_' + kpi.tone : ''}" role="button"
+                                     t-on-click="() => this.openKpi(kpi)">
+                                    <div class="card-body d-flex align-items-center gap-3">
+                                        <i t-attf-class="fa #{kpi.icon} fa-2x o_dash_icon" aria-hidden="true"/>
+                                        <div>
+                                            <div class="o_dash_value" t-esc="kpi.value"/>
+                                            <div class="text-muted small" t-esc="kpi.label"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- Placements -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-lg-8">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">Placements pipeline by stage</h5>
+                                <div class="o_dash_chart o_dash_chart_lg"><canvas t-ref="stageCanvas"/></div>
+                            </div></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">Open placements by phase</h5>
+                                <div class="o_dash_chart"><canvas t-ref="phaseCanvas"/></div>
+                            </div></div>
+                        </div>
+                    </div>
+
+                    <!-- Monitoring -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-lg-8">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">Monthly attendance (average %)</h5>
+                                <div class="o_dash_chart"><canvas t-ref="attendanceCanvas"/></div>
+                            </div></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">Placement health</h5>
+                                <div class="o_dash_chart"><canvas t-ref="riskCanvas"/></div>
+                            </div></div>
+                        </div>
+                    </div>
+
+                    <!-- Admission and CRM -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-lg-4">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">Applications by status</h5>
+                                <div class="o_dash_chart"><canvas t-ref="applicationsCanvas"/></div>
+                            </div></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">CRM pipeline (leads by stage)</h5>
+                                <div class="o_dash_chart"><canvas t-ref="leadsStageCanvas"/></div>
+                            </div></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">Leads by source</h5>
+                                <div class="o_dash_chart"><canvas t-ref="leadsSourceCanvas"/></div>
+                            </div></div>
+                        </div>
+                    </div>
+
+                    <!-- Voice AI and follow-ups -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-lg-4">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">AI calls per week</h5>
+                                <div class="o_dash_chart"><canvas t-ref="callsCanvas"/></div>
+                            </div></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">Placements needing attention</h5>
+                                <div t-if="!state.data.at_risk.length" class="text-muted">Nothing at risk. Good.</div>
+                                <ul class="list-group list-group-flush">
+                                    <t t-foreach="state.data.at_risk" t-as="p" t-key="p.id">
+                                        <li class="list-group-item px-0" role="button" t-on-click="() => this.openPlacement(p.id)">
+                                            <div class="d-flex justify-content-between">
+                                                <strong t-esc="p.student"/>
+                                                <span t-attf-class="badge #{p.risk == 'red' ? 'text-bg-danger' : 'text-bg-warning'}"
+                                                      t-esc="p.risk == 'red' ? 'At risk' : 'Attention'"/>
+                                            </div>
+                                            <div class="small text-muted"><t t-esc="p.company"/> · <t t-esc="p.stage"/></div>
+                                            <div class="small" t-esc="p.reason"/>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card h-100"><div class="card-body">
+                                <h5 class="card-title">Upcoming callbacks</h5>
+                                <div t-if="!state.data.callbacks.length" class="text-muted">No callbacks booked.</div>
+                                <ul class="list-group list-group-flush">
+                                    <t t-foreach="state.data.callbacks" t-as="lead" t-key="lead.id">
+                                        <li class="list-group-item px-0" role="button" t-on-click="() => this.openLead(lead.id)">
+                                            <div class="d-flex justify-content-between">
+                                                <strong t-esc="lead.name"/>
+                                                <span t-if="lead.interest" class="badge text-bg-light" t-esc="lead.interest"/>
+                                            </div>
+                                            <div class="small text-muted"><t t-esc="lead.contact"/> · <t t-esc="lead.when"/></div>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div></div>
+                        </div>
+                    </div>
+                    <p class="text-muted small">Click any card, bar or slice to open the records behind it.</p>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -59,6 +59,35 @@ class TestInternshipReporting(PlacementCommon):
         self.assertEqual(report.failed_rate, 0.0)
         self.assertEqual(report.avg_company_feedback, 4.0)
 
+    def test_dashboard_data(self):
+        placement = self._approved_placement()
+        placement.action_start()
+        self.env["crm.lead"].create(
+            {"name": "Lead", "type": "opportunity", "lead_category": "company", "interest_level": "hot"}
+        )
+        data = self.env["internship.dashboard"].get_dashboard_data()
+        self.assertEqual({k["key"] for k in data["kpis"]} >= {"students", "active", "at_risk", "hot_leads"}, True)
+        stage_chart = data["charts"]["placements_by_stage"]
+        self.assertEqual(len(stage_chart["labels"]), len(stage_chart["values"]))
+        active_index = stage_chart["labels"].index(placement.stage_id.name)
+        self.assertGreaterEqual(stage_chart["values"][active_index], 1)
+        self.assertEqual(stage_chart["model"], "internship.placement")
+        self.assertIn(
+            ("stage_id", "=", placement.stage_id.id), [tuple(d) for d in stage_chart["domains"][active_index]]
+        )
+        for key in (
+            "placements_by_phase",
+            "risk",
+            "applications",
+            "leads_by_stage",
+            "leads_by_source",
+            "attendance_trend",
+            "calls_by_week",
+        ):
+            self.assertIn(key, data["charts"])
+        scoped = self.env["internship.dashboard"].get_dashboard_data(university_id=self.university.id)
+        self.assertEqual(scoped["university_id"], self.university.id)
+
     def test_dashboard_and_legacy_certificate(self):
         action = self.env["internship.report"].action_open_dashboard()
         self.assertEqual(action["res_model"], "internship.report")

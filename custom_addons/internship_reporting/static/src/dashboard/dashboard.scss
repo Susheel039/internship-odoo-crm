@@ -1,0 +1,49 @@
+.o_internship_dashboard {
+    background-color: $o-view-background-color;
+
+    .o_dash_kpi {
+        cursor: pointer;
+        transition: box-shadow 0.15s ease-in-out;
+
+        &:hover {
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.12);
+        }
+
+        .o_dash_icon {
+            color: #2e5eaa;
+            width: 2.25rem;
+            text-align: center;
+        }
+
+        .o_dash_value {
+            font-size: 1.6rem;
+            font-weight: 600;
+            line-height: 1.1;
+        }
+
+        &.o_dash_danger .o_dash_icon {
+            color: #d64545;
+        }
+
+        &.o_dash_success .o_dash_icon {
+            color: #2e9d57;
+        }
+
+        &.o_dash_warning .o_dash_icon {
+            color: #e0a100;
+        }
+    }
+
+    .o_dash_chart {
+        position: relative;
+        height: 260px;
+
+        &.o_dash_chart_lg {
+            height: 300px;
+        }
+    }
+
+    .list-group-item[role="button"]:hover {
+        background-color: rgba(46, 94, 170, 0.06);
+    }
+}
