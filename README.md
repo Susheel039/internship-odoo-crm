@@ -1,4 +1,4 @@
-# Internship CRM
+# Interntion CRM
 
 UK internship management platform on **Odoo 19 Community**, connecting universities,
 students and host companies (line managers) from application to certificate, with a Vapi
