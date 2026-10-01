@@ -238,6 +238,9 @@ class InternshipCallLog(models.Model):
             return self.env._("Maximum attempts reached.")
         if self.lead_id.do_not_call:
             return self.env._("The contact is marked Do Not Call.")
+        if self.lead_id and self.lead_id.lead_category != "company" and not self.lead_id.consent_to_contact:
+            # Individuals (students and others) must have agreed to be contacted (UK GDPR / PECR).
+            return self.env._("No consent to contact has been recorded for this person.")
         if (
             self.purpose == "lead_generation"
             and self.lead_id.lead_category == "company"

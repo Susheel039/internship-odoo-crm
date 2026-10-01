@@ -119,6 +119,19 @@ class TestVapiQueue(PlacementCommon):
         self.assertFalse(client.create_call.called, "switched off: no fallback to the company account")
         self.assertIn("switched off", blocked.error_message)
 
+    def test_student_without_consent_is_not_called(self):
+        lead = self.env["crm.lead"].create(
+            {"name": "Student", "lead_category": "student", "phone": "07700 900777", "consent_to_contact": False}
+        )
+        log = self.CallLog.action_queue_call("lead_generation", lead)
+        client = self._fake_client()
+        log._dial(client=client)
+        self.assertFalse(client.create_call.called)
+        self.assertIn("consent", log.error_message)
+        lead.consent_to_contact = True
+        log._dial(client=client)
+        self.assertTrue(client.create_call.called)
+
     def test_queue_needs_phone(self):
         lead = self.env["crm.lead"].create({"name": "No phone"})
         with self.assertRaises(UserError):
