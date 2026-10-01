@@ -1,6 +1,6 @@
 {
     "name": "Internship Voice AI (Vapi)",
-    "version": "19.0.2.2.0",
+    "version": "19.0.2.3.0",
     "category": "Custom",
     "summary": "Outbound and inbound AI calls with Vapi: call queue, webhook, tools, lead creation.",
     "author": "Internship CRM",

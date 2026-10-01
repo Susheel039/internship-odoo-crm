@@ -24,8 +24,8 @@
             <form string="Placement Agreement">
                 <header>
                     <button name="action_send" type="object" string="Send for Signature" class="btn-primary" invisible="state != 'draft'"/>
-                    <button name="action_open_signing_page" type="object" string="Sign Now"
-                            invisible="state != 'awaiting_university'"/>
+                    <button name="action_open_signing_page" type="object" string="Open Signing Page"
+                            invisible="state not in ('sent_company', 'signed_company', 'sent_student', 'signed_student', 'awaiting_university')"/>
                     <button name="action_regenerate" type="object" string="Reissue New Version"
                             invisible="state in ('fully_signed', 'voided')"
                             confirm="Void this agreement and issue a new version for signature?"
